@@ -12,7 +12,7 @@ const resources = [
   { href: "/#faq", label: "FAQs" },
   { href: "/dashboard", label: "Delegate Login" }
 ];
-const socials = ["Instagram", "X", "Facebook", "YouTube", "LinkedIn"];
+const socials = ["Instagram", "X", "YouTube", "LinkedIn"];
 
 export default function Footer() {
   return (
