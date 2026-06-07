@@ -82,12 +82,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <a
-        href="https://wa.me/919650058469"
-        className="fixed bottom-5 right-5 z-40 rounded-full bg-green-500 px-5 py-3 text-sm font-600 text-white shadow-lg hover:bg-green-600"
-      >
-        Chat on WhatsApp
-      </a>
+      {/* WhatsApp button removed per request */}
     </footer>
   );
 }
