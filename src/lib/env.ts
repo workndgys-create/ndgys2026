@@ -1,11 +1,14 @@
 import { z } from "zod";
 
 // Validate at boot. Public/optional integrations are allowed to be absent in dev.
+<<<<<<< HEAD
 // Provide safe defaults for local development to avoid crashing middleware
 if (process.env.NODE_ENV !== "production") {
   process.env.DATABASE_URL ||= "file:./dev.db";
   process.env.JWT_SECRET ||= "development-secret-please-change";
 }
+=======
+>>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
 const schema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
   JWT_SECRET: z.string().min(16, "JWT_SECRET must be at least 16 chars"),

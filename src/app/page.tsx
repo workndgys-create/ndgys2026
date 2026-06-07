@@ -22,6 +22,7 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   return (
     <>
+<<<<<<< HEAD
       
       <Navbar />
       
@@ -29,6 +30,10 @@ export default async function HomePage() {
 
       <Marquee />
       
+=======
+      <Marquee />
+      <Navbar />  
+>>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
       <main>
         <Hero />
         <About />
