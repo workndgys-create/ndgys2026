@@ -7,12 +7,11 @@ import { defineConfig } from "prisma/config";
 const databaseUrl = process.env.DATABASE_URL || "file:./dev.db";
 =======
 import { defineConfig, env } from "prisma/config";
->>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
   datasource: {
-<<<<<<< HEAD
+ HEAD
     url: databaseUrl,
   },
   migrations: {
