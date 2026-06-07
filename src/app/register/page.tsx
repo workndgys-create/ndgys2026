@@ -23,6 +23,14 @@ function loadCashfree(): Promise<boolean> {
   });
 }
 
+const HEARD = [
+  "Instagram",
+  "WhatsApp",
+  "School / College",
+  "Friend / Word of mouth",
+  "Other",
+];
+
 function RegisterInner() {
   const params = useSearchParams();
   const preTrack = params.get("track") || TRACKS[0].slug;
