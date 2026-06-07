@@ -36,11 +36,6 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
   const [age, setAge] = useState("");
   const [consent, setConsent] = useState(false);
   const [guardianConsent, setGuardianConsent] = useState(false);
-<<<<<<< HEAD
-=======
-  const [howHeard, setHowHeard] = useState("");
-  const [referralName, setReferralName] = useState("");
->>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
   const isMinor = age !== "" && Number(age) > 0 && Number(age) < 18;
 
   const fee = useMemo(() => feeForParticipation(c, participation) ?? 0, [c, participation]);
@@ -76,10 +71,6 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
       institution: fd.get("institution") || "",
       pastExperience: fd.get("pastExperience") || "",
       howHeard: fd.get("howHeard") || "",
-<<<<<<< HEAD
-=======
-      referralName: fd.get("referralName") || "",
->>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
       notes: fd.get("notes") || "",
       members: cleanMembers,
       answers: questions.map((q, i) => ({ q, a: (answers[i] || "").trim() })).filter((x) => x.a),
@@ -161,11 +152,7 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
         <Field name="city" label="Place / City" errors={errors} />
         <Field name="emergencyContact" label="Emergency contact" errors={errors} />
       </div>
-<<<<<<< HEAD
       <Field name="institution" label="School / College (optional)" errors={errors} />
-=======
-      <Field name="institution" label="School / College" errors={errors} />
->>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
       <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
       {isTeam && (
@@ -205,41 +192,11 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
       )}
 
       <div>
-<<<<<<< HEAD
         <label className="text-sm font-500 text-ink/80">How did you hear about us?</label>
         <select name="howHeard" className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
           {HEARD.map((h) => <option key={h} value={h}>{h}</option>)}
         </select>
       </div>
-=======
-  <label className="text-sm font-500 text-ink/80">
-    How did you hear about us?
-  </label>
-
-  <select
-    name="howHeard"
-    value={howHeard}
-    onChange={(e) => setHowHeard(e.target.value)}
-    className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
-  >
-    {HEARD.map((h) => (
-      <option key={h} value={h}>
-        {h}
-      </option>
-    ))}
-  </select>
-
-  {howHeard === "Friend / Word of mouth" && (
-    <input
-      name="referralName"
-      value={referralName}
-      onChange={(e) => setReferralName(e.target.value)}
-      placeholder="Who referred you?"
-      className="mt-3 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
-    />
-  )}
-</div>
->>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
       <div>
         <label className="text-sm font-500 text-ink/80">Anything you'd like us to know? (optional)</label>
         <textarea name="notes" rows={2} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-gold" />

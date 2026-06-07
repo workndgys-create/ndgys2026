@@ -40,11 +40,7 @@ export default function Navbar() {
 
   return (
     <header
-<<<<<<< HEAD
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-=======
-      className={`fixed inset-x-0 top-8 z-50 transition-all duration-300 ${
->>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
         scrolled
           ? "bg-midnight/95 shadow-lg shadow-black/20 backdrop-blur"
           : "bg-midnight"

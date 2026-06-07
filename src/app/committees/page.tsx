@@ -28,7 +28,7 @@ export default async function CommitteesPage() {
               <article key={t.slug} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-ink/10 bg-paper shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
                 <div className="relative h-36 bg-midnight">
                   <div className="absolute inset-0 flex items-center justify-center font-display text-6xl font-900 text-white/5">{String(i + 1).padStart(2, "0")}</div>
-                  <div className="absolute bottom-3 left-4 rounded-full bg-gold px-3 py-1 text-xs font-600 text-midnight">₹{(t.fee / 100).toLocaleString("en-IN")}</div>
+                  
                   <div className="absolute right-4 top-3 rounded-full bg-black/30 px-3 py-1 text-[11px] text-cream backdrop-blur">{t.full ? "Full" : `${t.seatsRemaining} left`}</div>
                 </div>
                 <div className="flex flex-1 flex-col p-6">

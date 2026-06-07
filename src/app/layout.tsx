@@ -2,10 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Libre_Franklin } from "next/font/google";
 import "./globals.css";
 import ServiceWorker from "@/components/ServiceWorker";
-<<<<<<< HEAD
 import InitialLoader from "@/components/InitialLoader";
-=======
->>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
 
 const display = Fraunces({
   subsets: ["latin"],
@@ -60,15 +57,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
-<<<<<<< HEAD
       <body className="font-body antialiased">
         <InitialLoader />
         {children}
         <ServiceWorker />
       </body>
-=======
-      <body className="font-body antialiased">{children}<ServiceWorker /></body>
->>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
     </html>
   );
 }

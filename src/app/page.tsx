@@ -22,18 +22,9 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   return (
     <>
-<<<<<<< HEAD
-      
+      <Marquee />
       <Navbar />
-      
-      <div className="h-[72px]" />
-
-      <Marquee />
-      
-=======
-      <Marquee />
-      <Navbar />  
->>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
+      <div className="h-8" />
       <main>
         <Hero />
         <About />
@@ -47,6 +38,8 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* Venue preview inserted above Contact (full-height preview) */}
+
         <EventsFeatured />
         <Competitions />
         <Speakers />
@@ -56,6 +49,27 @@ export default async function HomePage() {
         <Tracks />
         <Resources />
         <FAQ />
+
+        <section id="venue-preview" className="py-0">
+          <div className="mx-auto max-w-full">
+            <SectionKicker label="DISPATCH — Venue" />
+            <div className="h-[80vh] w-full">
+              <iframe
+                title="IIT Delhi — full preview"
+                src="https://www.google.com/maps/embed?origin=mfe&pb=!1m2!2m1!1sIIT+Delhi,+Hauz+Khas,+New+Delhi"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+            <div className="mx-auto max-w-6xl px-5 py-6">
+              <p className="text-ink/70">IIT Delhi, Hauz Khas, New Delhi — previewed above. <a href="https://www.globalyouthsummit.in/venue" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">Open official venue page</a></p>
+            </div>
+          </div>
+        </section>
+
         <Contact />
       </main>
       <Footer />
