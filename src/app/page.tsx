@@ -23,8 +23,8 @@ export default async function HomePage() {
   return (
     <>
       
-      <Navbar />
       <Marquee />
+      <Navbar />
       <main>
         <Hero />
         <About />
