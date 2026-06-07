@@ -28,7 +28,7 @@ export default async function Competitions() {
                   <h3 className="mt-1 font-display text-xl font-700 text-ink">{c.title}</h3>
                   <p className="mt-2 flex-1 text-sm text-ink/70">{c.summary}</p>
                   <div className="mt-4 flex items-center justify-between">
-                    {c.prize ? <span className="rounded-full bg-gold/15 px-3 py-1 text-xs font-600 text-ink">🏆 {c.prize}</span> : <span />}
+                    <span />
                     {c.registrationOpen && (c.feeSolo || c.feeGroup)
                       ? <Link href={`/competitions/${c.slug}/register`} className="text-sm font-600 text-gold hover:underline">Register →</Link>
                       : c.ctaUrl
