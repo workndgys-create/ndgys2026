@@ -15,7 +15,7 @@ export default async function EventFlow() {
         </Reveal>
         {days.map((day) => (
           <div key={day} className="mt-10">
-            <h3 className="font-display text-2xl font-700 text-ink">Day {day} <span className="text-slatey">· {day === 1 ? "8 August" : "9 August"}</span></h3>
+            <h3 className="font-display text-2xl font-700 text-ink">Day {day} <span className="text-slatey">· {day === 1 ? "22 August" : "23 August"}</span></h3>
             <ol className="mt-5 border-l-2 border-gold/40 pl-6">
               {(items as any[]).filter((i) => i.day === day).map((it) => (
                 <li key={it.id} className="relative pb-7 last:pb-0">
