@@ -44,5 +44,9 @@ export async function currentPermissions(): Promise<{ session: AdminSession; per
 }
 
 export async function audit(adminEmail: string, action: string, entity: string, entityId?: string, meta?: string) {
-  await prisma.adminAction.create({ data: { adminEmail, action, entity, entityId: entityId ?? null, meta: meta ?? null } });
+  try {
+    await prisma.adminAction.create({ data: { adminEmail, action, entity, entityId: entityId ?? null, meta: meta ?? null } });
+  } catch (error) {
+    console.error("[adminSession] audit failed", { adminEmail, action, entity, entityId, error });
+  }
 }
