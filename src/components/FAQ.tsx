@@ -20,20 +20,23 @@ export default function FAQ() {
   const shown = faqs.filter((f) => cat === ALL || f.cat === cat);
 
   return (
-    <section id="faq" className="bg-cream grain py-24">
+    <section id="faq" className="bg-cream grain py-28">
       <div className="mx-auto max-w-3xl px-5">
         <SectionKicker label="DISPATCH — 04" />
         <h2 className="mt-5 font-display text-4xl font-700 text-ink sm:text-6xl">
           GOT <span className="text-gold">QUESTIONS?</span>
         </h2>
+        <p className="mt-3 text-sm text-slatey">Have queries about participation, fees, or timeline? We've got you covered.</p>
 
         <div className="mt-8 flex flex-wrap gap-2">
           {cats.map((c) => (
             <button
               key={c}
               onClick={() => { setCat(c); setOpen(null); }}
-              className={`rounded-full border px-4 py-1.5 text-sm transition ${
-                cat === c ? "border-gold bg-gold text-midnight" : "border-ink/15 text-ink/70 hover:border-gold"
+              className={`rounded-full border px-5 py-2 text-xs font-600 uppercase tracking-wider transition-all duration-300 ${
+                cat === c
+                  ? "border-gold bg-gold text-midnight shadow-md shadow-gold/25 scale-105"
+                  : "border-ink/10 bg-paper text-ink/65 hover:border-gold hover:text-gold"
               }`}
             >
               {c}
@@ -41,21 +44,44 @@ export default function FAQ() {
           ))}
         </div>
 
-        <div className="mt-8 divide-y divide-ink/10 border-y border-ink/10">
+        <div className="mt-10 space-y-4">
           {shown.map((f, i) => {
             const isOpen = open === i;
             return (
-              <div key={f.q}>
+              <div
+                key={f.q}
+                className={`overflow-hidden rounded-2xl border transition-all duration-400 ${
+                  isOpen
+                    ? "border-gold/30 bg-midnight text-cream shadow-xl shadow-black/15"
+                    : "border-ink/10 bg-paper text-ink"
+                }`}
+              >
                 <button
-                  className="flex w-full items-center justify-between gap-4 py-5 text-left"
+                  className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
                   onClick={() => setOpen(isOpen ? null : i)}
                   aria-expanded={isOpen}
                 >
-                  <span className="font-display text-lg font-600 text-ink">{f.q}</span>
-                  <span className={`text-2xl text-gold transition ${isOpen ? "rotate-45" : ""}`}>+</span>
+                  <span className={`font-display text-lg font-600 transition-colors duration-300 ${isOpen ? "text-goldlite" : "text-ink"}`}>
+                    {f.q}
+                  </span>
+                  <span
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-lg font-500 transition-all duration-300 ${
+                      isOpen ? "border-goldlite/30 bg-gold/10 text-goldlite rotate-45" : "border-ink/10 bg-cream text-gold"
+                    }`}
+                  >
+                    +
+                  </span>
                 </button>
-                <div className={`grid transition-all ${isOpen ? "grid-rows-[1fr] pb-5" : "grid-rows-[0fr]"}`}>
-                  <p className="overflow-hidden text-[15px] leading-relaxed text-ink/70">{f.a}</p>
+                <div
+                  className={`grid transition-all duration-300 ease-in-out ${
+                    isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <p className={`px-6 pb-6 text-[15px] leading-relaxed transition-colors duration-300 ${isOpen ? "text-cream/75" : "text-ink/70"}`}>
+                      {f.a}
+                    </p>
+                  </div>
                 </div>
               </div>
             );

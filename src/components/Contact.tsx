@@ -33,60 +33,80 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="bg-midnight py-24 text-cream">
-      <div className="mx-auto grid max-w-6xl gap-12 px-5 md:grid-cols-2">
+    <section id="contact" className="relative overflow-hidden bg-midnight py-28 text-cream">
+      {/* background glows */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-royal/30 blur-3xl" />
+        <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-gold/5 blur-3xl animate-pulse" />
+      </div>
+
+      <div className="mx-auto grid max-w-6xl gap-12 px-5 md:grid-cols-2 relative z-10 items-center">
         <div>
           <SectionKicker label="COMMUNIQUÉ — 05" />
           <h2 className="mt-5 font-display text-4xl font-700 sm:text-6xl">
-            LET'S <span className="text-goldlite">TALK.</span>
+            LET'S <span className="text-shimmer inline-block">TALK.</span>
           </h2>
-          <p className="mt-5 max-w-md text-cream/70">
-            Reach the Summit team directly — for registrations, track questions or press enquiries.
+          <p className="mt-5 max-w-md text-cream/70 leading-relaxed">
+            Reach the Summit team directly — for registrations, track questions or press enquiries. We are here to support you.
           </p>
-          <div className="mt-8 space-y-3">
-            <a href="mailto:hi@nesummit.in" className="flex items-center gap-3 text-cream/85 hover:text-gold">
-              ✉ <span>hi@nesummit.in</span>
+          
+          <div className="mt-10 space-y-4 max-w-sm">
+            <a href="mailto:hi@nesummit.in" className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4 text-cream/80 transition-all duration-300 hover:border-gold/30 hover:bg-gold/5 hover:text-gold hover:translate-x-1 shadow-sm">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/10 text-gold text-lg">✉</span>
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">Email Us</p>
+                <p className="text-sm font-500">hi@nesummit.in</p>
+              </div>
             </a>
-            <a href="tel:+919650058469" className="flex items-center gap-3 text-cream/85 hover:text-gold">
-              ☎ <span>+91 96500 58469</span>
+            <a href="tel:+919650058469" className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4 text-cream/80 transition-all duration-300 hover:border-gold/30 hover:bg-gold/5 hover:text-gold hover:translate-x-1 shadow-sm">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/10 text-gold text-lg">☎</span>
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">Call Us</p>
+                <p className="text-sm font-500">+91 96500 58469</p>
+              </div>
             </a>
-            <a href="https://wa.me/919650058469" className="flex items-center gap-3 text-cream/85 hover:text-gold">
-              ⦿ <span>WhatsApp us</span>
+            <a href="https://wa.me/919650058469" className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4 text-cream/80 transition-all duration-300 hover:border-gold/30 hover:bg-gold/5 hover:text-gold hover:translate-x-1 shadow-sm">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/10 text-gold text-lg">⦿</span>
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">WhatsApp</p>
+                <p className="text-sm font-500">Chat with support</p>
+              </div>
             </a>
           </div>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-4 rounded-2xl bg-paper p-7 text-ink">
+        <form onSubmit={onSubmit} className="space-y-5 rounded-3xl border border-white/10 bg-midnight/60 p-8 text-cream backdrop-blur-md shadow-2xl">
           <Field name="fullName" label="Full Name" errors={errors} />
           <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
           <Field name="email" type="email" label="Email" errors={errors} />
           <Field name="phone" label="Phone Number (optional)" errors={errors} />
           <div>
-            <label className="text-sm font-500 text-ink/80">Subject</label>
-            <select name="subject" required className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
-              <option>General Enquiry</option>
-              <option>Track Question</option>
-              <option>Registration Help</option>
-              <option>Press / Media</option>
-              <option>Other</option>
+            <label className="text-sm font-500 text-cream/80">Subject</label>
+            <select name="subject" required className="focus-glow mt-1.5 w-full rounded-xl border border-white/10 bg-midnight/50 px-4 py-3 text-cream outline-none transition-all duration-300">
+              <option className="bg-midnight text-cream">General Enquiry</option>
+              <option className="bg-midnight text-cream">Track Question</option>
+              <option className="bg-midnight text-cream">Registration Help</option>
+              <option className="bg-midnight text-cream">Press / Media</option>
+              <option className="bg-midnight text-cream">Other</option>
             </select>
           </div>
           <div>
-            <label className="text-sm font-500 text-ink/80">Message</label>
-            <textarea name="message" rows={4} required className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
-            {errors.message && <p className="mt-1 text-xs text-red-600">{errors.message[0]}</p>}
+            <label className="text-sm font-500 text-cream/80">Message</label>
+            <textarea name="message" rows={4} required className="focus-glow mt-1.5 w-full rounded-xl border border-white/10 bg-midnight/50 px-4 py-3 text-cream outline-none transition-all duration-300" />
+            {errors.message && <p className="mt-1.5 text-xs text-red-400 font-500">{errors.message[0]}</p>}
           </div>
 
           <button
             disabled={state === "sending"}
-            className="w-full rounded-full bg-gold py-3 font-600 text-midnight transition hover:bg-goldlite disabled:opacity-60"
+            className="group relative overflow-hidden w-full rounded-full bg-gold py-3.5 font-600 text-midnight transition-all duration-300 hover:bg-goldlite disabled:opacity-60 shadow-lg shadow-gold/15"
           >
-            {state === "sending" ? "Sending…" : "Send Message"}
+            <span className="relative z-10">{state === "sending" ? "Sending…" : "Send Message"}</span>
+            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[1200ms] ease-out bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12" />
           </button>
 
-          {state === "ok" && <p className="text-sm font-600 text-green-700">Thanks — we'll be in touch shortly.</p>}
+          {state === "ok" && <p className="text-sm font-600 text-goldlite animate-pulse mt-2">Thanks — we'll be in touch shortly.</p>}
           {state === "error" && Object.keys(errors).length === 0 && (
-            <p className="text-sm text-red-600">Something went wrong. Please try again.</p>
+            <p className="text-sm text-red-400 font-500 mt-2">Something went wrong. Please try again.</p>
           )}
         </form>
       </div>
@@ -107,13 +127,13 @@ function Field({
 }) {
   return (
     <div>
-      <label className="text-sm font-500 text-ink/80">{label}</label>
+      <label className="text-sm font-500 text-cream/80">{label}</label>
       <input
         name={name}
         type={type}
-        className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+        className="focus-glow mt-1.5 w-full rounded-xl border border-white/10 bg-midnight/50 px-4 py-3 text-cream outline-none placeholder:text-cream/35 transition-all duration-300"
       />
-      {errors[name] && <p className="mt-1 text-xs text-red-600">{errors[name][0]}</p>}
+      {errors[name] && <p className="mt-1.5 text-xs text-red-400 font-500">{errors[name][0]}</p>}
     </div>
   );
 }

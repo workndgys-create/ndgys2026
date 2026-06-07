@@ -50,3 +50,56 @@ body {
   line-height: 0.95;
   letter-spacing: -0.01em;
 }
+
+/* Custom Selection */
+::selection {
+  background: theme(colors.gold / 30%);
+  color: theme(colors.cream);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: theme(colors.ink);
+}
+::-webkit-scrollbar-thumb {
+  background: theme(colors.gold / 50%);
+  border-radius: 5px;
+  border: 2.5px solid theme(colors.ink);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: theme(colors.gold);
+}
+
+/* Glassmorphism utility */
+.glass-card {
+  background: rgba(26, 26, 62, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 162, 75, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(16, 17, 43, 0.35);
+}
+
+/* Shimmering Text Animation */
+.text-shimmer {
+  background: linear-gradient(
+    to right,
+    theme(colors.goldlite) 20%,
+    theme(colors.cream) 40%,
+    theme(colors.gold) 60%,
+    theme(colors.goldlite) 80%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: shimmer 6s linear infinite;
+}
+
+/* Focus glow for inputs */
+.focus-glow:focus {
+  border-color: theme(colors.gold) !important;
+  box-shadow: 0 0 0 3px theme(colors.gold / 25%) !important;
+}

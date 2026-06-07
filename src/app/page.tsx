@@ -1,4 +1,3 @@
-import Marquee from "@/components/Marquee";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -22,7 +21,6 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   return (
     <>
-      <Marquee />
       <Navbar />
       <main>
         <Hero />

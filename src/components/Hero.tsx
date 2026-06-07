@@ -30,7 +30,7 @@ export default function Hero() {
         </h1>
 
         {/* date badge */}
-        <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-gold/40 bg-white/5 px-6 py-2 text-sm tracking-[0.2em] backdrop-blur-sm">
+        <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-gold/30 bg-midnight/60 px-6 py-2.5 text-sm tracking-[0.2em] backdrop-blur-md shadow-inner shadow-white/5">
           <span className="h-2 w-2 rounded-full bg-gold animate-pulse" />
           22 – 23 AUGUST 2026 · NEW DELHI
         </div>
@@ -39,16 +39,17 @@ export default function Hero() {
         <CountdownTimer />
 
         {/* CTA buttons */}
-        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
             href="/register"
-            className="rounded-full bg-gold px-8 py-3.5 font-600 text-midnight shadow-lg shadow-gold/20 transition hover:bg-goldlite hover:shadow-gold/30 hover:scale-105 active:scale-95"
+            className="group relative overflow-hidden rounded-full bg-gold px-8 py-3.5 font-600 text-midnight shadow-lg shadow-gold/25 transition-all duration-300 hover:bg-goldlite hover:shadow-gold/40 hover:-translate-y-0.5 active:translate-y-0"
           >
-            Secure Your Spot
+            <span className="relative z-10">Secure Your Spot</span>
+            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[1200ms] ease-out bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
           </Link>
           <Link
             href="#tracks"
-            className="rounded-full border border-cream/30 px-8 py-3.5 font-500 text-cream transition hover:border-gold hover:text-gold hover:bg-white/5"
+            className="rounded-full border border-cream/25 bg-white/[0.02] px-8 py-3.5 font-500 text-cream backdrop-blur-sm transition-all duration-300 hover:border-gold hover:text-gold hover:bg-gold/5"
           >
             Explore Program
           </Link>
