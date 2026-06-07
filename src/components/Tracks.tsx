@@ -23,9 +23,6 @@ export default async function Tracks() {
                   <div className="absolute inset-0 flex items-center justify-center font-display text-6xl font-900 text-white/5">
                     {String(i + 1).padStart(2, "0")}
                   </div>
-                  <div className="absolute bottom-3 left-4 rounded-full bg-gold px-3 py-1 text-xs font-600 text-midnight">
-                    ₹{(t.fee / 100).toLocaleString("en-IN")}
-                  </div>
                   <div className="absolute right-4 top-3 rounded-full bg-black/30 px-3 py-1 text-[11px] font-500 text-cream backdrop-blur">
                     {t.full ? "Full" : `${t.seatsRemaining} seats left`}
                   </div>
