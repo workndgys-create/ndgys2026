@@ -23,6 +23,14 @@ function loadCashfree(): Promise<boolean> {
   });
 }
 
+const HEARD = [
+  "Instagram",
+  "WhatsApp",
+  "School / College",
+  "Friend / Word of mouth",
+  "Other",
+];
+
 function RegisterInner() {
   const params = useSearchParams();
   const preTrack = params.get("track") || TRACKS[0].slug;
@@ -44,6 +52,11 @@ function RegisterInner() {
   const [age, setAge] = useState<string>("");
   const [consent, setConsent] = useState(false);
   const [guardianConsent, setGuardianConsent] = useState(false);
+<<<<<<< HEAD
+=======
+  const [howHeard, setHowHeard] = useState("");
+  const [referralName, setReferralName] = useState("");
+>>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
   const isMinor = age !== "" && Number(age) > 0 && Number(age) < 18;
   const [questions, setQuestions] = useState<CustomQ[]>([]);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
@@ -131,6 +144,10 @@ function RegisterInner() {
     payload.portfolioId = selected;
     payload.consentAccepted = consent ? "true" : "";
     payload.guardianConsent = guardianConsent ? "true" : "";
+<<<<<<< HEAD
+=======
+    payload.referralName = referralName;
+>>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
     payload.customAnswers = questions.map((q) => ({ questionId: q.id, label: q.label, value: answers[q.id] ?? (q.type === "multiselect" ? [] : "") })).filter((x) => (Array.isArray(x.value) ? x.value.length : String(x.value).trim()));
     if (promo.trim()) payload.promoCode = promo.trim();
     setForm(payload as Record<string, string>);
@@ -220,7 +237,11 @@ function RegisterInner() {
           <Field name="fullName" label="Full Name" errors={errors} />
           <Field name="email" type="email" label="Email" errors={errors} />
           <Field name="phone" label="Phone Number" errors={errors} />
+<<<<<<< HEAD
           <Field name="institution" label="School / College (optional)" errors={errors} />
+=======
+          <Field name="institution" label="School / College" errors={errors} />
+>>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-500 text-ink/80">Age</label>
@@ -237,6 +258,7 @@ function RegisterInner() {
           <Field name="city" label="Place / City" errors={errors} />
           <Field name="emergencyContact" label="Emergency contact number" errors={errors} />
           <div>
+<<<<<<< HEAD
             <label className="text-sm font-500 text-ink/80">How did you hear about us?</label>
             <select name="howHeard" className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
               <option value="Instagram">Instagram</option><option value="WhatsApp">WhatsApp</option>
@@ -244,6 +266,35 @@ function RegisterInner() {
               <option value="Other">Other</option>
             </select>
           </div>
+=======
+  <label className="text-sm font-500 text-ink/80">
+    How did you hear about us?
+  </label>
+
+  <select
+    name="howHeard"
+    value={howHeard}
+    onChange={(e) => setHowHeard(e.target.value)}
+    className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+  >
+    {HEARD.map((h) => (
+      <option key={h} value={h}>
+        {h}
+      </option>
+    ))}
+  </select>
+
+  {howHeard === "Friend / Word of mouth" && (
+    <input
+      name="referralName"
+      value={referralName}
+      onChange={(e) => setReferralName(e.target.value)}
+      placeholder="Who referred you?"
+      className="mt-3 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+    />
+  )}
+</div>
+>>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
           <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
           <div>

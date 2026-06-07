@@ -1,5 +1,4 @@
 generator client {
-<<<<<<< HEAD
   provider = "prisma-client"
   output   = "../generated/prisma"
 }
@@ -408,13 +407,4 @@ model RegistrationQuestion {
   order     Int      @default(0)
   published Boolean  @default(true)
   createdAt DateTime @default(now())
-=======
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
->>>>>>> c44805af881fec0d8e0261bab301efbefe737c1f
 }

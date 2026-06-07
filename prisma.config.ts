@@ -1,13 +1,18 @@
 import "dotenv/config";
-import { defineConfig, env } from "prisma/config";
+
+import { defineConfig } from "prisma/config";
+
+// Allow building in environments without a DATABASE_URL by falling back to a local
+// SQLite file. For real deployments, set DATABASE_URL to your Postgres connection.
+const databaseUrl = process.env.DATABASE_URL || "file:./dev.db";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
   datasource: {
-    url: env("DATABASE_URL")
+    url: databaseUrl,
   },
   migrations: {
     path: "prisma/migrations",
-    seed: "tsx prisma/seed.ts"
-  }
+    seed: "tsx prisma/seed.ts",
+  },
 });

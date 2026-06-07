@@ -26,7 +26,7 @@ export default async function Competitions() {
                 <div className="flex flex-1 flex-col p-6">
                   <span className="text-[11px] uppercase tracking-wider text-slatey">{c.category}</span>
                   <h3 className="mt-1 font-display text-xl font-700 text-ink">{c.title}</h3>
-                  <p className="mt-2 flex-1 text-sm text-ink/70">{c.summary}</p>
+                  <p className="mt-2 flex-1 text-sm text-ink/70">{(c.summary || "").replace(/🏆/g, "").replace(/\b(Rs\.?|₹)\s?\d[\d,]*/gi, "").replace(/trophy|certificate/gi, "").trim()}</p>
                   <div className="mt-4 flex items-center justify-between">
                     <span />
                     {c.registrationOpen && (c.feeSolo || c.feeGroup)

@@ -21,7 +21,12 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   return (
     <>
+      
       <Navbar />
+      
+      <div className="h-[72px]" />
+
+      <Marquee />
       <main>
         <Hero />
         <About />
