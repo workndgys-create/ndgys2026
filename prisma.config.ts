@@ -1,5 +1,4 @@
 import "dotenv/config";
-
 import { defineConfig } from "prisma/config";
 
 // Allow building in environments without a DATABASE_URL by falling back to a local
@@ -10,7 +9,6 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   datasource: {
     url: databaseUrl,
-  },
   migrations: {
     path: "prisma/migrations",
     seed: "tsx prisma/seed.ts",
