@@ -25,11 +25,29 @@ export default function Footer() {
               Empowering the next generation of global leaders through diplomacy and debate.
             </p>
             <div className="mt-5 flex flex-wrap gap-3 text-xs text-cream/70">
-              {socials.map((s) => (
-                <a key={s} href="#" className="rounded-full border border-white/15 px-3 py-1 hover:border-gold hover:text-gold">
-                  {s}
-                </a>
-              ))}
+              {socials.map((s) => {
+                const href = s === "Instagram"
+                  ? "https://www.instagram.com/globalyouthsummit.gys?igsh=N2c0NTJrMXRkd3Jn"
+                  : s === "X"
+                  ? "https://x.com/_ndgys"
+                  : s === "LinkedIn"
+                  ? "https://www.linkedin.com/company/new-delhi-global-youth-summit/"
+                  : s === "YouTube"
+                  ? "https://youtube.com/@socialhouselearning?si=sFIHsf2fZLKkBZMb"
+                  : "#";
+                const isExternal = s === "Instagram" || s === "X" || s === "LinkedIn" || s === "YouTube";
+                return (
+                  <a
+                    key={s}
+                    href={href}
+                    target={isExternal ? "_blank" : undefined}
+                    rel={isExternal ? "noopener noreferrer" : undefined}
+                    className="rounded-full border border-white/15 px-3 py-1 hover:border-gold hover:text-gold"
+                  >
+                    {s}
+                  </a>
+                );
+              })}
             </div>
           </div>
 
