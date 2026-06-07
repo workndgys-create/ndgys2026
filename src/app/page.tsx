@@ -1,4 +1,3 @@
-import Marquee from "@/components/Marquee";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -16,12 +15,18 @@ import FAQ from "@/components/FAQ";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import SectionKicker from "@/components/SectionKicker";
-
+import Marquee from "@/components/Marquee";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   return (
     <>
+
+      <Navbar />
+
+      <div className="h-[72px]" />
+
+      <Marquee />
       <Marquee />
       <Navbar />
       <div className="h-8" />

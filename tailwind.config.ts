@@ -21,12 +21,15 @@ const config: Config = {
       keyframes: {
         marquee: { "0%": { transform: "translateX(0)" }, "100%": { transform: "translateX(-50%)" } },
         fadeUp: { "0%": { opacity: "0", transform: "translateY(24px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
-        float: { "0%,100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-14px)" } }
+        float: { "0%,100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-14px)" } },
+        shimmer: { "100%": { backgroundPosition: "200% center" } }
       },
       animation: {
         marquee: "marquee 30s linear infinite",
         fadeUp: "fadeUp 0.7s ease-out forwards",
-        float: "float 7s ease-in-out infinite"
+        float: "float 7s ease-in-out infinite",
+        shimmer: "shimmer 6s linear infinite",
+        "spin-slow": "spin 15s linear infinite"
       }
     }
   },

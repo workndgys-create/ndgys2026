@@ -40,15 +40,21 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 border-b ${
+      
+     
         scrolled
-          ? "bg-midnight/95 shadow-lg shadow-black/20 backdrop-blur"
-          : "bg-midnight"
+          ? "bg-midnight/90 backdrop-blur-md shadow-lg shadow-black/15 border-gold/25 py-2"
+          : "bg-midnight/30 border-transparent py-4"
       }`}
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-        <Link href="/" className="font-display text-lg font-700 tracking-tight text-cream">
-          NDGYS<span className="text-gold">.</span>
+        <Link href="/" className="flex items-center py-1">
+          <img
+            src="/NDGYS26.png"
+            alt="NDGYS 2026 Logo"
+            className="h-16 w-auto object-contain md:h-20 transition-all duration-200"
+          />
         </Link>
 
         {/* desktop links */}
@@ -71,13 +77,14 @@ export default function Navbar() {
           <NavLink href="/#contact" label="Contact" active={false} />
           <Link
             href="/register"
-            className={`rounded-full px-5 py-2 text-sm font-600 transition hover:bg-goldlite ${
+            className={`group relative overflow-hidden rounded-full px-5 py-2 text-sm font-600 transition-all duration-300 shadow-md ${
               isActive("/register")
-                ? "bg-goldlite text-midnight"
-                : "bg-gold text-midnight"
+                ? "bg-goldlite text-midnight shadow-goldlite/10"
+                : "bg-gold text-midnight shadow-gold/15 hover:bg-goldlite hover:shadow-gold/35 hover:-translate-y-0.5 active:translate-y-0"
             }`}
           >
-            Register Now
+            <span className="relative z-10">Register Now ↗</span>
+            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[1200ms] ease-out bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
           </Link>
         </div>
 
@@ -189,7 +196,7 @@ function Dropdown({
         )}
       </button>
       <div
-        className={`absolute left-0 top-full w-56 rounded-xl border border-white/10 bg-royal p-2 shadow-xl transition-all duration-200 ${
+        className={`absolute left-0 top-full w-56 rounded-xl border border-gold/15 bg-midnight/95 p-2 shadow-2xl backdrop-blur-md transition-all duration-300 ${
           open ? "opacity-100 translate-y-2 pointer-events-auto" : "opacity-0 translate-y-0 pointer-events-none"
         }`}
       >

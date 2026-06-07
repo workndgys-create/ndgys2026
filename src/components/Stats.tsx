@@ -41,11 +41,20 @@ export default function Stats() {
   }, []);
 
   return (
-    <section id="stats" ref={ref} className="bg-ink py-20 text-cream">
-      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-y-12 px-5 text-center md:grid-cols-5">
-        {stats.map((s) => (
-          <Stat key={s.label} {...s} run={run} />
-        ))}
+    <section id="stats" ref={ref} className="relative overflow-hidden bg-ink py-24 text-cream">
+      {/* background glow */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="h-72 w-72 rounded-full bg-gold/[0.03] blur-3xl animate-pulse" />
+      </div>
+
+      <div className="mx-auto max-w-6xl px-5 relative z-10">
+        <div className="rule-gold mb-12" />
+        <div className="grid grid-cols-2 gap-x-4 gap-y-12 text-center md:grid-cols-5">
+          {stats.map((s) => (
+            <Stat key={s.label} {...s} run={run} />
+          ))}
+        </div>
+        <div className="rule-gold mt-12" />
       </div>
     </section>
   );
@@ -54,12 +63,12 @@ export default function Stats() {
 function Stat({ value, suffix, label, run }: { value: number; suffix: string; label: string; run: boolean }) {
   const n = useCountUp(value, run);
   return (
-    <div>
-      <p className="font-display text-5xl font-900 text-goldlite md:text-6xl">
+    <div className="transition-transform duration-500 hover:scale-105">
+      <p className="font-display text-5xl font-900 text-goldlite inline-block md:text-6xl">
         {n}
         {suffix}
       </p>
-      <p className="mt-2 text-xs uppercase tracking-[0.18em] text-cream/60">{label}</p>
+      <p className="mt-3 text-[10px] uppercase tracking-[0.2em] text-cream/50 font-semibold">{label}</p>
     </div>
   );
 }

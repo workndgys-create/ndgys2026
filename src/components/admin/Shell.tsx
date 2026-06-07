@@ -66,7 +66,14 @@ export default function AdminShell({ children, title }: { children: React.ReactN
     <div className="flex min-h-screen bg-cream text-ink">
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 transform overflow-y-auto border-r border-white/10 bg-ink text-cream transition-transform md:static md:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex items-center justify-between px-6 py-5">
-          <Link href="/admin" className="font-display text-lg font-700">NDGYS<span className="text-gold">.</span><span className="ml-2 text-xs font-400 text-cream/50">Admin</span></Link>
+          <Link href="/admin" className="flex items-center gap-2">
+            <img
+              src="/NDGYS26.png"
+              alt="NDGYS 2026 Logo"
+              className="h-10 w-auto object-contain md:h-12"
+            />
+            <span className="text-xs font-400 text-cream/50">Admin</span>
+          </Link>
           <button className="text-cream/60 md:hidden" onClick={() => setOpen(false)} aria-label="Close menu">✕</button>
         </div>
         <nav className="space-y-5 px-3 pb-28">

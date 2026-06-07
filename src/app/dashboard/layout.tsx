@@ -15,7 +15,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-cream grain">
       <header className="flex items-center justify-between border-b border-ink/10 bg-midnight px-5 py-4 text-cream">
-        <Link href="/dashboard" className="font-display text-lg font-700">NDGYS<span className="text-gold">.</span> <span className="text-sm font-400 text-cream/60">Delegate</span></Link>
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <img
+            src="/NDGYS26.png"
+            alt="NDGYS 2026 Logo"
+            className="h-10 w-auto object-contain md:h-12"
+          />
+          <span className="text-sm font-400 text-cream/60">Delegate</span>
+        </Link>
         <LogoutButton endpoint="/api/delegate/auth/logout" redirect="/dashboard/login" />
       </header>
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-8 md:flex-row">
