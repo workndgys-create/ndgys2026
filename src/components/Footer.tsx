@@ -82,7 +82,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* WhatsApp button removed per request */}
+      {/* WhatsApp chat button removed */}
     </footer>
   );
 }
