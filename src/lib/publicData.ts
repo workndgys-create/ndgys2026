@@ -9,6 +9,10 @@ export type PublicTrack = {
   agenda: string; difficulty: string; isOpen: boolean; seatsRemaining: number; full: boolean;
 };
 
+function logPublicDataError(scope: string, error: unknown) {
+  console.error(`[publicData] ${scope} failed`, error);
+}
+
 /** Reads tracks from the DB with live seats-remaining; falls back to the seed list if the DB is empty/unavailable. */
 export async function getPublicTracks(): Promise<PublicTrack[]> {
   try {
@@ -23,7 +27,8 @@ export async function getPublicTracks(): Promise<PublicTrack[]> {
       const seatsRemaining = Math.max(0, t.capacity - used);
       return { slug: t.slug, name: t.name, fee: t.fee, capacity: t.capacity, agenda: t.agenda, difficulty: t.difficulty, isOpen: t.isOpen, seatsRemaining, full: seatsRemaining === 0 || !t.isOpen };
     });
-  } catch {
+  } catch (error) {
+    logPublicDataError("getPublicTracks", error);
     return TRACKS.map((t) => ({ ...t, isOpen: true, seatsRemaining: t.capacity, full: false }));
   }
 }
@@ -64,7 +69,8 @@ export async function getPublicAllocations(): Promise<AllocationsPayload> {
       .sort((a, b) => (order.get(a.slug) ?? 99) - (order.get(b.slug) ?? 99));
 
     return { committees, generatedAt, published: true };
-  } catch {
+  } catch (error) {
+    logPublicDataError("getPublicAllocations", error);
     return { committees: [], generatedAt, published: true };
   }
 }
@@ -78,28 +84,40 @@ export async function getPublicCompetitions() {
   if (!(await homeOn())) return [];
   try {
     return await prisma.competition.findMany({ where: { published: true }, orderBy: [{ order: "asc" }, { createdAt: "asc" }] });
-  } catch { return []; }
+  } catch (error) {
+    logPublicDataError("getPublicCompetitions", error);
+    return [];
+  }
 }
 
 export async function getPublicEvents() {
   if (!(await homeOn())) return [];
   try {
     return await prisma.event.findMany({ where: { published: true }, orderBy: [{ order: "asc" }, { createdAt: "asc" }] });
-  } catch { return []; }
+  } catch (error) {
+    logPublicDataError("getPublicEvents", error);
+    return [];
+  }
 }
 
 export async function getPublicSpeakers() {
   if (!(await homeOn())) return [];
   try {
     return await prisma.speaker.findMany({ orderBy: [{ order: "asc" }, { createdAt: "asc" }] });
-  } catch { return []; }
+  } catch (error) {
+    logPublicDataError("getPublicSpeakers", error);
+    return [];
+  }
 }
 
 export async function getPublicFlow() {
   if (!(await homeOn())) return [];
   try {
     return await prisma.scheduleItem.findMany({ where: { published: true }, orderBy: [{ day: "asc" }, { order: "asc" }] });
-  } catch { return []; }
+  } catch (error) {
+    logPublicDataError("getPublicFlow", error);
+    return [];
+  }
 }
 
 export async function getCompetitionBySlug(slug: string) {
@@ -107,19 +125,37 @@ export async function getCompetitionBySlug(slug: string) {
     const c = await prisma.competition.findUnique({ where: { slug } });
     if (!c || !c.published) return null;
     return c;
-  } catch { return null; }
+  } catch (error) {
+    logPublicDataError(`getCompetitionBySlug:${slug}`, error);
+    return null;
+  }
 }
 
 export async function getPublicSecretariat() {
   if (!(await homeOn())) return [];
-  try { return await prisma.secretariatMember.findMany({ where: { published: true }, orderBy: [{ order: "asc" }, { createdAt: "asc" }] }); } catch { return []; }
+  try {
+    return await prisma.secretariatMember.findMany({ where: { published: true }, orderBy: [{ order: "asc" }, { createdAt: "asc" }] });
+  } catch (error) {
+    logPublicDataError("getPublicSecretariat", error);
+    return [];
+  }
 }
 
 export async function getPublicSponsors() {
   if (!(await homeOn())) return [];
-  try { return await prisma.sponsor.findMany({ where: { published: true }, orderBy: [{ order: "asc" }, { createdAt: "asc" }] }); } catch { return []; }
+  try {
+    return await prisma.sponsor.findMany({ where: { published: true }, orderBy: [{ order: "asc" }, { createdAt: "asc" }] });
+  } catch (error) {
+    logPublicDataError("getPublicSponsors", error);
+    return [];
+  }
 }
 
 export async function getPublicAccommodation() {
-  try { return await prisma.accommodationOption.findMany({ where: { published: true }, orderBy: [{ order: "asc" }, { createdAt: "asc" }] }); } catch { return []; }
+  try {
+    return await prisma.accommodationOption.findMany({ where: { published: true }, orderBy: [{ order: "asc" }, { createdAt: "asc" }] });
+  } catch (error) {
+    logPublicDataError("getPublicAccommodation", error);
+    return [];
+  }
 }
