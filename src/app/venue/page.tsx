@@ -27,6 +27,11 @@ export default async function VenuePage() {
           <SectionKicker label="DISPATCH — Venue" />
           <h1 className="mt-5 font-display text-4xl font-700 text-ink sm:text-6xl">GETTING TO <span className="text-gold">{venue.toUpperCase()}.</span></h1>
           <p className="mt-3 max-w-2xl text-ink/70">{address}</p>
+          <div className="mt-4">
+            <a href="https://www.globalyouthsummit.in/venue" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white/5 px-4 py-2 text-sm font-600 text-ink hover:bg-white/10">
+              Official venue page
+            </a>
+          </div>
 
           <div className="mt-8 overflow-hidden rounded-2xl border border-ink/10 shadow-sm">
             <iframe title="Venue map" src={mapSrc} width="100%" height="380" loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="block w-full" />
