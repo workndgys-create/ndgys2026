@@ -23,8 +23,12 @@ export default async function HomePage() {
   return (
     <>
       
-      <Marquee />
       <Navbar />
+      
+      <div className="h-[72px]" />
+
+      <Marquee />
+      
       <main>
         <Hero />
         <About />
