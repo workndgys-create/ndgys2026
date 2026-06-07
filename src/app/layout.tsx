@@ -44,6 +44,16 @@ export const metadata: Metadata = {
     images: ["/og-image.jpg"]
   },
   robots: { index: true, follow: true },
+  other: {
+    "mobile-web-app-capable": "yes"
+  },
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", rel: "icon" }
+    ],
+    apple: [{ url: "/icon.svg" }]
+  },
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "NDGYS 2026" }
 };

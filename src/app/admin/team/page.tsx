@@ -17,10 +17,22 @@ export default function TeamPage() {
   const [err, setErr] = useState("");
 
   function load() {
-    fetch("/api/admin/team").then(async (r) => {
-      if (r.status === 403) return setForbidden(true);
-      setAdmins((await r.json()).admins);
-    });
+    fetch("/api/admin/team")
+      .then(async (r) => {
+        if (r.status === 403) return setForbidden(true);
+        const body = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          setErr(body.error || "Could not load team");
+          setAdmins([]);
+          return;
+        }
+        setErr("");
+        setAdmins(body.admins ?? []);
+      })
+      .catch(() => {
+        setErr("Could not load team");
+        setAdmins([]);
+      });
   }
   useEffect(load, []);
 
@@ -49,6 +61,7 @@ export default function TeamPage() {
           <p className="text-slatey">Loading…</p>
         ) : (
           <div className="overflow-x-auto">
+            {err && <p className="mb-3 text-sm text-red-600">{err}</p>}
             <table className="w-full text-sm">
               <thead className="text-left text-xs uppercase tracking-wider text-slatey">
                 <tr><th className="px-3 py-2">Admin</th><th className="px-3 py-2">Role (level)</th><th className="px-3 py-2">Active</th><th className="px-3 py-2">Last login</th></tr>

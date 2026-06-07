@@ -49,7 +49,7 @@ export default function AdminShell({ children, title }: { children: React.ReactN
   useEffect(() => {
     fetch("/api/admin/me").then(async (r) => {
       if (r.status === 401) return router.push("/admin/login");
-      const d = await r.json();
+      const d = await r.json().catch(() => ({}));
       setPerms(d.permissions ?? []);
       setMe({ role: d.role, email: d.email });
     }).catch(() => setPerms([]));

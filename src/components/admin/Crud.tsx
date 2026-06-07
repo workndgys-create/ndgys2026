@@ -31,7 +31,22 @@ export default function CrudManager({
   const [err, setErr] = useState("");
 
   function load() {
-    fetch(endpoint).then(async (r) => setItems(r.ok ? (await r.json()).items : []));
+    fetch(endpoint)
+      .then(async (r) => {
+        if (!r.ok) {
+          const body = await r.json().catch(() => ({}));
+          setErr(body.error || "Could not load items.");
+          setItems([]);
+          return;
+        }
+        const body = await r.json().catch(() => ({}));
+        setErr("");
+        setItems(body.items ?? []);
+      })
+      .catch(() => {
+        setErr("Could not load items.");
+        setItems([]);
+      });
   }
   useEffect(load, [endpoint]);
 
@@ -51,12 +66,22 @@ export default function CrudManager({
 
   async function togglePublished(row: any) {
     setItems((cur) => cur?.map((x) => (x.id === row.id ? { ...x, published: !x.published } : x)) ?? cur);
-    await fetch(`${endpoint}/${row.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ published: !row.published }) });
+    const res = await fetch(`${endpoint}/${row.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ published: !row.published }) });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      setErr(body.error || "Could not update item.");
+      load();
+    }
   }
 
   async function remove(row: any) {
     if (!confirm("Delete this item? This cannot be undone.")) return;
-    await fetch(`${endpoint}/${row.id}`, { method: "DELETE" });
+    const res = await fetch(`${endpoint}/${row.id}`, { method: "DELETE" });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      setErr(body.error || "Could not delete item.");
+      return;
+    }
     load();
   }
 
@@ -65,9 +90,13 @@ export default function CrudManager({
       {!items ? (
         <p className="text-slatey">Loading…</p>
       ) : items.length === 0 ? (
-        <p className="py-8 text-center text-slatey">Nothing yet. Click “{newLabel}” to add the first one.</p>
+        <div className="py-8 text-center">
+          {err && <p className="mb-3 text-sm text-red-600">{err}</p>}
+          <p className="text-slatey">Nothing yet. Click “{newLabel}” to add the first one.</p>
+        </div>
       ) : (
         <div className="overflow-x-auto">
+          {err && <p className="mb-3 text-sm text-red-600">{err}</p>}
           <table className="w-full text-sm">
             <thead className="text-left text-xs uppercase tracking-wider text-slatey">
               <tr>{columns.map((c) => <th key={c.key} className="px-3 py-2">{c.label}</th>)}{hasPublished && <th className="px-3 py-2">Live</th>}<th className="px-3 py-2 text-right">Actions</th></tr>
