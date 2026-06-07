@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { releaseExpiredHolds } from "@/lib/portfolios";
 export const runtime = "nodejs";
