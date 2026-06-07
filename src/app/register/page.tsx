@@ -44,6 +44,8 @@ function RegisterInner() {
   const [age, setAge] = useState<string>("");
   const [consent, setConsent] = useState(false);
   const [guardianConsent, setGuardianConsent] = useState(false);
+  const [howHeard, setHowHeard] = useState("");
+  const [referralName, setReferralName] = useState("");
   const isMinor = age !== "" && Number(age) > 0 && Number(age) < 18;
   const [questions, setQuestions] = useState<CustomQ[]>([]);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
@@ -131,6 +133,7 @@ function RegisterInner() {
     payload.portfolioId = selected;
     payload.consentAccepted = consent ? "true" : "";
     payload.guardianConsent = guardianConsent ? "true" : "";
+    payload.referralName = referralName;
     payload.customAnswers = questions.map((q) => ({ questionId: q.id, label: q.label, value: answers[q.id] ?? (q.type === "multiselect" ? [] : "") })).filter((x) => (Array.isArray(x.value) ? x.value.length : String(x.value).trim()));
     if (promo.trim()) payload.promoCode = promo.trim();
     setForm(payload as Record<string, string>);
@@ -220,7 +223,7 @@ function RegisterInner() {
           <Field name="fullName" label="Full Name" errors={errors} />
           <Field name="email" type="email" label="Email" errors={errors} />
           <Field name="phone" label="Phone Number" errors={errors} />
-          <Field name="institution" label="School / College (optional)" errors={errors} />
+          <Field name="institution" label="School / College" errors={errors} />
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-500 text-ink/80">Age</label>
@@ -237,13 +240,33 @@ function RegisterInner() {
           <Field name="city" label="Place / City" errors={errors} />
           <Field name="emergencyContact" label="Emergency contact number" errors={errors} />
           <div>
-            <label className="text-sm font-500 text-ink/80">How did you hear about us?</label>
-            <select name="howHeard" className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
-              <option value="Instagram">Instagram</option><option value="WhatsApp">WhatsApp</option>
-              <option value="School / College">School / College</option><option value="Friend / Word of mouth">Friend / Word of mouth</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
+  <label className="text-sm font-500 text-ink/80">
+    How did you hear about us?
+  </label>
+
+  <select
+    name="howHeard"
+    value={howHeard}
+    onChange={(e) => setHowHeard(e.target.value)}
+    className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+  >
+    {HEARD.map((h) => (
+      <option key={h} value={h}>
+        {h}
+      </option>
+    ))}
+  </select>
+
+  {howHeard === "Friend / Word of mouth" && (
+    <input
+      name="referralName"
+      value={referralName}
+      onChange={(e) => setReferralName(e.target.value)}
+      placeholder="Who referred you?"
+      className="mt-3 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+    />
+  )}
+</div>
           <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
           <div>
