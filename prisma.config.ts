@@ -1,5 +1,5 @@
 import "dotenv/config";
-<<<<<<< HEAD
+
 import { defineConfig } from "prisma/config";
 
 // Allow building in environments without a DATABASE_URL by falling back to a local
