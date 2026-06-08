@@ -15,6 +15,15 @@ enum RegistrationStatus {
 
 enum AdminRole {
   SUPER_ADMIN
+  DIRECTOR
+  HR
+  DEVELOPER
+  FINANCE_LEAD
+  FINANCE_EXECUTIVE
+  DELEGATE_AFFAIRS_LEAD
+  DELEGATE_AFFAIRS_EXECUTIVE
+  VOLUNTEER_COORDINATOR
+  VOLUNTEER
   ADMIN
   VIEWER
 }
@@ -104,7 +113,6 @@ model AdminUser {
   email        String    @unique
   name         String?
   passwordHash String
-  role String @default("VOLUNTEER")
   role         AdminRole @default(ADMIN)
   active            Boolean   @default(true)
   lastLoginAt       DateTime?
