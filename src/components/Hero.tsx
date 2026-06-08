@@ -36,7 +36,7 @@ export default function Hero() {
         {/* Date badge */}
         <div className="mt-7 inline-flex items-center gap-3 rounded-full border-2 border-[#D97706]/40 bg-[#1F0A02] px-6 py-2.5 text-xs font-bold tracking-[0.18em] text-[#FFF8E7] shadow-xl shadow-[#1F0A02]/35 animate-fadeUp">
           <span className="h-2 w-2 rounded-full bg-[#F59E0B] animate-pulse" />
-          22 – 23 AUGUST 2026 · NEW DELHI
+          22nd – 23rd AUGUST 2026 · NEW DELHI
         </div>
 
         {/* Countdown */}
