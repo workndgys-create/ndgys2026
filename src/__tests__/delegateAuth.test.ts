@@ -11,11 +11,11 @@ describe("delegate token primitives", () => {
     expect(a).toMatch(/^[0-9a-f]{64}$/);
     expect(a).not.toBe(b);
   });
-  it("hash/compare is correct and constant-shape", () => {
+  it("hash/compare is correct and constant-shape", async () => {
     const raw = generateRawToken();
-    const h = hashToken(raw);
-    expect(tokensMatch(raw, h)).toBe(true);
-    expect(tokensMatch("wrong", h)).toBe(false);
+    const h = await hashToken(raw);
+    expect(await tokensMatch(raw, h)).toBe(true);
+    expect(await tokensMatch("wrong", h)).toBe(false);
   });
 });
 

@@ -109,7 +109,7 @@ export default function Footer() {
               Register Now ↗
             </Link>
             <a
-              href="https://wa.me/919650058469"
+              href="https://wa.me/917042719992"
               className="mt-3 block text-sm text-cream/70 hover:text-gold transition"
             >
               Join Channel for Updates
@@ -135,7 +135,7 @@ export default function Footer() {
 
       {/* WhatsApp FAB */}
       <a
-        href="https://wa.me/919650058469"
+        href="https://wa.me/917042719992"
         aria-label="Chat on WhatsApp"
         className="fixed bottom-5 right-5 z-40 flex h-13 w-13 items-center justify-center rounded-full bg-[#D97706] p-3.5 text-[#1F0A02] shadow-lg shadow-[#D97706]/30 transition hover:bg-[#F59E0B] hover:scale-110 active:scale-95 border border-[#1F0A02]/20"
       >

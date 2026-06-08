@@ -32,6 +32,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "resend": "^4.0.1",
+    "sharp": "^0.34.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -48,6 +49,7 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
+    "jimp": "^1.6.1",
     "jsdom": "^24.1.1",
     "postcss": "^8.4.40",
     "prisma": "^7.8.0",

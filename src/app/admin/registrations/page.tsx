@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminShell, { StatusPill, Panel } from "@/components/admin/Shell";
+import { downloadFileFromUrl } from "@/lib/download";
 
 type Reg = {
   id: string; delegateId: string | null; fullName: string; email: string; phone: string;
@@ -30,6 +31,7 @@ export default function RegistrationsPage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
+  const [badgeError, setBadgeError] = useState("");
 
   const load = useCallback(() => {
     setLoading(true);
@@ -57,6 +59,15 @@ export default function RegistrationsPage() {
       body: JSON.stringify({ status: next })
     });
     load();
+  }
+
+  async function downloadBadge(id: string, delegateId?: string | null) {
+    try {
+      setBadgeError("");
+      await downloadFileFromUrl(`/api/admin/badges?id=${id}`, `badge-${delegateId || id}.pdf`);
+    } catch (error) {
+      setBadgeError(error instanceof Error ? error.message : "Could not download badge.");
+    }
   }
 
   return (
@@ -114,7 +125,7 @@ export default function RegistrationsPage() {
                     <option value="CANCELLED">Mark Cancelled</option>
                   </select>
                   {r.delegateId && (
-                    <a href={`/api/admin/badges?id=${r.id}`} className="ml-2 rounded-md border border-ink/15 px-2 py-1 text-xs font-600 text-ink hover:border-gold">Badge</a>
+                    <button onClick={() => downloadBadge(r.id, r.delegateId)} className="ml-2 rounded-md border border-ink/15 px-2 py-1 text-xs font-600 text-ink hover:border-gold">Badge</button>
                   )}
                 </Td>
               </tr>
@@ -137,6 +148,7 @@ export default function RegistrationsPage() {
       )}
 
       {showAdd && <OfflineModal tracks={TRACK_OPTS} onClose={() => setShowAdd(false)} onSaved={() => { setShowAdd(false); load(); }} />}
+      {badgeError && <p className="mt-3 text-sm text-red-600">{badgeError}</p>}
     </AdminShell>
   );
 }

@@ -2,9 +2,8 @@ import SectionKicker from "./SectionKicker";
 import Reveal from "./Reveal";
 
 const details = [
-  { label: "DATES", value: "Aug 22–23, 2026", sub: "Two intensive days" },
+  { label: "DATES", value: "Aug 22nd–23rd, 2026", sub: "Two intensive days" },
   { label: "VENUE", value: "IIT Delhi", sub: "New Delhi" },
-  { label: "DELEGATE FEE", value: "₹2,500", sub: "Flagship tracks from ₹3,000" }
 ];
 
 export default function About() {
@@ -83,7 +82,7 @@ export default function About() {
               </div>
             </div>
             <a
-              href="https://wa.me/919650058469"
+              href="https://wa.me/917042719992"
               className="group relative z-10 overflow-hidden whitespace-nowrap rounded-full bg-gold px-7 py-3 font-600 text-midnight transition hover:bg-goldlite w-full sm:w-auto text-center shadow-lg shadow-gold/15"
             >
               Join Channel →
