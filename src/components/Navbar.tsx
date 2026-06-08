@@ -48,12 +48,21 @@ export default function Navbar() {
           : "bg-midnight/30 border-transparent py-4"
       }`}
     >
+<<<<<<< HEAD
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
         <Link href="/" className="flex items-center py-1">
           <img
             src="/NDGYS26.png"
             alt="NDGYS 2026 Logo"
             className="h-16 w-auto object-contain md:h-20 transition-all duration-200"
+=======
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2">
+        <Link href="/" className="inline-block group">
+          <img
+            src="/logos/IMG_7820.png"
+            alt="Global Youth Summit 2026"
+            className="h-[100px] md:h-[130px] w-auto object-contain transition-all duration-300 group-hover:brightness-130 group-hover:drop-shadow-lg filter saturate-120 contrast-110 brightness-110"
+>>>>>>> 4e827c2 (Replace navbar NDGYS text with transparent Global Youth Summit logo; add image-processing scripts and styling)
           />
         </Link>
 
@@ -109,12 +118,12 @@ export default function Navbar() {
         }`}
       >
         <div className="border-t border-white/10 bg-midnight/98 backdrop-blur px-5 pb-6 pt-2">
-          {[
-            { href: "/", label: "Home" },
-            ...about,
-            ...resources,
-            { href: "/#contact", label: "Contact" }
-          ].map((i) => (
+        <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2">
+          <Link href="/" className="inline-block group">
+            <img
+              src="/logos/IMG_7820.png"
+              alt="Global Youth Summit 2026"
+              className="h-[100px] md:h-[130px] w-auto object-contain transition-all duration-300 group-hover:brightness-130 group-hover:drop-shadow-lg filter saturate-120 contrast-110 brightness-110"
             <Link
               key={i.label}
               href={i.href}
