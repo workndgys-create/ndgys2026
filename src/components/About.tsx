@@ -83,7 +83,7 @@ export default function About() {
               </div>
             </div>
             <a
-              href="https://wa.me/919650058469"
+              href="https://wa.me/917042719992"
               className="group relative z-10 overflow-hidden whitespace-nowrap rounded-full bg-gold px-7 py-3 font-600 text-midnight transition hover:bg-goldlite w-full sm:w-auto text-center shadow-lg shadow-gold/15"
             >
               Join Channel →
