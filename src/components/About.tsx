@@ -2,7 +2,7 @@ import SectionKicker from "./SectionKicker";
 import Reveal from "./Reveal";
 
 const details = [
-  { label: "DATES", value: "Aug 22–23, 2026", sub: "Two intensive days" },
+  { label: "DATES", value: "Aug 22nd–23rd, 2026", sub: "Two intensive days" },
   { label: "VENUE", value: "IIT Delhi", sub: "New Delhi" },
 ];
 
