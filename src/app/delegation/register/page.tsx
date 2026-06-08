@@ -75,7 +75,7 @@ export default function DelegationRegisterPage() {
     if (!promo.trim()) { setDiscount(0); return; }
     const res = await fetch("/api/promo/validate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: promo, amount: subtotal }) });
     const d = await res.json().catch(() => ({}));
-    if (d.ok) { setDiscount(d.discount); setPromoMsg(`Code applied - you save Rs ${(d.discount / 100).toLocaleString("en-IN")}.`); }
+    if (d.ok) { setDiscount(d.discount); setPromoMsg(`Code applied - you save Rs ${d.discount.toLocaleString("en-IN")}.`); }
     else { setDiscount(0); setPromoMsg("That code can't be applied."); }
   }
 
@@ -112,7 +112,7 @@ export default function DelegationRegisterPage() {
         <div className="text-center">
           <p className="font-display text-5xl">&#127881;</p>
           <h1 className="mt-4 font-display text-4xl font-700 text-ink">Delegation confirmed!</h1>
-          <p className="mt-3 max-w-md text-ink/70">Each delegate will receive their own ticket by email and can sign in to their dashboard. Portfolios can be picked by each delegate or assigned by your coordinator.</p>
+          <p className="mt-3 max-w-md text-ink/70">Each delegate will receive their own ticket by email and can sign in to their dashboard using their registered email. Any portfolios selected during registration are assigned automatically.</p>
           <Link href="/" className="mt-8 inline-block rounded-full bg-midnight px-6 py-3 font-600 text-cream hover:bg-royal">Home</Link>
         </div>
       </main>
@@ -180,9 +180,9 @@ export default function DelegationRegisterPage() {
           </div>
 
           <div className="rounded-lg bg-cream px-4 py-3">
-            <div className="flex items-center justify-between text-sm text-ink/70"><span>Subtotal ({members.length} delegates)</span><span>Rs {(subtotal / 100).toLocaleString("en-IN")}</span></div>
-            {discount > 0 && <div className="flex items-center justify-between text-sm text-green-700"><span>Discount</span><span>- Rs {(discount / 100).toLocaleString("en-IN")}</span></div>}
-            <div className="mt-2 flex items-center justify-between border-t border-ink/10 pt-2"><span className="text-sm font-600 text-ink">Total payable</span><span className="font-display text-2xl font-700 text-ink">Rs {(total / 100).toLocaleString("en-IN")}</span></div>
+            <div className="flex items-center justify-between text-sm text-ink/70"><span>Subtotal ({members.length} delegates)</span><span>Rs {subtotal.toLocaleString("en-IN")}</span></div>
+            {discount > 0 && <div className="flex items-center justify-between text-sm text-green-700"><span>Discount</span><span>- Rs {discount.toLocaleString("en-IN")}</span></div>}
+            <div className="mt-2 flex items-center justify-between border-t border-ink/10 pt-2"><span className="text-sm font-600 text-ink">Total payable</span><span className="font-display text-2xl font-700 text-ink">Rs {total.toLocaleString("en-IN")}</span></div>
           </div>
 
           <label className="flex items-start gap-2 text-sm text-ink/80">

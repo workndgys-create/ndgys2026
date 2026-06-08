@@ -27,7 +27,7 @@ export async function GET() {
   ];
   const rows = regs.map((r) => [
     r.delegateId ?? "", r.fullName, r.email, r.phone, r.age ?? "", r.gender ?? "", r.city ?? "", r.emergencyContact ?? "", r.institution ?? "",
-    r.trackName, r.portfolio ?? "", (r.amount / 100).toString(), r.status, r.source, r.promoCode ?? "",
+    r.trackName, r.portfolio ?? "", r.amount.toString(), r.status, r.source, r.promoCode ?? "",
     r.consentAccepted ? "Yes" : "No", r.guardianName ?? "", r.guardianPhone ?? "", r.guardianConsent ? "Yes" : "No",
     r.howHeard ?? "", r.notes ?? "", flattenAnswers(r.customAnswers), new Date(r.createdAt).toISOString()
   ]);

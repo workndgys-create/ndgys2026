@@ -33,6 +33,8 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const questions = c.questions ?? [];
   const [answers, setAnswers] = useState<string[]>(questions.map(() => ""));
+  const [heardFrom, setHeardFrom] = useState(HEARD[0]);
+  const [heardDetail, setHeardDetail] = useState("");
   const [age, setAge] = useState("");
   const [consent, setConsent] = useState(false);
   const [guardianConsent, setGuardianConsent] = useState(false);
@@ -70,7 +72,8 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
       emergencyContact: fd.get("emergencyContact") || "",
       institution: fd.get("institution") || "",
       pastExperience: fd.get("pastExperience") || "",
-      howHeard: fd.get("howHeard") || "",
+      howHeard: heardFrom,
+      howHeardDetail: heardDetail,
       notes: fd.get("notes") || "",
       members: cleanMembers,
       answers: questions.map((q, i) => ({ q, a: (answers[i] || "").trim() })).filter((x) => x.a),
@@ -152,7 +155,7 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
         <Field name="city" label="Place / City" errors={errors} />
         <Field name="emergencyContact" label="Emergency contact" errors={errors} />
       </div>
-      <Field name="institution" label="School / College (optional)" errors={errors} />
+      <Field name="institution" label="School / College" errors={errors} required />
       <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
       {isTeam && (
@@ -193,9 +196,30 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
 
       <div>
         <label className="text-sm font-500 text-ink/80">How did you hear about us?</label>
-        <select name="howHeard" className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
+        <select
+          name="howHeard"
+          value={heardFrom}
+          onChange={(e) => {
+            const next = e.target.value;
+            setHeardFrom(next);
+            if (next !== "Friend / Word of mouth" && next !== "Other") setHeardDetail("");
+          }}
+          className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+        >
           {HEARD.map((h) => <option key={h} value={h}>{h}</option>)}
         </select>
+        {(heardFrom === "Friend / Word of mouth" || heardFrom === "Other") && (
+          <textarea
+            name="howHeardDetail"
+            value={heardDetail}
+            onChange={(e) => setHeardDetail(e.target.value)}
+            rows={2}
+            required
+            placeholder="Please tell us a little more"
+            className="mt-2 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-gold"
+          />
+        )}
+        {errors.howHeardDetail && <p className="mt-1 text-xs text-red-600">{errors.howHeardDetail[0]}</p>}
       </div>
       <div>
         <label className="text-sm font-500 text-ink/80">Anything you'd like us to know? (optional)</label>
@@ -224,7 +248,7 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
 
       <div className="flex items-center justify-between rounded-lg bg-cream px-4 py-3">
         <span className="text-sm text-ink/70">Amount payable {isTeam ? "(per team)" : ""}</span>
-        <span className="font-display text-2xl font-700 text-ink">Rs {(fee / 100).toLocaleString("en-IN")}</span>
+        <span className="font-display text-2xl font-700 text-ink">Rs {fee.toLocaleString("en-IN")}</span>
       </div>
 
       <button disabled={status === "processing" || !consent || (isMinor && !guardianConsent)} className="w-full rounded-full bg-gold py-3 font-600 text-midnight transition hover:bg-goldlite disabled:opacity-60">
@@ -236,11 +260,11 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
   );
 }
 
-function Field({ name, label, type = "text", errors }: { name: string; label: string; type?: string; errors: Record<string, string[]> }) {
+function Field({ name, label, type = "text", errors, required = false }: { name: string; label: string; type?: string; errors: Record<string, string[]>; required?: boolean }) {
   return (
     <div>
       <label className="text-sm font-500 text-ink/80">{label}</label>
-      <input name={name} type={type} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+      <input name={name} type={type} required={required} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
       {errors[name] && <p className="mt-1 text-xs text-red-600">{errors[name][0]}</p>}
     </div>
   );

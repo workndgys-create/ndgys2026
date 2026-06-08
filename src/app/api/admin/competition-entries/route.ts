@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
       try { members = (JSON.parse(e.members) as { name: string }[]).map((m) => m.name).join("; "); } catch {}
       let answers = "";
       try { answers = (JSON.parse(e.answers || "[]") as { q: string; a: string }[]).map((x) => `${x.q}: ${x.a}`).join(" | "); } catch {}
-      rows.push([e.refId, e.competitionTitle, e.participation, e.teamName || "", e.leaderName, e.email, e.phone, e.age ?? "", e.gender ?? "", e.city ?? "", e.emergencyContact ?? "", e.howHeard ?? "", members, e.pastExperience ?? "", answers, e.notes ?? "", String(e.amount / 100), e.status, new Date(e.createdAt).toISOString()]);
+      rows.push([e.refId, e.competitionTitle, e.participation, e.teamName || "", e.leaderName, e.email, e.phone, e.age ?? "", e.gender ?? "", e.city ?? "", e.emergencyContact ?? "", e.howHeard ?? "", members, e.pastExperience ?? "", answers, e.notes ?? "", String(e.amount), e.status, new Date(e.createdAt).toISOString()]);
     }
     const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
     return new NextResponse(csv, { headers: { "Content-Type": "text/csv", "Content-Disposition": 'attachment; filename="competition-entries.csv"' } });

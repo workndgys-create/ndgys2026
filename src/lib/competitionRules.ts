@@ -3,11 +3,11 @@ export type CompetitionFormat = "SOLO" | "GROUP" | "BOTH";
 
 export interface FeeConfig {
   format: CompetitionFormat;
-  feeSolo?: number | null;  // paise
-  feeGroup?: number | null; // paise (per team)
+  feeSolo?: number | null;  // rupees
+  feeGroup?: number | null; // rupees (per team)
 }
 
-/** Returns the fee (paise) for the chosen participation, or null if not offered. */
+/** Returns the fee (rupees) for the chosen participation, or null if not offered. */
 export function feeForParticipation(c: FeeConfig, participation: Participation): number | null {
   if (participation === "SOLO") {
     if (c.format === "GROUP") return null;

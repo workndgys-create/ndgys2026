@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { registrationSchema, contactSchema, seedTrackBySlug, TRACKS } from "@/lib/validation";
 
 describe("registrationSchema", () => {
-  const base = { fullName: "Aanya Rao", email: "a@b.com", phone: "+91 9876543210", track: TRACKS[0].slug };
+  const base = { fullName: "Aanya Rao", email: "a@b.com", phone: "+91 9876543210", track: TRACKS[0].slug, institution: "Delhi Public School" };
   it("accepts a valid registration", () => expect(registrationSchema.safeParse(base).success).toBe(true));
   it("rejects a short name", () => expect(registrationSchema.safeParse({ ...base, fullName: "A" }).success).toBe(false));
   it("rejects a bad email", () => expect(registrationSchema.safeParse({ ...base, email: "nope" }).success).toBe(false));
@@ -18,9 +18,9 @@ describe("contactSchema", () => {
 });
 
 describe("seedTrackBySlug", () => {
-  it("resolves a known slug with paise fee", () => {
+  it("resolves a known slug with rupee fee", () => {
     const t = seedTrackBySlug(TRACKS[0].slug)!;
-    expect(t.fee % 100).toBe(0);
+    expect(t.fee).toBeGreaterThan(0);
     expect(t.name.length).toBeGreaterThan(3);
   });
   it("returns undefined for unknown slugs", () => expect(seedTrackBySlug("nope")).toBeUndefined());

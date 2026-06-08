@@ -2,7 +2,7 @@
 
 Cashfree is the **only** payment gateway in this app and is already wired into all three payment surfaces (delegate registration, competition entries, school delegations), the verify endpoint, and the webhook. This guide covers what you need to operate it: getting keys, configuring the environment, the webhook, sandbox testing, and going live. The adapter lives at `src/lib/cashfree.ts`.
 
-> Money is stored in **paise** everywhere in this app. Cashfree works in **rupees** (decimal). The adapter already converts (`amountPaise / 100`) — keep that in mind if you write any custom calls.
+> Money is stored in **rupees** everywhere in this app. Cashfree also works in **rupees**, so the adapter forwards the amount directly.
 
 > **Already wired:** order creation (`src/app/api/{register,competitions/register,delegation/register}/route.ts`), the webhook (`src/app/api/payment/cashfree-webhook/route.ts`), the server confirm (`src/app/api/payment/verify/route.ts`), and the client checkout (the three forms) all use Cashfree. The sections below on "switching" are kept as a reference for how the pieces fit together — you don't need to make those edits, they're done.
 
@@ -42,7 +42,7 @@ The `NEXT_PUBLIC_` copy is exposed to the browser so the client SDK initialises 
 
 `src/lib/cashfree.ts` exposes four functions (API version `2023-08-01`):
 
-- `createCashfreeOrder({ orderId, amountPaise, customer, returnUrl, notifyUrl, note })` → `{ cfOrderId, orderId, paymentSessionId }`. The **`paymentSessionId`** is what the browser SDK needs.
+- `createCashfreeOrder({ orderId, amountRupees, customer, returnUrl, notifyUrl, note })` → `{ cfOrderId, orderId, paymentSessionId }`. The **`paymentSessionId`** is what the browser SDK needs.
 - `verifyCashfreeWebhook(rawBody, timestamp, signature)` → `boolean`. Validates the `x-webhook-signature` / `x-webhook-timestamp` headers (`base64(HMAC_SHA256(timestamp + rawBody, secret))`).
 - `isCashfreeOrderPaid(orderId)` → `boolean`. Server-side source of truth — calls `GET /pg/orders/{order_id}` and checks `order_status === "PAID"`.
 - `cashfreeMode()` → `"sandbox" | "production"`.
@@ -78,7 +78,7 @@ try {
   const base = env.NEXT_PUBLIC_BASE_URL;
   const order = await createCashfreeOrder({
     orderId: reg.id,                       // reuse your internal id as the Cashfree order_id
-    amountPaise: amount,
+    amountRupees: amount,
     customer: { id: reg.id, name: data.fullName, email: data.email, phone: data.phone },
     returnUrl: `${base}/dashboard?order={order_id}`,
     notifyUrl: `${base}/api/payment/cashfree-webhook`,

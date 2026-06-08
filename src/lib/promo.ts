@@ -1,7 +1,7 @@
 export type PromoKind = "PERCENT" | "FLAT";
 export interface PromoLike {
   kind: PromoKind;
-  value: number;          // percent (0-100) or paise off
+  value: number;          // percent (0-100) or rupees off
   maxUses?: number | null;
   uses?: number;
   appliesTo?: string | null; // track slug filter, null = all
@@ -13,7 +13,7 @@ export type PromoCheck =
   | { ok: true; discount: number; final: number }
   | { ok: false; reason: "inactive" | "expired" | "used_up" | "not_applicable" | "invalid" };
 
-/** Applies a promo to a base amount (paise) for a given track. Pure + deterministic. */
+/** Applies a promo to a base amount (rupees) for a given track. Pure + deterministic. */
 export function applyPromo(promo: PromoLike | null, baseAmount: number, trackSlug?: string, now: Date = new Date()): PromoCheck {
   if (!promo) return { ok: false, reason: "invalid" };
   if (promo.active === false) return { ok: false, reason: "inactive" };

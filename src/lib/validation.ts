@@ -3,21 +3,21 @@ import { z } from "zod";
 // Seed catalogue — mirrored into the DB `Track` table by prisma/seed.ts.
 // At runtime, routes read fees/capacity from the DB so admin edits take effect.
 export const TRACKS = [
-  { slug: "global-policy", name: "Global Policy Dialogue", fee: 250000, capacity: 60, difficulty: "Intermediate",
+  { slug: "global-policy", name: "Global Policy Dialogue", fee: 2500, capacity: 60, difficulty: "Intermediate",
     agenda: "Accountability for civilian protection under international humanitarian law and multilateral mechanisms." },
-  { slug: "climate", name: "Climate & Sustainability Forum", fee: 250000, capacity: 50, difficulty: "Intermediate",
+  { slug: "climate", name: "Climate & Sustainability Forum", fee: 2500, capacity: 50, difficulty: "Intermediate",
     agenda: "Financing a just energy transition — balancing growth, equity and the 1.5°C target." },
-  { slug: "technology", name: "Technology & Society Lab", fee: 250000, capacity: 50, difficulty: "Intermediate",
+  { slug: "technology", name: "Technology & Society Lab", fee: 2500, capacity: 50, difficulty: "Intermediate",
     agenda: "Governing artificial intelligence: rights, safety and the digital public square." },
-  { slug: "entrepreneurship", name: "Youth Entrepreneurship Track", fee: 300000, capacity: 40, difficulty: "Beginner",
+  { slug: "entrepreneurship", name: "Youth Entrepreneurship Track", fee: 3000, capacity: 40, difficulty: "Beginner",
     agenda: "Pitch, prototype and pressure-test ventures with founders and investors." },
-  { slug: "human-rights", name: "Human Rights Council", fee: 250000, capacity: 50, difficulty: "Intermediate",
+  { slug: "human-rights", name: "Human Rights Council", fee: 2500, capacity: 50, difficulty: "Intermediate",
     agenda: "Protecting the rights of migrants in enforcement and border policy." },
-  { slug: "press", name: "International Press Corps", fee: 200000, capacity: 30, difficulty: "Beginner",
+  { slug: "press", name: "International Press Corps", fee: 2000, capacity: 30, difficulty: "Beginner",
     agenda: "Reporters, photographers and caricaturists documenting the Summit live." },
-  { slug: "leadership", name: "Leadership & Diplomacy Summit", fee: 300000, capacity: 40, difficulty: "Advanced",
+  { slug: "leadership", name: "Leadership & Diplomacy Summit", fee: 3000, capacity: 40, difficulty: "Advanced",
     agenda: "High-table diplomacy simulation on a live, evolving geopolitical crisis." },
-  { slug: "crisis", name: "Continuous Crisis Committee", fee: 350000, capacity: 25, difficulty: "Advanced",
+  { slug: "crisis", name: "Continuous Crisis Committee", fee: 3500, capacity: 25, difficulty: "Advanced",
     agenda: "Classified. A continuous, fast-moving crisis that rewards quick thinking." }
 ] as const;
 
@@ -34,10 +34,11 @@ export const registrationSchema = z.object({
   city: z.string().trim().max(120).optional().or(z.literal("")),
   gender: z.enum(GENDERS).optional(),
   emergencyContact: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid contact number").optional().or(z.literal("")),
-  institution: z.string().trim().max(160).optional().or(z.literal("")),
+  institution: z.string().trim().min(2, "Enter your school / college").max(160),
   track: z.string().min(1, "Choose a track"),
   experience: z.enum(["beginner", "experienced"]).optional(),
   howHeard: z.string().trim().max(80).optional().or(z.literal("")),
+  howHeardDetail: z.string().trim().max(200).optional().or(z.literal("")),
   notes: z.string().trim().max(1000).optional().or(z.literal("")),
   consentAccepted: z.coerce.boolean().optional(),
   guardianName: z.string().trim().max(120).optional().or(z.literal("")),
@@ -51,6 +52,9 @@ export const registrationSchema = z.object({
     if (!v.guardianName || !v.guardianName.trim()) ctx.addIssue({ code: "custom", path: ["guardianName"], message: "Parent/guardian name is required for delegates under 18" });
     if (!v.guardianPhone || !v.guardianPhone.trim()) ctx.addIssue({ code: "custom", path: ["guardianPhone"], message: "Parent/guardian contact is required for delegates under 18" });
     if (!v.guardianConsent) ctx.addIssue({ code: "custom", path: ["guardianConsent"], message: "Parent/guardian consent is required for delegates under 18" });
+  }
+  if ((v.howHeard === "Friend / Word of mouth" || v.howHeard === "Other") && !v.howHeardDetail?.trim()) {
+    ctx.addIssue({ code: "custom", path: ["howHeardDetail"], message: "Please add a short description" });
   }
 });
 export type RegistrationInput = z.infer<typeof registrationSchema>;
@@ -100,9 +104,10 @@ export const competitionRegistrationSchema = z.object({
   city: z.string().trim().max(120).optional().or(z.literal("")),
   gender: z.enum(GENDERS).optional(),
   emergencyContact: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid contact number").optional().or(z.literal("")),
-  institution: z.string().trim().max(160).optional().or(z.literal("")),
+  institution: z.string().trim().min(2, "Enter your school / college").max(160),
   pastExperience: z.string().trim().max(1000).optional().or(z.literal("")),
   howHeard: z.string().trim().max(80).optional().or(z.literal("")),
+  howHeardDetail: z.string().trim().max(200).optional().or(z.literal("")),
   notes: z.string().trim().max(1000).optional().or(z.literal("")),
   members: z.array(competitionMemberSchema).default([]),
   answers: z.array(z.object({ q: z.string().max(300), a: z.string().trim().max(1000) })).optional(),
@@ -120,6 +125,9 @@ export const competitionRegistrationSchema = z.object({
     if (!v.guardianName || !v.guardianName.trim()) ctx.addIssue({ code: "custom", path: ["guardianName"], message: "Parent/guardian name is required for participants under 18" });
     if (!v.guardianPhone || !v.guardianPhone.trim()) ctx.addIssue({ code: "custom", path: ["guardianPhone"], message: "Parent/guardian contact is required for participants under 18" });
     if (!v.guardianConsent) ctx.addIssue({ code: "custom", path: ["guardianConsent"], message: "Parent/guardian consent is required for participants under 18" });
+  }
+  if ((v.howHeard === "Friend / Word of mouth" || v.howHeard === "Other") && !v.howHeardDetail?.trim()) {
+    ctx.addIssue({ code: "custom", path: ["howHeardDetail"], message: "Please add a short description" });
   }
 });
 export type CompetitionRegistrationInput = z.infer<typeof competitionRegistrationSchema>;

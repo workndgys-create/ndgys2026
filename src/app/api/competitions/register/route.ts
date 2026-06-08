@@ -18,6 +18,10 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: "Validation failed", issues: parsed.error.flatten().fieldErrors }, { status: 422 });
   const d = parsed.data;
   if (d.company) return NextResponse.json({ ok: true }); // honeypot
+  const needsHowHeardDetail = d.howHeard === "Friend / Word of mouth" || d.howHeard === "Other";
+  const howHeard = needsHowHeardDetail && d.howHeardDetail?.trim()
+    ? `${d.howHeard}: ${d.howHeardDetail.trim()}`
+    : d.howHeard;
   if (!d.consentAccepted) return NextResponse.json({ error: "Please accept the Terms and Code of Conduct to continue.", needConsent: true }, { status: 422 });
 
   const c = await prisma.competition.findUnique({ where: { id: d.competitionId } });
@@ -39,7 +43,7 @@ export async function POST(req: NextRequest) {
       leaderName: d.leaderName, email: d.email, phone: d.phone, institution: d.institution || null,
       members: JSON.stringify(d.members), teamSize: participation === "GROUP" ? d.members.length : 1,
       age: d.age ?? null, city: d.city || null, gender: d.gender ?? null, emergencyContact: d.emergencyContact || null,
-      pastExperience: d.pastExperience || null, howHeard: d.howHeard || null, notes: d.notes || null,
+      pastExperience: d.pastExperience || null, howHeard: howHeard || null, notes: d.notes || null,
       answers: d.answers && d.answers.length ? JSON.stringify(d.answers) : null,
       consentAccepted: true, guardianName: d.guardianName || null, guardianPhone: d.guardianPhone || null, guardianConsent: !!d.guardianConsent,
       amount, status: "PENDING"
@@ -48,7 +52,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const order = await createCashfreeOrder({
-      orderId: entry.id, amountPaise: amount,
+      orderId: entry.id, amountRupees: amount,
       customer: { id: entry.id, name: d.leaderName, email: d.email, phone: d.phone },
       returnUrl: `${env.NEXT_PUBLIC_BASE_URL}/?entry={order_id}`,
       notifyUrl: `${env.NEXT_PUBLIC_BASE_URL}/api/payment/cashfree-webhook`,

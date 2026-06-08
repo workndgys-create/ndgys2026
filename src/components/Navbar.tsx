@@ -40,12 +40,17 @@ export default function Navbar() {
 
   return (
     <header
+<<<<<<< HEAD
       className={`fixed inset-x-0 top-8 z-50 transition-all duration-300 border-b bg-[#1F0A02] ${
+=======
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 border-b ${
+>>>>>>> 6dcfc9db2667d6f2b77bb43683c7b75d0704bf57
         scrolled
           ? "shadow-lg shadow-[#1F0A02]/30 border-[#D97706]/40 h-24"
           : "border-[#D97706]/20 h-28"
       }`}
     >
+<<<<<<< HEAD
       <nav className="mx-auto max-w-6xl px-5 flex items-center justify-between h-full">
         {/* Logo left */}
         <Link href="/" className="inline-block group shrink-0">
@@ -53,6 +58,14 @@ export default function Navbar() {
             src="/logos/IMG_7820_textwhite.png"
             alt="Global Youth Summit 2026"
             className="h-24 md:h-28 w-auto object-contain transition-all duration-300 group-hover:brightness-130 group-hover:drop-shadow-lg filter saturate-120 contrast-110 brightness-115"
+=======
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2">
+        <Link href="/" className="inline-block group">
+          <img
+            src="/logos/IMG_7820_textwhite.png"
+            alt="Global Youth Summit 2026"
+            className="h-[110px] md:h-[140px] w-auto object-contain transition-all duration-300 group-hover:brightness-130 group-hover:drop-shadow-lg filter saturate-120 contrast-110 brightness-115"
+>>>>>>> 6dcfc9db2667d6f2b77bb43683c7b75d0704bf57
           />
         </Link>
 

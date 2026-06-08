@@ -12,7 +12,7 @@ export default function Page() {
           { key: "title", label: "Title", render: (r) => <span className="font-600 text-ink">{r.title}</span> },
           { key: "format", label: "Format" },
           { key: "reg", label: "Reg", render: (r) => (r.registrationOpen ? "Open" : "Closed") },
-          { key: "fees", label: "Fees (paise)", render: (r) => [r.feeSolo ? `solo ${r.feeSolo}` : null, r.feeGroup ? `group ${r.feeGroup}` : null].filter(Boolean).join(" / ") || "—" },
+          { key: "fees", label: "Fees (Rs)", render: (r) => [r.feeSolo ? `solo ₹${r.feeSolo}` : null, r.feeGroup ? `group ₹${r.feeGroup}` : null].filter(Boolean).join(" / ") || "—" },
           { key: "order", label: "Order" }
         ]}
         fields={[
@@ -27,8 +27,8 @@ export default function Page() {
           { name: "format", label: "Format", type: "select", options: [
             { value: "SOLO", label: "Solo only" }, { value: "GROUP", label: "Group only" }, { value: "BOTH", label: "Solo or Group" }
           ]},
-          { name: "feeSolo", label: "Solo fee (paise, e.g. 20000 = ₹200)", type: "number" },
-          { name: "feeGroup", label: "Group fee per team (paise)", type: "number" },
+          { name: "feeSolo", label: "Solo fee (Rs, e.g. 200)", type: "number" },
+          { name: "feeGroup", label: "Group fee per team (Rs)", type: "number" },
           { name: "minTeam", label: "Min team size", type: "number" },
           { name: "maxTeam", label: "Max team size", type: "number" },
           { name: "registrationOpen", label: "Registration", type: "select", options: [

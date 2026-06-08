@@ -22,7 +22,7 @@ export default function Page() {
                     <td className="px-3 py-3 font-600 text-ink">{d.schoolName}</td>
                     <td className="px-3 py-3"><p>{d.headName}</p><p className="text-xs text-slatey">{d.email}</p></td>
                     <td className="px-3 py-3 tabular-nums">{d.memberCount}</td>
-                    <td className="px-3 py-3 tabular-nums">{(d.amount / 100).toLocaleString("en-IN")}</td>
+                    <td className="px-3 py-3 tabular-nums">{d.amount.toLocaleString("en-IN")}</td>
                     <td className="px-3 py-3 font-mono text-xs">{d.promoCode || "—"}</td>
                     <td className="px-3 py-3"><StatusPill s={d.status} /></td>
                     <td className="px-3 py-3 text-xs text-slatey">{new Date(d.createdAt).toLocaleDateString("en-IN")}</td>

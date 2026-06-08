@@ -49,6 +49,9 @@ function RegisterInner() {
   const [promo, setPromo] = useState("");
   const [promoMsg, setPromoMsg] = useState("");
   const [discounted, setDiscounted] = useState<number | null>(null);
+  const [portfolioQuery, setPortfolioQuery] = useState("");
+  const [heardFrom, setHeardFrom] = useState(HEARD[0]);
+  const [heardDetail, setHeardDetail] = useState("");
   const [age, setAge] = useState<string>("");
   const [consent, setConsent] = useState(false);
   const [guardianConsent, setGuardianConsent] = useState(false);
@@ -80,7 +83,7 @@ function RegisterInner() {
     } catch { /* keep last */ }
   }
   useEffect(() => {
-    setSelected(""); setPortfolios(null); setDiscounted(null); setPromoMsg("");
+    setSelected(""); setPortfolios(null); setDiscounted(null); setPromoMsg(""); setPortfolioQuery("");
     loadPortfolios();
     if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = setInterval(() => { if (!document.hidden) loadPortfolios(); }, 12000);
@@ -117,7 +120,7 @@ function RegisterInner() {
     if (!promo.trim()) { setDiscounted(null); return; }
     const res = await fetch("/api/promo/validate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: promo, amount: fee, trackSlug: track }) });
     const d = await res.json().catch(() => ({}));
-    if (d.ok) { setDiscounted(d.final); setPromoMsg(`Code applied - you save Rs ${(d.discount / 100).toLocaleString("en-IN")}.`); }
+    if (d.ok) { setDiscounted(d.final); setPromoMsg(`Code applied - you save Rs ${d.discount.toLocaleString("en-IN")}.`); }
     else { setDiscounted(null); setPromoMsg("That code can't be applied."); }
   }
 
@@ -136,6 +139,8 @@ function RegisterInner() {
     setStatus("processing");
     const fd = new FormData(e.currentTarget);
     const payload: Record<string, unknown> = Object.fromEntries(fd.entries());
+    payload.howHeard = heardFrom;
+    payload.howHeardDetail = heardDetail;
     payload.portfolioId = selected;
     payload.consentAccepted = consent ? "true" : "";
     payload.guardianConsent = guardianConsent ? "true" : "";
@@ -214,6 +219,7 @@ function RegisterInner() {
   }
 
   const available = portfolios?.filter((p) => p.state === "available" || p.state === "mine").length ?? 0;
+  const filteredPortfolios = (portfolios ?? []).filter((p) => p.name.toLowerCase().includes(portfolioQuery.trim().toLowerCase()));
   const mm = String(Math.floor(remaining / 60));
   const ss = String(remaining % 60).padStart(2, "0");
 
@@ -228,8 +234,13 @@ function RegisterInner() {
           <Field name="fullName" label="Full Name" errors={errors} />
           <Field name="email" type="email" label="Email" errors={errors} />
           <Field name="phone" label="Phone Number" errors={errors} />
+<<<<<<< HEAD
           <Field name="institution" label="School / College (optional)" errors={errors} />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+=======
+          <Field name="institution" label="School / College" errors={errors} required />
+          <div className="grid grid-cols-2 gap-3">
+>>>>>>> 6dcfc9db2667d6f2b77bb43683c7b75d0704bf57
             <div>
               <label className="text-sm font-500 text-ink/80">Age</label>
               <input name="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
@@ -246,11 +257,30 @@ function RegisterInner() {
           <Field name="emergencyContact" label="Emergency contact number" errors={errors} />
           <div>
             <label className="text-sm font-500 text-ink/80">How did you hear about us?</label>
-            <select name="howHeard" className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
-              <option value="Instagram">Instagram</option><option value="WhatsApp">WhatsApp</option>
-              <option value="School / College">School / College</option><option value="Friend / Word of mouth">Friend / Word of mouth</option>
-              <option value="Other">Other</option>
+            <select
+              name="howHeard"
+              value={heardFrom}
+              onChange={(e) => {
+                const next = e.target.value;
+                setHeardFrom(next);
+                if (next !== "Friend / Word of mouth" && next !== "Other") setHeardDetail("");
+              }}
+              className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+            >
+              {HEARD.map((h) => <option key={h} value={h}>{h}</option>)}
             </select>
+            {(heardFrom === "Friend / Word of mouth" || heardFrom === "Other") && (
+              <textarea
+                name="howHeardDetail"
+                value={heardDetail}
+                onChange={(e) => setHeardDetail(e.target.value)}
+                rows={2}
+                required
+                placeholder="Please tell us a little more"
+                className="mt-2 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+              />
+            )}
+            {errors.howHeardDetail && <p className="mt-1 text-xs text-red-600">{errors.howHeardDetail[0]}</p>}
           </div>
           <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
@@ -266,12 +296,18 @@ function RegisterInner() {
               <label className="text-sm font-500 text-ink/80">Portfolio</label>
               <span className="text-xs text-slatey">{portfolios ? `${available} available` : "loading..."}</span>
             </div>
+            <input
+              value={portfolioQuery}
+              onChange={(e) => setPortfolioQuery(e.target.value)}
+              placeholder="Search portfolio..."
+              className="mt-2 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold"
+            />
             <div className="mt-2 grid max-h-56 grid-cols-2 gap-2 overflow-y-auto rounded-lg border border-ink/10 bg-cream p-2 sm:grid-cols-3">
               {!portfolios ? (
                 <p className="col-span-full py-6 text-center text-sm text-slatey">Loading portfolios...</p>
-              ) : portfolios.length === 0 ? (
+              ) : filteredPortfolios.length === 0 ? (
                 <p className="col-span-full py-6 text-center text-sm text-slatey">No portfolios configured for this committee yet.</p>
-              ) : portfolios.map((p) => {
+              ) : filteredPortfolios.map((p) => {
                 const disabled = p.state === "held" || p.state === "taken";
                 const isSel = selected === p.id;
                 return (
@@ -377,8 +413,8 @@ function RegisterInner() {
             <span className="text-sm text-ink/70">Amount payable</span>
             <span className="font-display text-2xl font-700 text-ink">
               {discounted != null && discounted !== fee
-                ? <><span className="mr-2 text-base font-400 text-slatey line-through">Rs {(fee / 100).toLocaleString("en-IN")}</span>Rs {(discounted / 100).toLocaleString("en-IN")}</>
-                : <>Rs {(fee / 100).toLocaleString("en-IN")}</>}
+                ? <><span className="mr-2 text-base font-400 text-slatey line-through">Rs {fee.toLocaleString("en-IN")}</span>Rs {discounted.toLocaleString("en-IN")}</>
+                : <>Rs {fee.toLocaleString("en-IN")}</>}
             </span>
           </div>
 
@@ -394,11 +430,11 @@ function RegisterInner() {
   );
 }
 
-function Field({ name, label, type = "text", errors }: { name: string; label: string; type?: string; errors: Record<string, string[]> }) {
+function Field({ name, label, type = "text", errors, required = false }: { name: string; label: string; type?: string; errors: Record<string, string[]>; required?: boolean }) {
   return (
     <div>
       <label className="text-sm font-500 text-ink/80">{label}</label>
-      <input name={name} type={type} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+      <input name={name} type={type} required={required} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
       {errors[name] && <p className="mt-1 text-xs text-red-600">{errors[name][0]}</p>}
     </div>
   );
