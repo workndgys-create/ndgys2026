@@ -26,6 +26,10 @@ export async function POST(req: NextRequest) {
   }
   const data = parsed.data;
   if (data.company) return NextResponse.json({ ok: true }); // honeypot tripped — silently drop
+  const needsHowHeardDetail = data.howHeard === "Friend / Word of mouth" || data.howHeard === "Other";
+  const howHeard = needsHowHeardDetail && data.howHeardDetail?.trim()
+    ? `${data.howHeard}: ${data.howHeardDetail.trim()}`
+    : data.howHeard;
 
   const portfolioId: string | undefined = body?.portfolioId;
   if (!portfolioId) return NextResponse.json({ error: "Please select a portfolio.", needPortfolio: true }, { status: 422 });
@@ -69,7 +73,7 @@ export async function POST(req: NextRequest) {
       institution: data.institution || null, trackSlug: track.slug, trackName: track.name,
       experience: data.experience ?? null, amount, status: "PENDING", portfolioId, promoCode: appliedCode,
       age: data.age ?? null, city: data.city || null, gender: data.gender ?? null,
-      emergencyContact: data.emergencyContact || null, howHeard: data.howHeard || null, notes: data.notes || null,
+      emergencyContact: data.emergencyContact || null, howHeard: howHeard || null, notes: data.notes || null,
       consentAccepted: true, guardianName: data.guardianName || null, guardianPhone: data.guardianPhone || null, guardianConsent: !!data.guardianConsent,
       customAnswers: answers.length ? JSON.stringify(answers) : null
     }

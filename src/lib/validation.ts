@@ -34,10 +34,11 @@ export const registrationSchema = z.object({
   city: z.string().trim().max(120).optional().or(z.literal("")),
   gender: z.enum(GENDERS).optional(),
   emergencyContact: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid contact number").optional().or(z.literal("")),
-  institution: z.string().trim().max(160).optional().or(z.literal("")),
+  institution: z.string().trim().min(2, "Enter your school / college").max(160),
   track: z.string().min(1, "Choose a track"),
   experience: z.enum(["beginner", "experienced"]).optional(),
   howHeard: z.string().trim().max(80).optional().or(z.literal("")),
+  howHeardDetail: z.string().trim().max(200).optional().or(z.literal("")),
   notes: z.string().trim().max(1000).optional().or(z.literal("")),
   consentAccepted: z.coerce.boolean().optional(),
   guardianName: z.string().trim().max(120).optional().or(z.literal("")),
@@ -51,6 +52,9 @@ export const registrationSchema = z.object({
     if (!v.guardianName || !v.guardianName.trim()) ctx.addIssue({ code: "custom", path: ["guardianName"], message: "Parent/guardian name is required for delegates under 18" });
     if (!v.guardianPhone || !v.guardianPhone.trim()) ctx.addIssue({ code: "custom", path: ["guardianPhone"], message: "Parent/guardian contact is required for delegates under 18" });
     if (!v.guardianConsent) ctx.addIssue({ code: "custom", path: ["guardianConsent"], message: "Parent/guardian consent is required for delegates under 18" });
+  }
+  if ((v.howHeard === "Friend / Word of mouth" || v.howHeard === "Other") && !v.howHeardDetail?.trim()) {
+    ctx.addIssue({ code: "custom", path: ["howHeardDetail"], message: "Please add a short description" });
   }
 });
 export type RegistrationInput = z.infer<typeof registrationSchema>;
@@ -100,9 +104,10 @@ export const competitionRegistrationSchema = z.object({
   city: z.string().trim().max(120).optional().or(z.literal("")),
   gender: z.enum(GENDERS).optional(),
   emergencyContact: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid contact number").optional().or(z.literal("")),
-  institution: z.string().trim().max(160).optional().or(z.literal("")),
+  institution: z.string().trim().min(2, "Enter your school / college").max(160),
   pastExperience: z.string().trim().max(1000).optional().or(z.literal("")),
   howHeard: z.string().trim().max(80).optional().or(z.literal("")),
+  howHeardDetail: z.string().trim().max(200).optional().or(z.literal("")),
   notes: z.string().trim().max(1000).optional().or(z.literal("")),
   members: z.array(competitionMemberSchema).default([]),
   answers: z.array(z.object({ q: z.string().max(300), a: z.string().trim().max(1000) })).optional(),
@@ -120,6 +125,9 @@ export const competitionRegistrationSchema = z.object({
     if (!v.guardianName || !v.guardianName.trim()) ctx.addIssue({ code: "custom", path: ["guardianName"], message: "Parent/guardian name is required for participants under 18" });
     if (!v.guardianPhone || !v.guardianPhone.trim()) ctx.addIssue({ code: "custom", path: ["guardianPhone"], message: "Parent/guardian contact is required for participants under 18" });
     if (!v.guardianConsent) ctx.addIssue({ code: "custom", path: ["guardianConsent"], message: "Parent/guardian consent is required for participants under 18" });
+  }
+  if ((v.howHeard === "Friend / Word of mouth" || v.howHeard === "Other") && !v.howHeardDetail?.trim()) {
+    ctx.addIssue({ code: "custom", path: ["howHeardDetail"], message: "Please add a short description" });
   }
 });
 export type CompetitionRegistrationInput = z.infer<typeof competitionRegistrationSchema>;
