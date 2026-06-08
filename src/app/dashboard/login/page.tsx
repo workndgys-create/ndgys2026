@@ -52,7 +52,7 @@ function LoginInner() {
     <main className="flex min-h-screen items-center justify-center bg-midnight px-5">
       <div className="w-full max-w-sm rounded-2xl bg-paper p-8 shadow-2xl">
         <h1 className="font-display text-2xl font-700 text-ink">Delegate Sign-in</h1>
-        <p className="mt-1 text-sm text-slatey">Enter the email you registered with. Your delegate panel unlocks once your payment is confirmed — we'll send a secure link and code.</p>
+        <p className="mt-1 text-sm text-slatey">Enter the email you registered with. Once payment is confirmed, access is automatically sent to that email — no manual sharing needed.</p>
 
         {step === "email" ? (
           <form onSubmit={requestLink} className="mt-6">

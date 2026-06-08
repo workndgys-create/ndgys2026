@@ -8,6 +8,22 @@ import { assignPortfolioForRegistration } from "./portfolios";
 import { generateCompetitionRefId } from "./ids";
 import { consumePromo } from "./promoDb";
 import { summitIcs } from "./eventIcs";
+import { generateRawToken, generateOtp, hashToken } from "./delegateAuth";
+
+async function createAutoAccessLink(email: string): Promise<string | null> {
+  try {
+    const raw = generateRawToken();
+    const otp = generateOtp();
+    const [tokenHash, otpHash] = await Promise.all([hashToken(raw), hashToken(otp)]);
+    await prisma.magicLinkToken.create({
+      data: { email: email.toLowerCase(), tokenHash, otpHash, expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) }
+    });
+    return `${env.NEXT_PUBLIC_BASE_URL}/dashboard/login?token=${raw}&email=${encodeURIComponent(email.toLowerCase())}`;
+  } catch (error) {
+    console.error("[fulfil] could not create auto access link", { email, error });
+    return null;
+  }
+}
 
 /**
  * Idempotently fulfils a paid registration:
@@ -59,11 +75,12 @@ export async function fulfilPaidRegistration(orderId: string, paymentId: string)
     ]);
 
     const cal = await summitIcs(delegateId);
+    const accessLink = await createAutoAccessLink(reg.email);
     await Promise.allSettled([
       sendMail({
         to: reg.email,
         subject: "Your Summit registration is confirmed 🎉",
-        html: templates.registrationPaid(reg.fullName, reg.trackName, delegateId, reg.amount, qr),
+        html: templates.registrationPaid(reg.fullName, reg.trackName, delegateId, reg.amount, qr, accessLink || undefined),
         attachments: [
           { filename: `${invoice.number.replace(/\//g, "-")}.pdf`, content: pdf },
           { filename: cal.filename, content: Buffer.from(cal.ics, "utf8") }
@@ -132,6 +149,7 @@ export async function fulfilPaidDelegation(orderId: string, paymentId: string): 
       if (label) await prisma.registration.update({ where: { id: reg.id }, data: { portfolio: label } });
     }
     try {
+      const accessLink = await createAutoAccessLink(reg.email);
       const [pdf, qr] = await Promise.all([
         generateInvoicePdf({ number: await nextInvoiceNumber(), issuedAt: new Date(), delegateId, fullName: reg.fullName, email: reg.email, trackName: reg.trackName, amount: reg.amount }),
         qrDataUrl(delegateId)
@@ -142,7 +160,7 @@ export async function fulfilPaidDelegation(orderId: string, paymentId: string): 
       await sendMail({
         to: reg.email,
         subject: "Your Summit registration is confirmed 🎉",
-        html: templates.registrationPaid(reg.fullName, reg.trackName, delegateId, reg.amount, qr),
+        html: templates.registrationPaid(reg.fullName, reg.trackName, delegateId, reg.amount, qr, accessLink || undefined),
         attachments: [
           { filename: `${invoice.number.replace(/\//g, "-")}.pdf`, content: pdf },
           { filename: cal.filename, content: Buffer.from(cal.ics, "utf8") }

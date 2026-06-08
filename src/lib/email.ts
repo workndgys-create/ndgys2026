@@ -51,7 +51,7 @@ const shell = (inner: string) => `
 const inr = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
 
 export const templates = {
-  registrationPaid: (name: string, track: string, delegateId: string, amount: number, qrDataUrl: string) =>
+  registrationPaid: (name: string, track: string, delegateId: string, amount: number, qrDataUrl: string, accessLink?: string) =>
     shell(
       `<h2 style="margin:0 0 12px;color:#4A2008">You're confirmed, ${name}. 🎉</h2>
        <p>Your seat at the <b>New Delhi Global Youth Summit 4.0</b> is secured.</p>
@@ -62,7 +62,11 @@ export const templates = {
        </table>
        <p>Your tax invoice is attached as a PDF. Show this QR at check-in:</p>
        <div style="text-align:center;margin:16px 0"><img src="${qrDataUrl}" width="180" height="180" alt="Check-in QR" style="border:8px solid #fff;border-radius:8px"/></div>
-       <p style="color:#8B6914;font-size:13px">Access your delegate dashboard anytime at ${env.NEXT_PUBLIC_BASE_URL}/dashboard</p>`
+       ${accessLink
+        ? `<p style="margin:16px 0"><a href="${accessLink}" style="background:#D97706;color:#FFF3D6;padding:12px 22px;border-radius:999px;text-decoration:none;font-weight:600">Open Delegate Dashboard</a></p>
+          <p style="color:#8B6914;font-size:13px">This secure access link is sent automatically to your registered email and can be used directly.</p>`
+        : `<p style="color:#8B6914;font-size:13px">Access your delegate dashboard anytime at ${env.NEXT_PUBLIC_BASE_URL}/dashboard</p>`}
+      `
      ),
   magicLink: (link: string, otp: string) =>
     shell(
