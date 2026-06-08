@@ -1,5 +1,4 @@
 import { SignJWT, jwtVerify } from "jose";
-import crypto from "crypto";
 import { env } from "./env";
 
 const COOKIE = "ndgys_delegate";
@@ -25,19 +24,35 @@ export async function verifyDelegateSession(token: string): Promise<DelegateSess
 }
 
 // ── Magic-link / OTP token primitives ──────────────────────────────
+function toHex(bytes: Uint8Array): string {
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 export function generateRawToken(): string {
-  return crypto.randomBytes(32).toString("hex");
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return toHex(bytes);
 }
+
 export function generateOtp(): string {
-  return String(crypto.randomInt(0, 1_000_000)).padStart(6, "0");
+  const bytes = new Uint32Array(1);
+  crypto.getRandomValues(bytes);
+  return String(bytes[0] % 1_000_000).padStart(6, "0");
 }
-export function hashToken(raw: string): string {
-  return crypto.createHash("sha256").update(raw).digest("hex");
+
+export async function hashToken(raw: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
+  return toHex(new Uint8Array(digest));
 }
-export function tokensMatch(raw: string, hash: string): boolean {
-  const a = Buffer.from(hashToken(raw));
-  const b = Buffer.from(hash);
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
+
+export async function tokensMatch(raw: string, hash: string): Promise<boolean> {
+  const calculated = await hashToken(raw);
+  if (calculated.length !== hash.length) return false;
+  let diff = 0;
+  for (let i = 0; i < calculated.length; i++) {
+    diff |= calculated.charCodeAt(i) ^ hash.charCodeAt(i);
+  }
+  return diff === 0;
 }
 
 export const delegateCookieName = COOKIE;

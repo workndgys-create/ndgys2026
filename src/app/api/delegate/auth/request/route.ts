@@ -25,8 +25,9 @@ export async function POST(req: NextRequest) {
   if (paid) {
     const raw = generateRawToken();
     const otp = generateOtp();
+    const [tokenHash, otpHash] = await Promise.all([hashToken(raw), hashToken(otp)]);
     await prisma.magicLinkToken.create({
-      data: { email, tokenHash: hashToken(raw), otpHash: hashToken(otp), expiresAt: new Date(Date.now() + 15 * 60 * 1000) }
+      data: { email, tokenHash, otpHash, expiresAt: new Date(Date.now() + 15 * 60 * 1000) }
     });
     const link = `${env.NEXT_PUBLIC_BASE_URL}/dashboard/login?token=${raw}&email=${encodeURIComponent(email)}`;
     await sendMail({ to: email, subject: "Your sign-in link", html: templates.magicLink(link, otp) });
