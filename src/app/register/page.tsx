@@ -229,7 +229,7 @@ function RegisterInner() {
           <Field name="email" type="email" label="Email" errors={errors} />
           <Field name="phone" label="Phone Number" errors={errors} />
           <Field name="institution" label="School / College (optional)" errors={errors} />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-500 text-ink/80">Age</label>
               <input name="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
