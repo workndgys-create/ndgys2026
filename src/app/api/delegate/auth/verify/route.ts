@@ -24,9 +24,18 @@ export async function POST(req: NextRequest) {
     take: 5
   });
 
-  const match = candidates.find((c: { tokenHash: string; otpHash: string }) =>
-    parsed.data.token ? tokensMatch(parsed.data.token, c.tokenHash) : parsed.data.otp ? tokensMatch(parsed.data.otp, c.otpHash) : false
-  );
+  let match: (typeof candidates)[number] | undefined;
+  for (const c of candidates as { tokenHash: string; otpHash: string; id: string }[]) {
+    const ok = parsed.data.token
+      ? await tokensMatch(parsed.data.token, c.tokenHash)
+      : parsed.data.otp
+        ? await tokensMatch(parsed.data.otp, c.otpHash)
+        : false;
+    if (ok) {
+      match = c as (typeof candidates)[number];
+      break;
+    }
+  }
   if (!match) return NextResponse.json({ error: "Invalid or expired code" }, { status: 401 });
 
   await prisma.magicLinkToken.update({ where: { id: match.id }, data: { usedAt: new Date() } });
