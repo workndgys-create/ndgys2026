@@ -33,17 +33,10 @@ export default function Hero() {
           SUMMIT 4.0
         </h1>
 
-<<<<<<< HEAD
         {/* Date badge */}
         <div className="mt-7 inline-flex items-center gap-3 rounded-full border-2 border-[#D97706]/40 bg-[#1F0A02] px-6 py-2.5 text-xs font-bold tracking-[0.18em] text-[#FFF8E7] shadow-xl shadow-[#1F0A02]/35 animate-fadeUp">
           <span className="h-2 w-2 rounded-full bg-[#F59E0B] animate-pulse" />
           22 – 23 AUGUST 2026 · NEW DELHI
-=======
-        {/* date badge */}
-        <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-gold/30 bg-midnight/60 px-6 py-2.5 text-sm tracking-[0.2em] backdrop-blur-md shadow-inner shadow-white/5">
-          <span className="h-2 w-2 rounded-full bg-gold animate-pulse" />
-    22nd – 23rd AUGUST 2026 · NEW DELHI
->>>>>>> 6dcfc9db2667d6f2b77bb43683c7b75d0704bf57
         </div>
 
         {/* Countdown */}
