@@ -53,7 +53,7 @@ export default function About() {
           </Reveal>
         </div>
 
-        <div className="mt-16 grid gap-5 sm:grid-cols-3">
+        <div className="mt-16 grid gap-5 sm:grid-cols-2 max-w-3xl mx-auto">
           {details.map((d, i) => (
             <Reveal key={d.label} delay={i * 100}>
               <div className="h-full rounded-2xl border border-ink/10 bg-paper p-7 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-md hover:border-gold/30">
