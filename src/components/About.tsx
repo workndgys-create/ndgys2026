@@ -47,7 +47,7 @@ export default function About() {
             <p>
               Whether you are stepping into your first committee room or arriving as a seasoned
               delegate hungry for a rigorous challenge on live global agendas, the Summit is built
-              for you. Two high-intensity days. Eight meticulously crafted tracks. A landmark
+              for you. Two high-intensity days.More than Eight meticulously crafted tracks. A landmark
               inaugural edition — and a founding cohort who will always have been there first.
             </p>
           </Reveal>

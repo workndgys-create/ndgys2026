@@ -26,7 +26,7 @@ export default function AboutPage() {
               delegates debate live agendas, draft resolutions and pitch ideas — learning by doing.
             </p>
             <p>
-              Our inaugural edition runs on 22–23 August 2026 at IIT Delhi. Every committee is chaired by experienced
+              Our inaugural edition runs on 22nd–23rd August 2026 at IIT Delhi. Every committee is chaired by experienced
               facilitators, and the programme balances rigorous debate with mentorship from practitioners in policy,
               climate, technology and enterprise.
             </p>
