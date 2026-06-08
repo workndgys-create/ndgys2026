@@ -1,68 +1,20 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-
-const about = [
-  { href: "/about", label: "About the Summit" },
-  { href: "/committees", label: "Committees" },
-  { href: "/schedule", label: "Schedule" }
-];
-const resources = [
-  { href: "/#resources", label: "Delegate Guides" },
-  { href: "/#faq", label: "FAQ" }
-];
-
-export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [menu, setMenu] = useState<string | null>(null);
-  const pathname = usePathname();
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // close mobile menu on route change
-  useEffect(() => { setOpen(false); }, [pathname]);
-
-  const isActive = (href: string) => {
-    if (href.startsWith("/#")) return false;
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
-  };
-
-  const isGroupActive = (items: { href: string }[]) =>
-    items.some((i) => isActive(i.href));
-
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 border-b ${
-      
-     
         scrolled
           ? "bg-midnight/90 backdrop-blur-md shadow-lg shadow-black/15 border-gold/25 py-2"
           : "bg-midnight/30 border-transparent py-4"
       }`}
     >
-<<<<<<< HEAD
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-        <Link href="/" className="flex items-center py-1">
-          <img
-            src="/NDGYS26.png"
-            alt="NDGYS 2026 Logo"
-            className="h-16 w-auto object-contain md:h-20 transition-all duration-200"
-=======
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2">
         <Link href="/" className="inline-block group">
           <img
-            src="/logos/IMG_7820.png"
+            src="/logos/IMG_7820_textwhite.png"
             alt="Global Youth Summit 2026"
-            className="h-[100px] md:h-[130px] w-auto object-contain transition-all duration-300 group-hover:brightness-130 group-hover:drop-shadow-lg filter saturate-120 contrast-110 brightness-110"
->>>>>>> 4e827c2 (Replace navbar NDGYS text with transparent Global Youth Summit logo; add image-processing scripts and styling)
+            className="h-[110px] md:h-[140px] w-auto object-contain transition-all duration-300 group-hover:brightness-130 group-hover:drop-shadow-lg filter saturate-120 contrast-110 brightness-115"
           />
         </Link>
 
@@ -115,6 +67,41 @@ export default function Navbar() {
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ${
           open ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="border-t border-white/10 bg-midnight/98 backdrop-blur px-5 pb-6 pt-2">
+          {[
+            { href: "/", label: "Home" },
+            ...about,
+            ...resources,
+            { href: "/#contact", label: "Contact" }
+          ].map((i) => (
+            <Link
+              key={i.label}
+              href={i.href}
+              onClick={() => setOpen(false)}
+              className={`flex items-center justify-between border-b border-white/5 py-3 text-sm transition ${
+                isActive(i.href)
+                  ? "text-gold font-600"
+                  : "text-cream/85 hover:text-gold"
+              }`}
+            >
+              {i.label}
+              {isActive(i.href) && (
+                <span className="h-1.5 w-1.5 rounded-full bg-gold" />
+              )}
+            </Link>
+          ))}
+          <Link
+            href="/register"
+            onClick={() => setOpen(false)}
+            className="mt-4 block rounded-full bg-gold py-3 text-center font-600 text-midnight hover:bg-goldlite transition"
+          >
+            Register Now
+          </Link>
+        </div>
+      </div>
+    </header>
         }`}
       >
         <div className="border-t border-white/10 bg-midnight/98 backdrop-blur px-5 pb-6 pt-2">
