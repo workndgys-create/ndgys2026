@@ -163,11 +163,11 @@ export default function Terms() {
       <h2>10. Final Acknowledgement</h2>
       <p>By registering for the New Delhi Global Youth Summit, participants:</p>
       <ul className="list-none space-y-2 pl-0">
-        <li>✅ Confirm that they have read, understood, and agreed to all Terms and Conditions.</li>
-        <li>✅ Confirm that they are registering either for themselves (if adult) or via a legal guardian/school representative (if minor).</li>
-        <li>✅ Agree to follow all rules and accept decisions made by organisers and administrators as final.</li>
-        <li>✅ Acknowledge that registrations are non-refundable, non-transferable, and final. No exceptions will be granted under any personal or external circumstance.</li>
-        <li>✅ Accept full responsibility for their or their team&rsquo;s conduct, travel, safety and participation during the event.</li>
+        <li> Confirm that they have read, understood, and agreed to all Terms and Conditions.</li>
+        <li> Confirm that they are registering either for themselves (if adult) or via a legal guardian/school representative (if minor).</li>
+        <li> Agree to follow all rules and accept decisions made by organisers and administrators as final.</li>
+        <li>Acknowledge that registrations are non-refundable, non-transferable, and final. No exceptions will be granted under any personal or external circumstance.</li>
+        <li>Accept full responsibility for their or their team&rsquo;s conduct, travel, safety and participation during the event.</li>
       </ul>
     </LegalPage>
   );
