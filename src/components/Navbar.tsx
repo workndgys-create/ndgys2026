@@ -1,6 +1,43 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+
+const about = [
+  { href: "/about", label: "About the Summit" },
+  { href: "/committees", label: "Committees" },
+  { href: "/schedule", label: "Schedule" }
+];
+const resources = [
+  { href: "/#resources", label: "Delegate Guides" },
+  { href: "/#faq", label: "FAQ" }
+];
+
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [menu, setMenu] = useState<string | null>(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // close mobile menu on route change
+  useEffect(() => { setOpen(false); }, [pathname]);
+
+  const isActive = (href: string) => {
+    if (href.startsWith("/#")) return false;
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
+
+  const isGroupActive = (items: { href: string }[]) =>
+    items.some((i) => isActive(i.href));
+
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 border-b ${
@@ -76,41 +113,6 @@ import { usePathname } from "next/navigation";
             ...resources,
             { href: "/#contact", label: "Contact" }
           ].map((i) => (
-            <Link
-              key={i.label}
-              href={i.href}
-              onClick={() => setOpen(false)}
-              className={`flex items-center justify-between border-b border-white/5 py-3 text-sm transition ${
-                isActive(i.href)
-                  ? "text-gold font-600"
-                  : "text-cream/85 hover:text-gold"
-              }`}
-            >
-              {i.label}
-              {isActive(i.href) && (
-                <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-              )}
-            </Link>
-          ))}
-          <Link
-            href="/register"
-            onClick={() => setOpen(false)}
-            className="mt-4 block rounded-full bg-gold py-3 text-center font-600 text-midnight hover:bg-goldlite transition"
-          >
-            Register Now
-          </Link>
-        </div>
-      </div>
-    </header>
-        }`}
-      >
-        <div className="border-t border-white/10 bg-midnight/98 backdrop-blur px-5 pb-6 pt-2">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2">
-          <Link href="/" className="inline-block group">
-            <img
-              src="/logos/IMG_7820.png"
-              alt="Global Youth Summit 2026"
-              className="h-[100px] md:h-[130px] w-auto object-contain transition-all duration-300 group-hover:brightness-130 group-hover:drop-shadow-lg filter saturate-120 contrast-110 brightness-110"
             <Link
               key={i.label}
               href={i.href}
