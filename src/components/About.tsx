@@ -4,7 +4,6 @@ import Reveal from "./Reveal";
 const details = [
   { label: "DATES", value: "Aug 22–23, 2026", sub: "Two intensive days" },
   { label: "VENUE", value: "IIT Delhi", sub: "New Delhi" },
-  { label: "DELEGATE FEE", value: "₹2,500", sub: "Flagship tracks from ₹3,000" }
 ];
 
 export default function About() {
