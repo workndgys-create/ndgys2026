@@ -75,7 +75,7 @@ function DayToggle({ label, on, onClick }: { label: string; on: boolean; onClick
   return (
     <button
       onClick={onClick}
-      className={`rounded-xl px-5 py-3 text-sm font-600 transition ${on ? "bg-green-600 text-white" : "border border-ink/15 bg-cream text-ink hover:border-gold"}`}
+      className={`rounded-xl px-5 py-3 text-sm font-600 transition ${on ? "bg-[#D97706] text-midnight" : "border border-ink/15 bg-cream text-ink hover:border-gold"}`}
     >
       {on ? "✓ " : ""}{label}
     </button>

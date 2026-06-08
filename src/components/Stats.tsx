@@ -41,10 +41,10 @@ export default function Stats() {
   }, []);
 
   return (
-    <section id="stats" ref={ref} className="relative overflow-hidden bg-ink py-24 text-cream">
+    <section id="stats" ref={ref} className="relative overflow-hidden bg-[#3B1A0A] py-24 text-cream">
       {/* background glow */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <div className="h-72 w-72 rounded-full bg-gold/[0.03] blur-3xl animate-pulse" />
+        <div className="h-72 w-72 rounded-full bg-[#D97706]/[0.06] blur-3xl animate-pulse" />
       </div>
 
       <div className="mx-auto max-w-6xl px-5 relative z-10">
@@ -64,11 +64,11 @@ function Stat({ value, suffix, label, run }: { value: number; suffix: string; la
   const n = useCountUp(value, run);
   return (
     <div className="transition-transform duration-500 hover:scale-105">
-      <p className="font-display text-5xl font-900 text-goldlite inline-block md:text-6xl">
+      <p className="font-display text-5xl font-900 text-[#F59E0B] inline-block md:text-6xl">
         {n}
         {suffix}
       </p>
-      <p className="mt-3 text-[10px] uppercase tracking-[0.2em] text-cream/50 font-semibold">{label}</p>
+      <p className="mt-3 text-[10px] uppercase tracking-[0.2em] text-[#EFE5C8]/60 font-semibold">{label}</p>
     </div>
   );
 }

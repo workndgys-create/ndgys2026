@@ -7,11 +7,11 @@ export async function summitIcs(uidSuffix = "summit"): Promise<{ ics: string; fi
     getSetting("event.start"), getSetting("event.end"), getSetting("event.venue")
   ]);
   const ics = buildIcs({
-    uid: `ndgys-2026-${uidSuffix}@nesummit.in`,
-    title: "New Delhi Global Youth Summit 2026",
+    uid: `ndgys-4.0-${uidSuffix}@nesummit.in`,
+    title: "New Delhi Global Youth Summit 4.0",
     start: new Date(start), end: new Date(end),
     location: venue,
     description: "Your delegate pass and committee details are in your dashboard."
   });
-  return { ics, filename: "ndgys-2026.ics" };
+  return { ics, filename: "ndgys-4.0.ics" };
 }

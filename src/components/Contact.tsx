@@ -51,22 +51,22 @@ export default function Contact() {
           </p>
           
           <div className="mt-10 space-y-4 max-w-sm">
-            <a href="mailto:hi@nesummit.in" className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4 text-cream/80 transition-all duration-300 hover:border-gold/30 hover:bg-gold/5 hover:text-gold hover:translate-x-1 shadow-sm">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/10 text-gold text-lg">✉</span>
+            <a href="mailto:hi@nesummit.in" className="flex items-center gap-4 rounded-2xl border border-[#D97706]/15 bg-[#D97706]/5 p-4 text-cream/80 transition-all duration-300 hover:border-gold/50 hover:bg-gold/10 hover:text-gold hover:translate-x-1 shadow-sm">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold text-lg">✉</span>
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">Email Us</p>
                 <p className="text-sm font-500">hi@nesummit.in</p>
               </div>
             </a>
-            <a href="tel:+919650058469" className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4 text-cream/80 transition-all duration-300 hover:border-gold/30 hover:bg-gold/5 hover:text-gold hover:translate-x-1 shadow-sm">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/10 text-gold text-lg">☎</span>
+            <a href="tel:+919650058469" className="flex items-center gap-4 rounded-2xl border border-[#D97706]/15 bg-[#D97706]/5 p-4 text-cream/80 transition-all duration-300 hover:border-gold/50 hover:bg-gold/10 hover:text-gold hover:translate-x-1 shadow-sm">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold text-lg">☎</span>
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">Call Us</p>
                 <p className="text-sm font-500">+91 96500 58469</p>
               </div>
             </a>
-            <a href="https://wa.me/919650058469" className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4 text-cream/80 transition-all duration-300 hover:border-gold/30 hover:bg-gold/5 hover:text-gold hover:translate-x-1 shadow-sm">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/10 text-gold text-lg">⦿</span>
+            <a href="https://wa.me/919650058469" className="flex items-center gap-4 rounded-2xl border border-[#D97706]/15 bg-[#D97706]/5 p-4 text-cream/80 transition-all duration-300 hover:border-gold/50 hover:bg-gold/10 hover:text-gold hover:translate-x-1 shadow-sm">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold text-lg">⦿</span>
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">WhatsApp</p>
                 <p className="text-sm font-500">Chat with support</p>
@@ -75,14 +75,14 @@ export default function Contact() {
           </div>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-5 rounded-3xl border border-white/10 bg-midnight/60 p-8 text-cream backdrop-blur-md shadow-2xl">
+        <form onSubmit={onSubmit} className="space-y-5 rounded-3xl border border-[#D97706]/20 bg-midnight/60 p-8 text-cream backdrop-blur-md shadow-2xl">
           <Field name="fullName" label="Full Name" errors={errors} />
           <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
           <Field name="email" type="email" label="Email" errors={errors} />
           <Field name="phone" label="Phone Number (optional)" errors={errors} />
           <div>
             <label className="text-sm font-500 text-cream/80">Subject</label>
-            <select name="subject" required className="focus-glow mt-1.5 w-full rounded-xl border border-white/10 bg-midnight/50 px-4 py-3 text-cream outline-none transition-all duration-300">
+            <select name="subject" required className="focus-glow mt-1.5 w-full rounded-xl border border-[#D97706]/20 bg-midnight/50 px-4 py-3 text-cream outline-none transition-all duration-300">
               <option className="bg-midnight text-cream">General Enquiry</option>
               <option className="bg-midnight text-cream">Track Question</option>
               <option className="bg-midnight text-cream">Registration Help</option>
@@ -92,7 +92,7 @@ export default function Contact() {
           </div>
           <div>
             <label className="text-sm font-500 text-cream/80">Message</label>
-            <textarea name="message" rows={4} required className="focus-glow mt-1.5 w-full rounded-xl border border-white/10 bg-midnight/50 px-4 py-3 text-cream outline-none transition-all duration-300" />
+            <textarea name="message" rows={4} required className="focus-glow mt-1.5 w-full rounded-xl border border-[#D97706]/20 bg-midnight/50 px-4 py-3 text-cream outline-none transition-all duration-300" />
             {errors.message && <p className="mt-1.5 text-xs text-red-400 font-500">{errors.message[0]}</p>}
           </div>
 
@@ -131,7 +131,7 @@ function Field({
       <input
         name={name}
         type={type}
-        className="focus-glow mt-1.5 w-full rounded-xl border border-white/10 bg-midnight/50 px-4 py-3 text-cream outline-none placeholder:text-cream/35 transition-all duration-300"
+        className="focus-glow mt-1.5 w-full rounded-xl border border-[#D97706]/20 bg-midnight/50 px-4 py-3 text-cream outline-none placeholder:text-cream/35 transition-all duration-300"
       />
       {errors[name] && <p className="mt-1.5 text-xs text-red-400 font-500">{errors[name][0]}</p>}
     </div>

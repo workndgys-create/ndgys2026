@@ -3,7 +3,7 @@ import LegalPage from "@/components/LegalPage";
 import { getSetting } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Code of Conduct & Safety — NDGYS 2026", description: "Code of conduct, anti-harassment and safety policy for the New Delhi Global Youth Summit 2026, including how to raise a grievance." };
+export const metadata: Metadata = { title: "Code of Conduct & Safety — NDGYS 4.0", description: "Code of conduct, anti-harassment and safety policy for the New Delhi Global Youth Summit 4.0, including how to raise a grievance." };
 
 export default async function CodeOfConduct() {
   const [email, phone] = await Promise.all([getSetting("safety.grievanceEmail"), getSetting("safety.grievancePhone")]);

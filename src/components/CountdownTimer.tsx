@@ -61,21 +61,19 @@ export default function CountdownTimer() {
       {units.map((u, i) => (
         <div key={u.label} className="flex items-center gap-3 sm:gap-5">
           <div className="flex flex-col items-center">
-            <div className="relative flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl border border-gold/25 bg-midnight/45 backdrop-blur-md shadow-lg shadow-black/30">
+            <div className="relative flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl border border-[#D97706]/30 bg-[#3B1A0A]/70 backdrop-blur-md shadow-lg shadow-[#3B1A0A]/30">
               {/* subtle top shine */}
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-[1.5px] rounded-t-2xl bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
-              {/* internal subtle gold shadow */}
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-b from-white/[0.02] to-transparent" />
-              <span className="font-display text-3xl sm:text-4xl font-900 text-cream tabular-nums leading-none drop-shadow-[0_2px_6px_rgba(201,162,75,0.2)]">
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-[1.5px] rounded-t-2xl bg-gradient-to-r from-transparent via-[#D97706]/50 to-transparent" />
+              <span className="font-display text-3xl sm:text-4xl font-900 text-[#EFE5C8] tabular-nums leading-none drop-shadow-[0_2px_6px_rgba(217,119,6,0.3)]">
                 {pad(u.value)}
               </span>
             </div>
-            <span className="mt-2 text-[9px] sm:text-[10px] tracking-[0.25em] text-gold/80 font-semibold uppercase">
+            <span className="mt-2 text-[9px] sm:text-[10px] tracking-[0.25em] text-[#D97706] font-semibold uppercase">
               {u.label}
             </span>
           </div>
           {i < units.length - 1 && (
-            <span className="mb-5 text-2xl font-700 text-gold/50 leading-none select-none">:</span>
+            <span className="mb-5 text-2xl font-700 text-[#D97706]/60 leading-none select-none">:</span>
           )}
         </div>
       ))}

@@ -48,7 +48,7 @@ export default function LiveAnnouncements() {
     <div className="mt-6">
       <div className="mb-2 flex items-center gap-2">
         <h2 className="font-display text-xl font-700 text-ink">Announcements</h2>
-        {live && <span className="flex items-center gap-1 text-xs text-green-700"><span className="h-2 w-2 animate-pulse rounded-full bg-green-600" />live</span>}
+        {live && <span className="flex items-center gap-1 text-xs text-[#D97706]"><span className="h-2 w-2 animate-pulse rounded-full bg-[#D97706]" />live</span>}
       </div>
       <div className="space-y-2">
         {items.map((a) => (

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import LegalPage from "@/components/LegalPage";
-export const metadata: Metadata = { title: "Refund Policy — NDGYS 2026" };
+export const metadata: Metadata = { title: "Refund Policy — NDGYS 4.0" };
 export default function Refund() {
   return (
     <LegalPage title="Refund Policy" updated="June 2026">

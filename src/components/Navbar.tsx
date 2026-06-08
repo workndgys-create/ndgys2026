@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const about = [
   { href: "/about", label: "About the Summit" },
@@ -40,24 +40,23 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 border-b ${
-      
-     
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 border-b bg-[#1F0A02] ${
         scrolled
-          ? "bg-midnight/90 backdrop-blur-md shadow-lg shadow-black/15 border-gold/25 py-2"
-          : "bg-midnight/30 border-transparent py-4"
+          ? "shadow-lg shadow-[#1F0A02]/30 border-[#D97706]/40 h-20"
+          : "border-[#D97706]/20 h-24"
       }`}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-        <Link href="/" className="flex items-center py-1">
+      <nav className="mx-auto max-w-6xl px-5 flex items-center justify-between h-full">
+        {/* Logo left */}
+        <Link href="/" className="flex items-center py-1 shrink-0">
           <img
             src="/NDGYS26.png"
-            alt="NDGYS 2026 Logo"
-            className="h-16 w-auto object-contain md:h-20 transition-all duration-200"
+            alt="NDGYS 4.0 Logo"
+            className="h-16 w-auto object-contain transition-all duration-200 filter drop-shadow-[0_2px_8px_rgba(217,119,6,0.25)]"
           />
         </Link>
 
-        {/* desktop links */}
+        {/* Links center */}
         <div className="hidden items-center gap-7 md:flex">
           <NavLink href="/" label="Home" active={isActive("/")} />
           <Dropdown
@@ -75,23 +74,27 @@ export default function Navbar() {
             groupActive={isGroupActive(resources)}
           />
           <NavLink href="/#contact" label="Contact" active={false} />
+        </div>
+
+        {/* CTA right */}
+        <div className="hidden md:flex shrink-0">
           <Link
             href="/register"
-            className={`group relative overflow-hidden rounded-full px-5 py-2 text-sm font-600 transition-all duration-300 shadow-md ${
+            className={`group relative overflow-hidden rounded-full px-6 py-2.5 text-sm font-700 transition-all duration-300 shadow-md ${
               isActive("/register")
-                ? "bg-goldlite text-midnight shadow-goldlite/10"
-                : "bg-gold text-midnight shadow-gold/15 hover:bg-goldlite hover:shadow-gold/35 hover:-translate-y-0.5 active:translate-y-0"
+                ? "bg-[#B45309] text-white shadow-[#B45309]/20"
+                : "bg-[#D97706] text-white shadow-[#D97706]/20 hover:bg-[#B45309] hover:shadow-[#B45309]/30 hover:-translate-y-0.5 active:translate-y-0"
             }`}
           >
             <span className="relative z-10">Register Now ↗</span>
-            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[1200ms] ease-out bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
+            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[1200ms] ease-out bg-gradient-to-r from-transparent via-white/35 to-transparent skew-x-12" />
           </Link>
         </div>
 
-        {/* hamburger */}
+        {/* mobile hamburger button */}
         <button
           aria-label="Toggle menu"
-          className="md:hidden text-cream"
+          className="md:hidden text-[#FFF8E7] p-2"
           onClick={() => setOpen((v) => !v)}
         >
           <div className="space-y-1.5">
@@ -108,7 +111,7 @@ export default function Navbar() {
           open ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="border-t border-white/10 bg-midnight/98 backdrop-blur px-5 pb-6 pt-2">
+        <div className="border-t border-[#D97706]/30 bg-[#1F0A02]/98 backdrop-blur px-5 pb-6 pt-2">
           {[
             { href: "/", label: "Home" },
             ...about,
@@ -119,22 +122,22 @@ export default function Navbar() {
               key={i.label}
               href={i.href}
               onClick={() => setOpen(false)}
-              className={`flex items-center justify-between border-b border-white/5 py-3 text-sm transition ${
+              className={`flex items-center justify-between border-b border-[#D97706]/10 py-3 text-sm transition ${
                 isActive(i.href)
-                  ? "text-gold font-600"
-                  : "text-cream/85 hover:text-gold"
+                  ? "text-[#F59E0B] font-600"
+                  : "text-[#FFF8E7]/80 hover:text-[#F59E0B]"
               }`}
             >
               {i.label}
               {isActive(i.href) && (
-                <span className="h-1.5 w-1.5 rounded-full bg-gold" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B]" />
               )}
             </Link>
           ))}
           <Link
             href="/register"
             onClick={() => setOpen(false)}
-            className="mt-4 block rounded-full bg-gold py-3 text-center font-600 text-midnight hover:bg-goldlite transition"
+            className="mt-4 block rounded-full bg-[#D97706] py-3 text-center font-600 text-white hover:bg-[#B45309] transition"
           >
             Register Now
           </Link>
@@ -149,13 +152,13 @@ function NavLink({ href, label, active }: { href: string; label: string; active:
   return (
     <Link
       href={href}
-      className={`relative text-sm transition ${
-        active ? "text-gold" : "text-cream/80 hover:text-gold"
+      className={`relative text-sm font-600 transition ${
+        active ? "text-[#F59E0B]" : "text-[#FFF8E7]/85 hover:text-[#F59E0B]"
       }`}
     >
       {label}
       {active && (
-        <span className="absolute -bottom-1 left-0 h-px w-full rounded-full bg-gold" />
+        <span className="absolute -bottom-1 left-0 h-0.5 w-full rounded-full bg-[#F59E0B]" />
       )}
     </Link>
   );
@@ -177,27 +180,40 @@ function Dropdown({
 }) {
   const pathname = usePathname();
   const open = active === name;
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        if (open) setActive(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open, setActive]);
+
+  const toggle = () => {
+    setActive(open ? null : name);
+  };
 
   return (
-    <div
-      className="relative"
-      onMouseEnter={() => setActive(name)}
-      onMouseLeave={() => setActive(null)}
-    >
+    <div ref={ref} className="relative">
       <button
-        className={`relative flex items-center gap-1 text-sm transition ${
-          groupActive ? "text-gold" : "text-cream/80 hover:text-gold"
+        onClick={toggle}
+        type="button"
+        className={`relative flex items-center gap-1 text-sm font-600 transition outline-none ${
+          groupActive ? "text-[#F59E0B]" : "text-[#FFF8E7]/85 hover:text-[#F59E0B]"
         }`}
       >
         {name}
         <span className={`text-xs transition-transform duration-200 ${open ? "rotate-180" : ""}`}>▾</span>
         {groupActive && (
-          <span className="absolute -bottom-1 left-0 h-px w-[calc(100%-10px)] rounded-full bg-gold" />
+          <span className="absolute -bottom-1 left-0 h-0.5 w-[calc(100%-10px)] rounded-full bg-[#F59E0B]" />
         )}
       </button>
       <div
-        className={`absolute left-0 top-full w-56 rounded-xl border border-gold/15 bg-midnight/95 p-2 shadow-2xl backdrop-blur-md transition-all duration-300 ${
-          open ? "opacity-100 translate-y-2 pointer-events-auto" : "opacity-0 translate-y-0 pointer-events-none"
+        className={`absolute left-0 top-full mt-3 w-56 rounded-xl border border-[#D97706]/30 bg-[#1F0A02]/98 p-2 shadow-2xl backdrop-blur-md transition-all duration-300 ${
+          open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"
         }`}
       >
         {items.map((i) => {
@@ -206,14 +222,15 @@ function Dropdown({
             <Link
               key={i.label}
               href={i.href}
+              onClick={() => setActive(null)}
               className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm transition ${
                 itemActive
-                  ? "bg-white/10 text-gold font-600"
-                  : "text-cream/85 hover:bg-white/5 hover:text-gold"
+                  ? "bg-[#D97706]/20 text-[#F59E0B] font-600"
+                  : "text-[#FFF8E7]/90 hover:bg-white/5 hover:text-[#F59E0B]"
               }`}
             >
               {i.label}
-              {itemActive && <span className="h-1.5 w-1.5 rounded-full bg-gold" />}
+              {itemActive && <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B]" />}
             </Link>
           );
         })}

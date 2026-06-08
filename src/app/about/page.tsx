@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "About — New Delhi Global Youth Summit 2026",
+  title: "About — New Delhi Global Youth Summit 4.0",
   description: "A two-day youth diplomacy summit bringing together students from across India and beyond to debate the issues that define our era."
 };
 

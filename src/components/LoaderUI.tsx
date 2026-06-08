@@ -64,7 +64,7 @@ export default function LoaderUI() {
             Preparing Summit Experience
           </p>
           <h1 className="font-display text-xl md:text-2xl text-ink font-bold tracking-tight">
-            New Delhi Global Youth Summit 2026
+            New Delhi Global Youth Summit 4.0
           </h1>
         </div>
 

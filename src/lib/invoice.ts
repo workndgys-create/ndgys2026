@@ -1,10 +1,10 @@
 import PDFDocument from "pdfkit";
 import { qrPngBuffer } from "./qr";
 
-const NAVY = "#1A1A3E";
-const GOLD = "#C9A24B";
-const INK = "#10112B";
-const SLATE = "#6B6E8A";
+const DARK_BROWN = "#3B1A0A";
+const SAFFRON   = "#D97706";
+const INK       = "#2C0F04";
+const SLATE     = "#8B6914";
 
 export interface InvoiceData {
   number: string;
@@ -35,10 +35,10 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
     const right = pageW - 50;
 
     // Header band
-    doc.rect(0, 0, pageW, 90).fill(NAVY);
-    doc.fillColor(GOLD).fontSize(20).font("Helvetica-Bold").text("NEW DELHI GLOBAL YOUTH SUMMIT", left, 30);
-    doc.fillColor("#FFFFFF").fontSize(10).font("Helvetica").text("22–23 August 2026 · IIT Delhi, New Delhi", left, 56);
-    doc.fillColor(GOLD).fontSize(22).font("Helvetica-Bold").text("INVOICE", right - 120, 32, { width: 120, align: "right" });
+    doc.rect(0, 0, pageW, 90).fill(DARK_BROWN);
+    doc.fillColor(SAFFRON).fontSize(20).font("Helvetica-Bold").text("NEW DELHI GLOBAL YOUTH SUMMIT 4.0", left, 30);
+    doc.fillColor("#FFE8C8").fontSize(10).font("Helvetica").text("22–23 August 2026 · IIT Delhi, New Delhi", left, 56);
+    doc.fillColor(SAFFRON).fontSize(22).font("Helvetica-Bold").text("INVOICE", right - 120, 32, { width: 120, align: "right" });
 
     // Meta
     let y = 120;
@@ -57,7 +57,7 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
 
     // Table header
     y = 210;
-    doc.rect(left, y, right - left, 26).fill("#F2EFE6");
+    doc.rect(left, y, right - left, 26).fill("#FFF3D6");
     doc.fillColor(INK).font("Helvetica-Bold").fontSize(10)
       .text("Description", left + 12, y + 8)
       .text("Amount", right - 132, y + 8, { width: 120, align: "right" });
@@ -67,7 +67,7 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
     doc.fillColor(INK).font("Helvetica").fontSize(10)
       .text(`Delegate Registration — ${data.trackName}`, left + 12, y + 9, { width: right - left - 160 })
       .text(inr(data.amount), right - 132, y + 9, { width: 120, align: "right" });
-    doc.moveTo(left, y + 30).lineTo(right, y + 30).strokeColor("#E2DDCE").stroke();
+    doc.moveTo(left, y + 30).lineTo(right, y + 30).strokeColor("#D97706").stroke();
 
     // Totals
     y += 44;
@@ -81,7 +81,7 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
     }
     doc.font("Helvetica-Bold").fillColor(INK).fontSize(12)
       .text("Total Paid", right - 252, y, { width: 120, align: "right" })
-      .fillColor(GOLD).text(inr(total), right - 132, y, { width: 120, align: "right" });
+      .fillColor(SAFFRON).text(inr(total), right - 132, y, { width: 120, align: "right" });
 
     // QR + footer
     if (qr) {

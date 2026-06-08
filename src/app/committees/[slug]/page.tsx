@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const t = (await getPublicTracks()).find((x) => x.slug === params.slug);
   if (!t) return { title: "Committee not found" };
-  return { title: `${t.name} — NDGYS 2026`, description: t.agenda };
+  return { title: `${t.name} — NDGYS 4.0`, description: t.agenda };
 }
 
 export default async function CommitteeDetail({ params }: { params: { slug: string } }) {

@@ -77,7 +77,7 @@ export default function TeamPage() {
                       <p className="mt-1 text-[11px] text-slatey">{ROLE_HELP[a.role]}</p>
                     </td>
                     <td className="px-3 py-3">
-                      <button onClick={() => update(a.id, { active: !a.active })} className={`rounded-full px-2.5 py-1 text-xs font-600 ${a.active ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                      <button onClick={() => update(a.id, { active: !a.active })} className={`rounded-full px-2.5 py-1 text-xs font-600 ${a.active ? "bg-[#D97706]/20 text-[#92400E]" : "bg-[#3B1A0A]/10 text-[#3B1A0A]/50"}`}>
                         {a.active ? "Active" : "Disabled"}
                       </button>
                     </td>

@@ -206,7 +206,7 @@ function RegisterInner() {
           <h1 className="font-display text-3xl font-700 text-ink">This track is full</h1>
           <p className="mt-3 text-ink/70">{TRACKS.find((t) => t.slug === track)?.name} has reached capacity. Join the waitlist and we'll notify you if a seat frees up.</p>
           <button onClick={joinWaitlist} className="mt-6 rounded-full bg-gold px-6 py-3 font-600 text-midnight hover:bg-goldlite">Join Waitlist</button>
-          {message && <p className="mt-4 text-sm text-green-700">{message}</p>}
+          {message && <p className="mt-4 text-sm text-[#D97706]">{message}</p>}
           <div className="mt-4"><Link href="/#tracks" className="text-sm text-gold hover:underline">&larr; Choose another track</Link></div>
         </div>
       </Centered>
@@ -303,7 +303,7 @@ function RegisterInner() {
           </div>
 
           {isMinor && (
-            <div className="space-y-3 rounded-xl border border-amber-300 bg-amber-50 p-4">
+            <div className="space-y-3 rounded-xl border border-[#D97706]/40 bg-[#D97706]/10 p-4">
               <p className="text-sm font-600 text-amber-900">You're under 18 — a parent/guardian must consent.</p>
               <div className="grid grid-cols-2 gap-3">
                 <Field name="guardianName" label="Parent / guardian name" errors={errors} />
@@ -370,7 +370,7 @@ function RegisterInner() {
               <input value={promo} onChange={(e) => setPromo(e.target.value.toUpperCase())} placeholder="EARLYBIRD" className="flex-1 rounded-lg border border-ink/15 bg-cream px-3 py-2.5 uppercase outline-none focus:border-gold" />
               <button type="button" onClick={applyPromo} className="rounded-lg border border-ink/15 px-4 text-sm font-600 text-ink hover:border-gold">Apply</button>
             </div>
-            {promoMsg && <p className={`mt-1 text-xs ${discounted != null ? "text-green-700" : "text-red-600"}`}>{promoMsg}</p>}
+            {promoMsg && <p className={`mt-1 text-xs ${discounted != null ? "text-[#D97706]" : "text-red-600"}`}>{promoMsg}</p>}
           </div>
 
           <div className="flex items-center justify-between rounded-lg bg-cream px-4 py-3">

@@ -41,7 +41,7 @@ export default function About() {
 
           <Reveal delay={120} className="space-y-5 text-[15px] leading-relaxed text-ink/80">
             <p>
-              The New Delhi Global Youth Summit 2026 is a youth leadership and diplomacy
+              The New Delhi Global Youth Summit 4.0 is a youth leadership and diplomacy
               conference convened in the heart of the capital — designed from the ground up by a
               team with deep experience across India's most competitive debate and policy circuits.
             </p>

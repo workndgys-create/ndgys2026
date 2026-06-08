@@ -1,22 +1,22 @@
 import PDFDocument from "pdfkit";
 import { qrPngBuffer } from "./qr";
 
-const NAVY = "#1A1A3E";
-const GOLD = "#C9A24B";
-const INK = "#10112B";
-const SLATE = "#6B6E8A";
-const CREAM = "#F7F4EC";
+const DARK_BROWN = "#3B1A0A";
+const SAFFRON    = "#D97706";
+const INK        = "#2C0F04";
+const SLATE      = "#8B6914";
+const CREAM      = "#FFE8C8";
 
-// Committee accent colours for the badge band.
+// Committee accent colours for the badge band — warm Indian heritage palette.
 const TRACK_COLOURS: Record<string, string> = {
-  "global-policy": "#2C2C66",
-  "climate": "#2E7D5B",
-  "technology": "#3A4DB5",
-  "entrepreneurship": "#C9A24B",
-  "human-rights": "#A23B5E",
-  "press": "#5A5A7A",
-  "leadership": "#1A1A3E",
-  "crisis": "#9C2B2B"
+  "global-policy":    "#6B2D0A",  // deep terracotta
+  "climate":          "#2E7D5B",  // forest green (kept — contextually meaningful)
+  "technology":       "#7C3400",  // burnt sienna
+  "entrepreneurship": "#D97706",  // saffron
+  "human-rights":     "#A23B5E",  // heritage rose
+  "press":            "#5A3A28",  // warm leather
+  "leadership":       "#4A2008",  // midnight brown
+  "crisis":           "#9C2B2B"   // deep red
 };
 
 export interface BadgeData {
@@ -33,7 +33,7 @@ const BADGE_W = 100 * MM;
 const BADGE_H = 150 * MM;
 
 async function drawBadge(doc: PDFKit.PDFDocument, x: number, y: number, d: BadgeData) {
-  const accent = (d.trackSlug && TRACK_COLOURS[d.trackSlug]) || GOLD;
+  const accent = (d.trackSlug && TRACK_COLOURS[d.trackSlug]) || SAFFRON;
   const w = BADGE_W;
 
   // Card background
@@ -41,10 +41,10 @@ async function drawBadge(doc: PDFKit.PDFDocument, x: number, y: number, d: Badge
   doc.roundedRect(x, y, BADGE_W, BADGE_H, 10).fill(CREAM);
 
   // Header
-  doc.rect(x, y, w, 70).fill(NAVY);
-  doc.fillColor(GOLD).font("Helvetica-Bold").fontSize(12).text("NEW DELHI GLOBAL", x, y + 16, { width: w, align: "center" });
-  doc.fillColor("#FFFFFF").fontSize(12).text("YOUTH SUMMIT 2026", x, y + 32, { width: w, align: "center" });
-  doc.fillColor("rgba(255,255,255,0.7)").font("Helvetica").fontSize(8).text("22–23 August 2026 · IIT Delhi", x, y + 50, { width: w, align: "center" });
+  doc.rect(x, y, w, 70).fill(DARK_BROWN);
+  doc.fillColor(SAFFRON).font("Helvetica-Bold").fontSize(12).text("NEW DELHI GLOBAL", x, y + 16, { width: w, align: "center" });
+  doc.fillColor(CREAM).fontSize(12).text("YOUTH SUMMIT 4.0", x, y + 32, { width: w, align: "center" });
+  doc.fillColor("rgba(255,232,200,0.7)").font("Helvetica").fontSize(8).text("22–23 August 2026 · IIT Delhi", x, y + 50, { width: w, align: "center" });
 
   // Accent band
   doc.rect(x, y + 70, w, 8).fill(accent);
@@ -71,7 +71,7 @@ async function drawBadge(doc: PDFKit.PDFDocument, x: number, y: number, d: Badge
   doc.fillColor(SLATE).font("Helvetica").fontSize(7).text("Scan at check-in · DELEGATE", x + 16, y + 330, { width: w - 32, align: "center" });
 
   // Border
-  doc.roundedRect(x, y, BADGE_W, BADGE_H, 10).lineWidth(1).strokeColor("#E2DDCE").stroke();
+  doc.roundedRect(x, y, BADGE_W, BADGE_H, 10).lineWidth(1).strokeColor("#D97706").stroke();
   doc.restore();
 }
 

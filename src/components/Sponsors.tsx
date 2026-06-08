@@ -6,7 +6,7 @@ import Reveal from "./Reveal";
 export default async function Sponsors() {
   const [items, grievanceEmail] = await Promise.all([getPublicSponsors(), getSetting("safety.grievanceEmail")]);
   // Always render the section so the "partner with us" CTA is visible even before sponsors are added.
-  const partnerMail = `mailto:partnerships@nesummit.in?subject=Partnership%20enquiry%20%E2%80%94%20NDGYS%202026`;
+  const partnerMail = `mailto:partnerships@nesummit.in?subject=Partnership%20enquiry%20%E2%80%94%20NDGYS%204.0`;
   return (
     <section id="sponsors" className="bg-paper py-24">
       <div className="mx-auto max-w-6xl px-5">

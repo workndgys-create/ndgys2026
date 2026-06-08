@@ -64,7 +64,7 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-ink text-cream">
+    <footer className="relative overflow-hidden bg-[#2A1005] text-cream">
       <div className="mx-auto max-w-6xl px-5 pt-16">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           {/* brand column */}
@@ -72,7 +72,7 @@ export default function Footer() {
             <Link href="/" className="inline-block">
               <img
                 src="/NDGYS26.png"
-                alt="NDGYS 2026 Logo"
+                alt="NDGYS 4.0 Logo"
                 className="h-16 w-auto object-contain md:h-20"
               />
             </Link>
@@ -122,7 +122,7 @@ export default function Footer() {
         </p>
       </div>
 
-      <div className="border-t border-white/10">
+      <div className="border-t border-[#D97706]/20">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-6 text-xs text-cream/50 sm:flex-row">
           <p>© 2026 New Delhi Global Youth Summit · All Rights Reserved</p>
           <div className="flex gap-5">
@@ -137,7 +137,7 @@ export default function Footer() {
       <a
         href="https://wa.me/919650058469"
         aria-label="Chat on WhatsApp"
-        className="fixed bottom-5 right-5 z-40 flex h-13 w-13 items-center justify-center rounded-full bg-green-500 p-3.5 text-white shadow-lg shadow-green-900/30 transition hover:bg-green-400 hover:scale-110 active:scale-95"
+        className="fixed bottom-5 right-5 z-40 flex h-13 w-13 items-center justify-center rounded-full bg-[#D97706] p-3.5 text-[#1F0A02] shadow-lg shadow-[#D97706]/30 transition hover:bg-[#F59E0B] hover:scale-110 active:scale-95 border border-[#1F0A02]/20"
       >
         {/* WhatsApp icon */}
         <svg viewBox="0 0 16 16" fill="currentColor" className="h-6 w-6" aria-hidden>
@@ -151,11 +151,11 @@ export default function Footer() {
 function FooterCol({ title, links }: { title: string; links: { href: string; label: string }[] }) {
   return (
     <div>
-      <h4 className="text-sm font-600 uppercase tracking-wider text-goldlite">{title}</h4>
+      <h4 className="text-sm font-600 uppercase tracking-wider text-[#F59E0B]">{title}</h4>
       <ul className="mt-4 space-y-2 text-sm text-cream/70">
         {links.map((l) => (
           <li key={l.label}>
-            <Link href={l.href} className="hover:text-gold transition">{l.label}</Link>
+            <Link href={l.href} className="text-cream/70 hover:text-[#F59E0B] transition">{l.label}</Link>
           </li>
         ))}
       </ul>

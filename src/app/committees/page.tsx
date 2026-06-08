@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Committees — New Delhi Global Youth Summit 2026",
+  title: "Committees — New Delhi Global Youth Summit 4.0",
   description: "Eight committees spanning policy, climate, technology, human rights and crisis simulation. Find your track and reserve a seat."
 };
 

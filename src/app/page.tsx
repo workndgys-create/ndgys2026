@@ -71,27 +71,27 @@ export default async function HomePage() {
             </div>
             <div className="mx-auto max-w-6xl px-5 py-6">
               <div className="grid gap-6 md:grid-cols-3">
-                <div className="rounded-lg border border-cream p-6 bg-white">
-                  <h4 className="text-lg font-semibold">By Metro</h4>
+                <div className="rounded-lg border border-gold/20 p-6 bg-paper">
+                  <h4 className="text-lg font-semibold text-ink">By Metro</h4>
                   <p className="mt-3 text-ink/80">Nearest Metro: IIT Delhi (Magenta Line), ~1 km. Hauz Khas (Yellow/Magenta interchange) is ~2.5 km.</p>
                 </div>
 
-                <div className="rounded-lg border border-cream p-6 bg-white">
-                  <h4 className="text-lg font-semibold">By Air</h4>
+                <div className="rounded-lg border border-gold/20 p-6 bg-paper">
+                  <h4 className="text-lg font-semibold text-ink">By Air</h4>
                   <p className="mt-3 text-ink/80">Indira Gandhi International Airport (DEL) is ~15 km / 35-45 min by cab.</p>
                 </div>
 
-                <div className="rounded-lg border border-cream p-6 bg-white">
-                  <h4 className="text-lg font-semibold">Parking & on-site</h4>
+                <div className="rounded-lg border border-gold/20 p-6 bg-paper">
+                  <h4 className="text-lg font-semibold text-ink">Parking & on-site</h4>
                   <p className="mt-3 text-ink/80">On-campus visitor parking is available; carpooling and metro are recommended on event days.</p>
                 </div>
               </div>
 
-              <div className="mt-6 rounded-lg border border-cream bg-amber-50 p-4 text-ink/80">
+              <div className="mt-6 rounded-lg border border-gold/30 bg-gold/10 p-4 text-ink/80 font-600">
                 Carry a government photo ID and your delegate QR for entry. Gates open 60 minutes before the first session.
               </div>
 
-              <div className="mt-6 rounded-lg border border-dashed border-cream p-6 bg-white">
+              <div className="mt-6 rounded-lg border border-dashed border-gold/20 p-6 bg-paper">
                 <p className="text-ink/80">Recommended hotels and travel options will be published here soon. Outstation and international delegates — check back closer to the event for curated hotel and travel partners.</p>
               </div>
 

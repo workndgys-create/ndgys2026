@@ -69,7 +69,7 @@ export default function AdminShell({ children, title }: { children: React.ReactN
           <Link href="/admin" className="flex items-center gap-2">
             <img
               src="/NDGYS26.png"
-              alt="NDGYS 2026 Logo"
+              alt="NDGYS 4.0 Logo"
               className="h-10 w-auto object-contain md:h-12"
             />
             <span className="text-xs font-400 text-cream/50">Admin</span>
@@ -126,8 +126,8 @@ export const KpiCard = ({ label, value, sub }: { label: string; value: React.Rea
   </div>
 );
 export const StatusPill = ({ s }: { s: string }) => {
-  const map: Record<string, string> = { PAID: "bg-green-100 text-green-700", PENDING: "bg-amber-100 text-amber-700", CANCELLED: "bg-red-100 text-red-700" };
-  return <span className={`inline-block rounded-full px-2.5 py-1 text-xs font-600 ${map[s] || "bg-gray-100 text-gray-600"}`}>{s}</span>;
+  const map: Record<string, string> = { PAID: "bg-[#D97706]/20 text-[#92400E]", PENDING: "bg-[#F59E0B]/20 text-[#B45309]", CANCELLED: "bg-red-100 text-red-700" };
+  return <span className={`inline-block rounded-full px-2.5 py-1 text-xs font-600 ${map[s] || "bg-[#3B1A0A]/10 text-[#3B1A0A]/60"}`}>{s}</span>;
 };
 export const Panel = ({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) => (
   <section className="rounded-2xl border border-ink/10 bg-paper p-5">

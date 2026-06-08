@@ -14,7 +14,7 @@ export default function WaitlistForm({ trackSlug }: { trackSlug: string }) {
     });
     setState(res.ok ? "ok" : "error");
   }
-  if (state === "ok") return <p className="mt-4 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">You're on the waitlist — watch your inbox.</p>;
+  if (state === "ok") return <p className="mt-4 rounded-lg bg-[#D97706]/10 px-4 py-3 text-sm text-[#92400E]">You're on the waitlist — watch your inbox.</p>;
   return (
     <form onSubmit={submit} className="mt-4 flex flex-col gap-3 sm:flex-row">
       <input name="fullName" required placeholder="Full name" className="flex-1 rounded-lg border border-ink/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-gold" />

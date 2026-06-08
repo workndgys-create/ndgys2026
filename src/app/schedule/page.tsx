@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Schedule — New Delhi Global Youth Summit 2026",
+  title: "Schedule — New Delhi Global Youth Summit 4.0",
   description: "Two days of committee sessions, keynotes and ceremonies. 22–23 August 2026, IIT Delhi."
 };
 

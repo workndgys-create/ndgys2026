@@ -203,7 +203,7 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
       </div>
 
       {isMinor && (
-        <div className="space-y-3 rounded-xl border border-amber-300 bg-amber-50 p-4">
+        <div className="space-y-3 rounded-xl border border-[#D97706]/40 bg-[#D97706]/10 p-4">
           <p className="text-sm font-600 text-amber-900">You're under 18 — a parent/guardian must consent.</p>
           <div className="grid grid-cols-2 gap-3">
             <Field name="guardianName" label="Parent / guardian name" errors={errors} />

@@ -18,7 +18,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <Link href="/dashboard" className="flex items-center gap-2">
           <img
             src="/NDGYS26.png"
-            alt="NDGYS 2026 Logo"
+            alt="NDGYS 4.0 Logo"
             className="h-10 w-auto object-contain md:h-12"
           />
           <span className="text-sm font-400 text-cream/60">Delegate</span>

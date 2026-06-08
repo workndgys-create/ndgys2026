@@ -50,12 +50,12 @@ export default function SettingsPage() {
 
   return (
     <AdminShell title="Settings">
-      <Panel title="Live switches" action={saved ? <span className="text-sm text-green-700">Saved ✓</span> : null}>
+      <Panel title="Live switches" action={saved ? <span className="text-sm text-[#D97706]">Saved ✓</span> : null}>
         {!settings ? (
           <p className="text-slatey">Loading…</p>
         ) : (
           <div className="space-y-4">
-            {readOnly && <p className="rounded-lg bg-amber-50 px-4 py-2 text-sm text-amber-800">Read-only — only a super-admin can change settings.</p>}
+            {readOnly && <p className="rounded-lg bg-[#D97706]/10 px-4 py-2 text-sm text-[#92400E]">Read-only — only a super-admin can change settings.</p>}
             {TOGGLES.map((t) => {
               const on = settings[t.key] === "true";
               return (
@@ -67,9 +67,9 @@ export default function SettingsPage() {
                   <button
                     onClick={() => toggle(t.key)} disabled={readOnly}
                     aria-pressed={on}
-                    className={`relative h-7 w-12 shrink-0 rounded-full transition ${on ? "bg-green-600" : "bg-ink/20"} ${readOnly ? "opacity-50" : ""}`}
+                    className={`relative h-7 w-12 shrink-0 rounded-full transition ${on ? "bg-[#D97706]" : "bg-ink/20"} ${readOnly ? "opacity-50" : ""}`}
                   >
-                    <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white transition ${on ? "left-[22px]" : "left-0.5"}`} />
+                    <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-cream transition ${on ? "left-[22px]" : "left-0.5"}`} />
                   </button>
                 </div>
               );
@@ -78,10 +78,10 @@ export default function SettingsPage() {
         )}
       </Panel>
 
-      <Panel title="Venue, travel & safety" action={saved ? <span className="text-sm text-green-700">Saved ✓</span> : null}>
+      <Panel title="Venue, travel & safety" action={saved ? <span className="text-sm text-[#D97706]">Saved ✓</span> : null}>
         {!settings ? <p className="text-slatey">Loading…</p> : (
           <div className="space-y-4">
-            {readOnly && <p className="rounded-lg bg-amber-50 px-4 py-2 text-sm text-amber-800">Read-only — only a super-admin can change settings.</p>}
+            {readOnly && <p className="rounded-lg bg-[#D97706]/10 px-4 py-2 text-sm text-[#92400E]">Read-only — only a super-admin can change settings.</p>}
             <p className="text-sm text-slatey">These power the public <b>/venue</b> page and the <b>/code-of-conduct</b> grievance contact.</p>
             {TEXT_SETTINGS.map((t) => (
               <div key={t.key}>

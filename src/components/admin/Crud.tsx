@@ -107,7 +107,7 @@ export default function CrudManager({
                   {columns.map((c) => <td key={c.key} className="px-3 py-2.5 align-top">{c.render ? c.render(row) : String(row[c.key] ?? "")}</td>)}
                   {hasPublished && (
                     <td className="px-3 py-2.5">
-                      <button onClick={() => togglePublished(row)} className={`rounded-full px-2.5 py-1 text-xs font-600 ${row.published ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                      <button onClick={() => togglePublished(row)} className={`rounded-full px-2.5 py-1 text-xs font-600 ${row.published ? "bg-[#D97706]/20 text-[#92400E]" : "bg-[#3B1A0A]/10 text-[#3B1A0A]/50"}`}>
                         {row.published ? "Published" : "Hidden"}
                       </button>
                     </td>
