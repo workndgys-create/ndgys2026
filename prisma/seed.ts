@@ -88,18 +88,20 @@ async function main() {
   // Clear any previously-seeded sample competitions so the lineup matches the current roster
   await prisma.competition.deleteMany({ where: { slug: { in: ["group-dance", "battle-of-bands"] } } });
 
-  const competitions = [
-    { slug: "best-delegate", title: "Best Delegate Awards", category: "Recognition", summary: "Awarded across every committee to delegates who lead the floor.", prize: "Trophy + certificate", published: true, order: 0, format: "SOLO", registrationOpen: false },
-    { slug: "bandish", title: "Bandish", category: "Cultural", summary: "A team music showdown — bring your ensemble and perform.", prize: "Rs 25,000", published: true, order: 1, format: "GROUP", feeGroup: 1500, minTeam: 2, maxTeam: 5, registrationOpen: true },
-    { slug: "shaam-e-mehfil", title: "Shaam-e-Mehfil", category: "Cultural", summary: "A solo dance showcase.", prize: "Rs 10,000", published: true, order: 2, format: "SOLO", feeSolo: 350, registrationOpen: true, questionsText: "What is your dance form? (short description)" },
-    { slug: "solo-singing", title: "Solo Singing", category: "Cultural", summary: "Take the stage for a three-minute solo performance.", prize: "Rs 10,000", published: true, order: 3, format: "SOLO", feeSolo: 300, registrationOpen: true },
-    { slug: "stock-sense", title: "Stock Sense", category: "Finance", summary: "A solo simulation testing your market instincts.", prize: "Rs 15,000", published: true, order: 4, format: "SOLO", feeSolo: 400, registrationOpen: true },
-    { slug: "greenovation-showdown", title: "Greenovation Showdown", category: "Sustainability", summary: "Team pitch battle for the best sustainability innovation.", prize: "Rs 25,000", published: true, order: 5, format: "GROUP", feeGroup: 1200, minTeam: 2, maxTeam: 5, registrationOpen: true, questionsText: "What is your pitch idea?" },
-    { slug: "spark-tank", title: "Spark Tank", category: "Business", summary: "Pitch your startup to a panel of investors, Shark-Tank style.", prize: "Rs 30,000", published: true, order: 6, format: "GROUP", feeGroup: 1500, minTeam: 2, maxTeam: 5, registrationOpen: true, questionsText: "What is your pitch idea?" },
-    { slug: "ipl-auction", title: "IPL Auction", category: "Strategy", summary: "Build your dream XI in a fast-paced team auction.", prize: "Rs 20,000", published: true, order: 7, format: "GROUP", feeGroup: 1500, minTeam: 2, maxTeam: 5, registrationOpen: true },
-    { slug: "film-making", title: "Film Making", category: "Creative", summary: "A short-film challenge. Details and registration coming soon.", prize: "Rs 30,000", published: true, order: 8, format: "GROUP", minTeam: 2, maxTeam: 5, registrationOpen: false },
-    { slug: "marketing-mayhem", title: "Marketing Mayhem", category: "Business", summary: "Pitch a campaign — enter solo or as a team.", prize: "Rs 20,000", published: true, order: 9, format: "BOTH", feeSolo: 400, feeGroup: 1500, minTeam: 2, maxTeam: 5, registrationOpen: true }
-  ];
+const competitions = [
+  { slug: "best-delegate", title: "Best Delegate Awards", category: "Recognition", summary: "Awarded across every committee to delegates who lead the floor.", prize: "Trophy + certificate", published: true, order: 0, format: "SOLO", registrationOpen: false },
+  { slug: "shaam-e-mehfil", title: "Shaam-e-Mehfil", category: "Cultural", summary: "A solo showcase — classical or contemporary.", prize: "Rs 10,000", published: true, order: 1, format: "SOLO", feeSolo: 179900, registrationOpen: true, questionsText: "What is your performance form?" },
+  { slug: "sur-aur-taal", title: "Sur Aur Taal", category: "Cultural", summary: "A solo singing showcase.", prize: "Rs 10,000", published: true, order: 2, format: "SOLO", feeSolo: 179900, registrationOpen: true },
+  { slug: "nazarana", title: "Nazarana", category: "Cultural", summary: "A team cultural performance showcase.", prize: "Rs 30,000", published: true, order: 3, format: "GROUP", feeGroup: 479900, minTeam: 6, maxTeam: 6, registrationOpen: true },
+  { slug: "beat-breakout", title: "Beat Breakout", category: "Cultural", summary: "A high-energy team dance battle.", prize: "Rs 20,000", published: true, order: 4, format: "GROUP", feeGroup: 399900, minTeam: 8, maxTeam: 8, registrationOpen: true },
+  { slug: "battle-of-bands", title: "Battle of Bands", category: "Cultural", summary: "A team music battle — bring your band and perform.", prize: "Rs 25,000", published: true, order: 5, format: "GROUP", feeGroup: 399900, minTeam: 8, maxTeam: 8, registrationOpen: true },
+  { slug: "stock-sense", title: "Stock Sense", category: "Finance", summary: "A solo simulation testing your market instincts.", prize: "Rs 15,000", published: true, order: 6, format: "SOLO", feeSolo: 199900, registrationOpen: true },
+  { slug: "greenovation-showdown", title: "Greenovation Showdown", category: "Sustainability", summary: "Team pitch battle for the best sustainability innovation.", prize: "Rs 25,000", published: true, order: 7, format: "BOTH", feeSolo: 179900, feeGroup: 399900, minTeam: 2, maxTeam: 5, registrationOpen: true, questionsText: "What is your pitch idea?" },
+  { slug: "spark-tank", title: "Spark Tank", category: "Business", summary: "Pitch your startup to a panel of investors, Shark-Tank style.", prize: "Rs 30,000", published: true, order: 8, format: "BOTH", feeSolo: 179900, feeGroup: 399900, minTeam: 2, maxTeam: 5, registrationOpen: true, questionsText: "What is your pitch idea?" },
+  { slug: "marketing-mayhem", title: "Marketing Mayhem", category: "Business", summary: "Pitch a campaign — enter solo or as a team.", prize: "Rs 20,000", published: true, order: 9, format: "BOTH", feeSolo: 179900, feeGroup: 399900, minTeam: 2, maxTeam: 5, registrationOpen: true },
+  { slug: "ipl-auction", title: "IPL Auction", category: "Strategy", summary: "Build your dream XI in a fast-paced team auction.", prize: "Rs 20,000", published: true, order: 10, format: "GROUP", feeGroup: 439900, minTeam: 2, maxTeam: 5, registrationOpen: true },
+  { slug: "film-making", title: "Film Making", category: "Creative", summary: "A short-film challenge. Details and registration coming soon.", prize: "Rs 30,000", published: true, order: 11, format: "GROUP", minTeam: 2, maxTeam: 5, registrationOpen: false },
+];
   for (const c of competitions) await prisma.competition.upsert({ where: { slug: c.slug }, update: c, create: c });
   console.log("OK Seeded competitions (incl. solo/group cultural events)");
 

@@ -42,20 +42,19 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 z-50 transition-all duration-300 border-b bg-[#1F0A02]/90 backdrop-blur-md ${
-        isHome ? "top-8" : "top-0"
-      } ${
+      className={`fixed inset-x-0 top-8 z-50 transition-all duration-300 border-b bg-[#1F0A02] ${
         scrolled
           ? "shadow-lg shadow-[#1F0A02]/30 border-[#D97706]/40 h-24"
           : "border-[#D97706]/20 h-28"
       }`}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2">
-        <Link href="/" className="inline-block group">
+      <nav className="mx-auto max-w-6xl px-5 flex items-center justify-between h-full">
+        {/* Logo left */}
+        <Link href="/" className="inline-block group shrink-0">
           <img
-            src="/NDGYS26.png"
+            src="/logos/IMG_7820_textwhite.png"
             alt="Global Youth Summit 2026"
-            className="h-[80px] md:h-[105px] w-auto object-contain transition-all duration-300 group-hover:brightness-130 group-hover:drop-shadow-lg filter saturate-120 contrast-110 brightness-115"
+            className="h-24 md:h-28 w-auto object-contain transition-all duration-300 group-hover:brightness-130 group-hover:drop-shadow-lg filter saturate-120 contrast-110 brightness-115"
           />
         </Link>
 
