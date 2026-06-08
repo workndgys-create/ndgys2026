@@ -104,6 +104,7 @@ model AdminUser {
   email        String    @unique
   name         String?
   passwordHash String
+  role String @default("VOLUNTEER")
   role         AdminRole @default(ADMIN)
   active            Boolean   @default(true)
   lastLoginAt       DateTime?
