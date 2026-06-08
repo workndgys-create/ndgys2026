@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   if (reg.status === "PAID") return NextResponse.json({ error: "Already paid" }, { status: 409 });
 
   const order = await createCashfreeOrder({
-    orderId: reg.id, amountPaise: reg.amount,
+    orderId: reg.id, amountRupees: reg.amount,
     customer: { id: reg.id, name: reg.fullName, email: reg.email, phone: reg.phone },
     returnUrl: `${env.NEXT_PUBLIC_BASE_URL}/dashboard?order={order_id}`,
     notifyUrl: `${env.NEXT_PUBLIC_BASE_URL}/api/payment/cashfree-webhook`

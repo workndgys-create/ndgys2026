@@ -110,7 +110,7 @@ export default function RegistrationsPage() {
                 </Td>
                 <Td className="text-slatey">{r.email}<div className="text-xs">{r.phone}</div></Td>
                 <Td>{r.trackName}</Td>
-                <Td>₹{(r.amount / 100).toLocaleString("en-IN")}</Td>
+                <Td>₹{r.amount.toLocaleString("en-IN")}</Td>
                 <Td><span className="text-xs uppercase tracking-wide text-slatey">{r.source}</span></Td>
                 <Td><StatusPill s={r.status} /></Td>
                 <Td>

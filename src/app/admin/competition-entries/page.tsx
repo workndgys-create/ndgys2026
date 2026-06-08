@@ -64,7 +64,7 @@ export default function Page() {
                           <ul className="mt-1 list-disc pl-4 text-xs text-ink/70">{members.map((m, i) => <li key={i}>{m.name}{m.age ? ` (${m.age})` : ""}</li>)}</ul>
                         )}
                       </td>
-                      <td className="px-3 py-3 tabular-nums">{(e.amount / 100).toLocaleString("en-IN")}</td>
+                      <td className="px-3 py-3 tabular-nums">{e.amount.toLocaleString("en-IN")}</td>
                       <td className="px-3 py-3"><StatusPill s={e.status} /></td>
                       <td className="px-3 py-3 text-xs text-slatey">{new Date(e.createdAt).toLocaleDateString("en-IN")}</td>
                     </tr>

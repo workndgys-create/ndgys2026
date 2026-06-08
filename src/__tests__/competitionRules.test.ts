@@ -3,17 +3,17 @@ import { feeForParticipation, validateTeam } from "@/lib/competitionRules";
 
 describe("feeForParticipation", () => {
   it("solo competition: solo fee, no group", () => {
-    expect(feeForParticipation({ format: "SOLO", feeSolo: 30000 }, "SOLO")).toBe(30000);
-    expect(feeForParticipation({ format: "SOLO", feeSolo: 30000 }, "GROUP")).toBeNull();
+    expect(feeForParticipation({ format: "SOLO", feeSolo: 300 }, "SOLO")).toBe(300);
+    expect(feeForParticipation({ format: "SOLO", feeSolo: 300 }, "GROUP")).toBeNull();
   });
   it("group competition: group fee, no solo", () => {
-    expect(feeForParticipation({ format: "GROUP", feeGroup: 120000 }, "GROUP")).toBe(120000);
-    expect(feeForParticipation({ format: "GROUP", feeGroup: 120000 }, "SOLO")).toBeNull();
+    expect(feeForParticipation({ format: "GROUP", feeGroup: 1200 }, "GROUP")).toBe(1200);
+    expect(feeForParticipation({ format: "GROUP", feeGroup: 1200 }, "SOLO")).toBeNull();
   });
   it("both: each side returns its own fee", () => {
-    const c = { format: "BOTH" as const, feeSolo: 40000, feeGroup: 150000 };
-    expect(feeForParticipation(c, "SOLO")).toBe(40000);
-    expect(feeForParticipation(c, "GROUP")).toBe(150000);
+    const c = { format: "BOTH" as const, feeSolo: 400, feeGroup: 1500 };
+    expect(feeForParticipation(c, "SOLO")).toBe(400);
+    expect(feeForParticipation(c, "GROUP")).toBe(1500);
   });
 });
 

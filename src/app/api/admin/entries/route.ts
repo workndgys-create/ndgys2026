@@ -96,7 +96,7 @@ export async function GET() {
             .reduce(
               (sum: number, r: any) => sum + (r.amount ?? 0),
               0
-            ) / 100,
+            ),
       });
     }
 
@@ -115,7 +115,7 @@ export async function GET() {
         paid,
         pending,
         cancelled,
-        revenueInr: revenue / 100,
+        revenueInr: revenue,
         todaySignups,
         unreadMessages,
         total: regs.length,

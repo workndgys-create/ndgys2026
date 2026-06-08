@@ -19,7 +19,7 @@ export default function Page() {
         hasPublished={false}
         columns={[
           { key: "code", label: "Code", render: (r) => <span className="font-mono font-600 text-ink">{r.code}</span> },
-          { key: "kind", label: "Type", render: (r) => (r.kind === "FLAT" ? `₹${(r.value / 100).toLocaleString("en-IN")} off` : `${r.value}% off`) },
+          { key: "kind", label: "Type", render: (r) => (r.kind === "FLAT" ? `₹${r.value.toLocaleString("en-IN")} off` : `${r.value}% off`) },
           { key: "uses", label: "Used", render: (r) => `${r.uses}${r.maxUses ? ` / ${r.maxUses}` : ""}` },
           { key: "appliesTo", label: "Scope", render: (r) => TRACK_OPTIONS.find((t) => t.value === (r.appliesTo || ""))?.label || "All" },
           { key: "active", label: "Active", render: (r) => (r.active ? "Yes" : "No") },
@@ -27,8 +27,8 @@ export default function Page() {
         ]}
         fields={[
           { name: "code", label: "Code (e.g. EARLYBIRD)", required: true },
-          { name: "kind", label: "Discount type", type: "select", options: [{ value: "PERCENT", label: "Percent (%)" }, { value: "FLAT", label: "Flat (paise off)" }] },
-          { name: "value", label: "Value (percent 0-100, or paise off e.g. 50000 = ₹500)", type: "number", required: true },
+          { name: "kind", label: "Discount type", type: "select", options: [{ value: "PERCENT", label: "Percent (%)" }, { value: "FLAT", label: "Flat (Rs off)" }] },
+          { name: "value", label: "Value (percent 0-100, or rupees off e.g. 500 = ₹500)", type: "number", required: true },
           { name: "maxUses", label: "Max uses (blank = unlimited)", type: "number" },
           { name: "appliesTo", label: "Limit to committee", type: "select", options: TRACK_OPTIONS },
           { name: "active", label: "Active", type: "select", options: [{ value: "true", label: "Yes" }, { value: "false", label: "No" }] },

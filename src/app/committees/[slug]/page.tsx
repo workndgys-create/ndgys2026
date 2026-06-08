@@ -36,7 +36,7 @@ export default async function CommitteeDetail({ params }: { params: { slug: stri
             <p className="mt-2 text-ink/75">{t.agenda}</p>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              <Stat label="Delegate fee" value={`₹${(t.fee / 100).toLocaleString("en-IN")}`} />
+              <Stat label="Delegate fee" value={`₹${t.fee.toLocaleString("en-IN")}`} />
               <Stat label="Capacity" value={String(t.capacity)} />
               <Stat label="Seats left" value={t.full ? "Full" : String(t.seatsRemaining)} />
             </div>

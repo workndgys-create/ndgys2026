@@ -219,8 +219,8 @@ model Competition {
   format          String   @default("SOLO") // SOLO | GROUP | BOTH
   minTeam         Int?
   maxTeam         Int?
-  feeSolo         Int?     // paise
-  feeGroup        Int?     // paise (per team)
+  feeSolo         Int?     // rupees
+  feeGroup        Int?     // rupees (per team)
   registrationOpen Boolean @default(true)
   questionsText    String?  // newline-separated custom questions for the entry form
   createdAt   DateTime @default(now())
@@ -277,7 +277,7 @@ model CompetitionRegistration {
   institution       String?
   members           String   @default("[]") // JSON array of { name, age? }
   teamSize          Int      @default(1)
-  amount            Int      // paise
+  amount            Int      // rupees
   status            String   @default("PENDING")
   age               Int?
   city              String?
@@ -303,7 +303,7 @@ model PromoCode {
   id         String    @id @default(cuid())
   code       String    @unique
   kind       String    @default("PERCENT") // PERCENT | FLAT
-  value      Int       // percent (0-100) or paise off
+  value      Int       // percent (0-100) or rupees off
   maxUses    Int?
   uses       Int       @default(0)
   appliesTo  String?   // optional track slug filter; null = all committees
@@ -320,7 +320,7 @@ model Delegation {
   phone             String
   institution       String?
   memberCount       Int
-  amount            Int      // total paise (after discount)
+  amount            Int      // total rupees (after discount)
   promoCode         String?
   consentAccepted   Boolean  @default(false)
   status            String   @default("PENDING") // PENDING | PAID | CANCELLED

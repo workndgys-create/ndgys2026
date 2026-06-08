@@ -120,7 +120,7 @@ function RegisterInner() {
     if (!promo.trim()) { setDiscounted(null); return; }
     const res = await fetch("/api/promo/validate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: promo, amount: fee, trackSlug: track }) });
     const d = await res.json().catch(() => ({}));
-    if (d.ok) { setDiscounted(d.final); setPromoMsg(`Code applied - you save Rs ${(d.discount / 100).toLocaleString("en-IN")}.`); }
+    if (d.ok) { setDiscounted(d.final); setPromoMsg(`Code applied - you save Rs ${d.discount.toLocaleString("en-IN")}.`); }
     else { setDiscounted(null); setPromoMsg("That code can't be applied."); }
   }
 
@@ -408,8 +408,8 @@ function RegisterInner() {
             <span className="text-sm text-ink/70">Amount payable</span>
             <span className="font-display text-2xl font-700 text-ink">
               {discounted != null && discounted !== fee
-                ? <><span className="mr-2 text-base font-400 text-slatey line-through">Rs {(fee / 100).toLocaleString("en-IN")}</span>Rs {(discounted / 100).toLocaleString("en-IN")}</>
-                : <>Rs {(fee / 100).toLocaleString("en-IN")}</>}
+                ? <><span className="mr-2 text-base font-400 text-slatey line-through">Rs {fee.toLocaleString("en-IN")}</span>Rs {discounted.toLocaleString("en-IN")}</>
+                : <>Rs {fee.toLocaleString("en-IN")}</>}
             </span>
           </div>
 

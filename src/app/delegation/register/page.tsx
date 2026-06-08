@@ -75,7 +75,7 @@ export default function DelegationRegisterPage() {
     if (!promo.trim()) { setDiscount(0); return; }
     const res = await fetch("/api/promo/validate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: promo, amount: subtotal }) });
     const d = await res.json().catch(() => ({}));
-    if (d.ok) { setDiscount(d.discount); setPromoMsg(`Code applied - you save Rs ${(d.discount / 100).toLocaleString("en-IN")}.`); }
+    if (d.ok) { setDiscount(d.discount); setPromoMsg(`Code applied - you save Rs ${d.discount.toLocaleString("en-IN")}.`); }
     else { setDiscount(0); setPromoMsg("That code can't be applied."); }
   }
 
@@ -180,9 +180,9 @@ export default function DelegationRegisterPage() {
           </div>
 
           <div className="rounded-lg bg-cream px-4 py-3">
-            <div className="flex items-center justify-between text-sm text-ink/70"><span>Subtotal ({members.length} delegates)</span><span>Rs {(subtotal / 100).toLocaleString("en-IN")}</span></div>
-            {discount > 0 && <div className="flex items-center justify-between text-sm text-green-700"><span>Discount</span><span>- Rs {(discount / 100).toLocaleString("en-IN")}</span></div>}
-            <div className="mt-2 flex items-center justify-between border-t border-ink/10 pt-2"><span className="text-sm font-600 text-ink">Total payable</span><span className="font-display text-2xl font-700 text-ink">Rs {(total / 100).toLocaleString("en-IN")}</span></div>
+            <div className="flex items-center justify-between text-sm text-ink/70"><span>Subtotal ({members.length} delegates)</span><span>Rs {subtotal.toLocaleString("en-IN")}</span></div>
+            {discount > 0 && <div className="flex items-center justify-between text-sm text-green-700"><span>Discount</span><span>- Rs {discount.toLocaleString("en-IN")}</span></div>}
+            <div className="mt-2 flex items-center justify-between border-t border-ink/10 pt-2"><span className="text-sm font-600 text-ink">Total payable</span><span className="font-display text-2xl font-700 text-ink">Rs {total.toLocaleString("en-IN")}</span></div>
           </div>
 
           <label className="flex items-start gap-2 text-sm text-ink/80">

@@ -3,21 +3,21 @@ import { z } from "zod";
 // Seed catalogue — mirrored into the DB `Track` table by prisma/seed.ts.
 // At runtime, routes read fees/capacity from the DB so admin edits take effect.
 export const TRACKS = [
-  { slug: "global-policy", name: "Global Policy Dialogue", fee: 250000, capacity: 60, difficulty: "Intermediate",
+  { slug: "global-policy", name: "Global Policy Dialogue", fee: 2500, capacity: 60, difficulty: "Intermediate",
     agenda: "Accountability for civilian protection under international humanitarian law and multilateral mechanisms." },
-  { slug: "climate", name: "Climate & Sustainability Forum", fee: 250000, capacity: 50, difficulty: "Intermediate",
+  { slug: "climate", name: "Climate & Sustainability Forum", fee: 2500, capacity: 50, difficulty: "Intermediate",
     agenda: "Financing a just energy transition — balancing growth, equity and the 1.5°C target." },
-  { slug: "technology", name: "Technology & Society Lab", fee: 250000, capacity: 50, difficulty: "Intermediate",
+  { slug: "technology", name: "Technology & Society Lab", fee: 2500, capacity: 50, difficulty: "Intermediate",
     agenda: "Governing artificial intelligence: rights, safety and the digital public square." },
-  { slug: "entrepreneurship", name: "Youth Entrepreneurship Track", fee: 300000, capacity: 40, difficulty: "Beginner",
+  { slug: "entrepreneurship", name: "Youth Entrepreneurship Track", fee: 3000, capacity: 40, difficulty: "Beginner",
     agenda: "Pitch, prototype and pressure-test ventures with founders and investors." },
-  { slug: "human-rights", name: "Human Rights Council", fee: 250000, capacity: 50, difficulty: "Intermediate",
+  { slug: "human-rights", name: "Human Rights Council", fee: 2500, capacity: 50, difficulty: "Intermediate",
     agenda: "Protecting the rights of migrants in enforcement and border policy." },
-  { slug: "press", name: "International Press Corps", fee: 200000, capacity: 30, difficulty: "Beginner",
+  { slug: "press", name: "International Press Corps", fee: 2000, capacity: 30, difficulty: "Beginner",
     agenda: "Reporters, photographers and caricaturists documenting the Summit live." },
-  { slug: "leadership", name: "Leadership & Diplomacy Summit", fee: 300000, capacity: 40, difficulty: "Advanced",
+  { slug: "leadership", name: "Leadership & Diplomacy Summit", fee: 3000, capacity: 40, difficulty: "Advanced",
     agenda: "High-table diplomacy simulation on a live, evolving geopolitical crisis." },
-  { slug: "crisis", name: "Continuous Crisis Committee", fee: 350000, capacity: 25, difficulty: "Advanced",
+  { slug: "crisis", name: "Continuous Crisis Committee", fee: 3500, capacity: 25, difficulty: "Advanced",
     agenda: "Classified. A continuous, fast-moving crisis that rewards quick thinking." }
 ] as const;
 
