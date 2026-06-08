@@ -112,7 +112,7 @@ export default function DelegationRegisterPage() {
         <div className="text-center">
           <p className="font-display text-5xl">&#127881;</p>
           <h1 className="mt-4 font-display text-4xl font-700 text-ink">Delegation confirmed!</h1>
-          <p className="mt-3 max-w-md text-ink/70">Each delegate will receive their own ticket by email and can sign in to their dashboard. Portfolios can be picked by each delegate or assigned by your coordinator.</p>
+          <p className="mt-3 max-w-md text-ink/70">Each delegate will receive their own ticket by email and can sign in to their dashboard using their registered email. Any portfolios selected during registration are assigned automatically.</p>
           <Link href="/" className="mt-8 inline-block rounded-full bg-midnight px-6 py-3 font-600 text-cream hover:bg-royal">Home</Link>
         </div>
       </main>

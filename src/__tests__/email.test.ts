@@ -7,9 +7,10 @@ describe("email", () => {
     expect(res.sent).toBe(false);
   });
   it("templates render the dynamic values", () => {
-    const html = templates.registrationPaid("Aanya", "Climate Forum", "NDGYS-2026-AB12", 250000, "data:image/png;base64,AAA");
+    const html = templates.registrationPaid("Aanya", "Climate Forum", "NDGYS-2026-AB12", 2500, "data:image/png;base64,AAA", "https://example.com/dashboard/login?token=abc");
     expect(html).toContain("Aanya");
     expect(html).toContain("NDGYS-2026-AB12");
     expect(html).toContain("Climate Forum");
+    expect(html).toContain("Open Delegate Dashboard");
   });
 });
