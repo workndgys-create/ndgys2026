@@ -13,7 +13,23 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     const body = await req.json().catch(() => ({}));
     const data: Record<string, unknown> = {};
-    if (typeof body.role === "string" && ["SUPER_ADMIN", "ADMIN", "VIEWER"].includes(body.role)) data.role = body.role;
+    if (
+  typeof body.role === "string" &&
+  [
+    "SUPER_ADMIN",
+    "DIRECTOR",
+    "HR",
+    "DEVELOPER",
+    "FINANCE_LEAD",
+    "FINANCE_EXECUTIVE",
+    "DELEGATE_AFFAIRS_LEAD",
+    "DELEGATE_AFFAIRS_EXECUTIVE",
+    "VOLUNTEER_COORDINATOR",
+    "VOLUNTEER"
+  ].includes(body.role)
+) {
+  data.role = body.role;
+}
     if (typeof body.active === "boolean") data.active = body.active;
     if (typeof body.name === "string") data.name = body.name || null;
     if (typeof body.extraPermissions === "string" || body.extraPermissions === null) data.extraPermissions = body.extraPermissions;
