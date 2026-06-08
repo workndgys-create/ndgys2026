@@ -11,7 +11,7 @@ function parseOptionalNumber(value: unknown) {
 }
 
 function parseOptionalDate(value: unknown) {
-  if (!value) return { ok: true as const, value: null };
+  if (!value) return { ok: true as const, value:  };
   const parsed = new Date(String(value));
   if (Number.isNaN(parsed.getTime())) return { ok: false as const };
   return { ok: true as const, value: parsed };
@@ -22,7 +22,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!s) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const b = await req.json().catch(() => ({}));
   const data: Record<string, unknown> = {};
-  for (const k of ["title", "category", "summary", "description", "prize", "ctaUrl", "imageUrl"]) if (k in b) data[k] = b[k] || null;
+  if ("title" in b) data.title = b.title ?? "";
+if ("category" in b) data.category = b.category ?? "";
+if ("summary" in b) data.summary = b.summary ?? "";
+if ("description" in b) data.description = b.description ?? "";
+
+if ("prize" in b) data.prize = b.prize || null;
+if ("ctaUrl" in b) data.ctaUrl = b.ctaUrl || null;
+if ("imageUrl" in b) data.imageUrl = b.imageUrl || null;
   if ("published" in b) data.published = !!b.published;
   if ("order" in b) {
     const parsed = parseOptionalNumber(b.order);
