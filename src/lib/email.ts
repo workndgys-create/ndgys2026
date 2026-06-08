@@ -48,17 +48,17 @@ const shell = (inner: string) => `
     </div>
   </div>`;
 
-const inr = (paise: number) => `₹${(paise / 100).toLocaleString("en-IN")}`;
+const inr = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
 
 export const templates = {
-  registrationPaid: (name: string, track: string, delegateId: string, amountPaise: number, qrDataUrl: string) =>
+  registrationPaid: (name: string, track: string, delegateId: string, amount: number, qrDataUrl: string) =>
     shell(
       `<h2 style="margin:0 0 12px;color:#4A2008">You're confirmed, ${name}. 🎉</h2>
        <p>Your seat at the <b>New Delhi Global Youth Summit 4.0</b> is secured.</p>
        <table style="margin:14px 0;font-size:14px">
          <tr><td style="color:#8B6914;padding:2px 12px 2px 0">Delegate ID</td><td><b>${delegateId}</b></td></tr>
          <tr><td style="color:#8B6914;padding:2px 12px 2px 0">Track</td><td>${track}</td></tr>
-         <tr><td style="color:#8B6914;padding:2px 12px 2px 0">Amount paid</td><td>${inr(amountPaise)}</td></tr>
+         <tr><td style="color:#8B6914;padding:2px 12px 2px 0">Amount paid</td><td>${inr(amount)}</td></tr>
        </table>
        <p>Your tax invoice is attached as a PDF. Show this QR at check-in:</p>
        <div style="text-align:center;margin:16px 0"><img src="${qrDataUrl}" width="180" height="180" alt="Check-in QR" style="border:8px solid #fff;border-radius:8px"/></div>
@@ -83,15 +83,15 @@ export const templates = {
     shell(`<h3 style="margin:0 0 8px;color:#4A2008">New paid registration</h3><p><b>${name}</b> (${email})<br/>Track: ${track}</p>`),
   adminNewContact: (name: string, email: string, subject: string, message: string) =>
     shell(`<h3 style="margin:0 0 8px;color:#4A2008">New contact message</h3><p><b>${name}</b> (${email})<br/><b>Subject:</b> ${subject}</p><p style="white-space:pre-wrap">${message}</p>`),
-  refundProcessed: (name: string, track: string, amountPaise: number) =>
-    shell(`<h2 style="margin:0 0 12px;color:#4A2008">Your registration has been cancelled</h2><p>Hi ${name}, your <b>${track}</b> registration was cancelled and a refund of ${inr(amountPaise)} has been initiated.</p>`),
+  refundProcessed: (name: string, track: string, amount: number) =>
+    shell(`<h2 style="margin:0 0 12px;color:#4A2008">Your registration has been cancelled</h2><p>Hi ${name}, your <b>${track}</b> registration was cancelled and a refund of ${inr(amount)} has been initiated.</p>`),
 
-  competitionConfirmed: (name: string, competition: string, participation: string, refId: string, amountPaise: number, teamName?: string | null) =>
+  competitionConfirmed: (name: string, competition: string, participation: string, refId: string, amount: number, teamName?: string | null) =>
     shell(`
       <h2 style="font-family:Georgia,serif;color:#4A2008;margin:0 0 8px">You're registered!</h2>
       <p style="color:#444">Hi ${name}, your entry for <b>${competition}</b> (${participation === "GROUP" ? `Group${teamName ? ` — ${teamName}` : ""}` : "Solo"}) is confirmed.</p>
       <p style="color:#444">Entry reference: <b style="font-family:monospace">${refId}</b></p>
-      <p style="color:#444">Amount paid: <b>₹${(amountPaise / 100).toLocaleString("en-IN")}</b></p>
+      <p style="color:#444">Amount paid: <b>${inr(amount)}</b></p>
       <p style="color:#666;font-size:13px">Keep this reference handy on the day of the event.</p>
     `),
 
@@ -117,11 +117,11 @@ export const templates = {
       <p style="color:#666;font-size:13px">If you've already paid, please ignore this email.</p>
     `),
 
-  delegationConfirmed: (headName: string, school: string, count: number, amountPaise: number) =>
+  delegationConfirmed: (headName: string, school: string, count: number, amount: number) =>
     shell(`
       <h2 style="font-family:Georgia,serif;color:#4A2008;margin:0 0 8px">Delegation confirmed</h2>
       <p style="color:#444">Hi ${headName}, your delegation for <b>${school}</b> (${count} delegate${count === 1 ? "" : "s"}) is confirmed.</p>
-      <p style="color:#444">Total paid: <b>₹${(amountPaise / 100).toLocaleString("en-IN")}</b></p>
+      <p style="color:#444">Total paid: <b>${inr(amount)}</b></p>
       <p style="color:#666;font-size:13px">Each delegate will receive their own ticket and can sign in to their dashboard with their email.</p>
     `),
 

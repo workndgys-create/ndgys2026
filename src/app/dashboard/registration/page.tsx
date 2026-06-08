@@ -21,7 +21,7 @@ export default async function RegistrationPage() {
         <Row k="Delegate ID" v={reg.delegateId ?? "—"} />
         <Row k="Track" v={reg.trackName} />
         <Row k="Portfolio / Allotment" v={reg.portfolio ?? "To be announced"} />
-        <Row k="Amount" v={`₹${(reg.amount / 100).toLocaleString("en-IN")}`} />
+        <Row k="Amount" v={`₹${reg.amount.toLocaleString("en-IN")}`} />
         <Row k="Status" v={reg.status} />
         <Row k="Invoice No." v={invoice?.number ?? "—"} />
       </div>

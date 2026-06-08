@@ -13,11 +13,11 @@ export interface InvoiceData {
   fullName: string;
   email: string;
   trackName: string;
-  amount: number; // paise
-  gstAmount?: number; // paise
+  amount: number; // rupees
+  gstAmount?: number; // rupees
 }
 
-const inr = (paise: number) => `INR ${(paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
+const inr = (amount: number) => `INR ${amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
 
 /** Renders a branded A4 invoice to a Buffer. Uses pdfkit's built-in Helvetica (no font files needed). */
 export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {

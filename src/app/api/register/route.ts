@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const order = await createCashfreeOrder({
-      orderId: reg.id, amountPaise: amount,
+      orderId: reg.id, amountRupees: amount,
       customer: { id: reg.id, name: data.fullName, email: data.email, phone: data.phone },
       returnUrl: `${env.NEXT_PUBLIC_BASE_URL}/dashboard?order={order_id}`,
       notifyUrl: `${env.NEXT_PUBLIC_BASE_URL}/api/payment/cashfree-webhook`,

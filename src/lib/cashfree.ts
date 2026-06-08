@@ -6,8 +6,8 @@ import crypto from "crypto";
  * Cashfree is the only payment gateway for this app. See docs/CASHFREE.md for setup
  * (keys, env, webhook configuration, sandbox testing and go-live).
  *
- * IMPORTANT: Cashfree amounts are in RUPEES (decimal), while this app stores money
- * in PAISE everywhere. Always divide by 100 when sending an amount to Cashfree.
+ * IMPORTANT: Cashfree amounts are in RUPEES. This app now stores money in RUPEES
+ * as well, so amounts can be forwarded directly to Cashfree.
  */
 
 function creds() {
@@ -23,7 +23,7 @@ const API_VERSION = "2023-08-01";
 
 export interface CashfreeOrderInput {
   orderId: string;        // your internal id (registration / competition / delegation id)
-  amountPaise: number;    // paise — converted to rupees for Cashfree
+  amountRupees: number;
   customer: { id: string; name?: string; email?: string; phone: string };
   returnUrl?: string;     // where Cashfree redirects after payment
   notifyUrl?: string;     // your webhook URL
@@ -44,7 +44,7 @@ export async function createCashfreeOrder(input: CashfreeOrderInput): Promise<Ca
     headers: { "Content-Type": "application/json", "x-client-id": id, "x-client-secret": secret, "x-api-version": API_VERSION },
     body: JSON.stringify({
       order_id: input.orderId,
-      order_amount: Number((input.amountPaise / 100).toFixed(2)),
+      order_amount: Number(input.amountRupees.toFixed(2)),
       order_currency: "INR",
       customer_details: {
         customer_id: input.customer.id,

@@ -248,7 +248,7 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
 
       <div className="flex items-center justify-between rounded-lg bg-cream px-4 py-3">
         <span className="text-sm text-ink/70">Amount payable {isTeam ? "(per team)" : ""}</span>
-        <span className="font-display text-2xl font-700 text-ink">Rs {(fee / 100).toLocaleString("en-IN")}</span>
+        <span className="font-display text-2xl font-700 text-ink">Rs {fee.toLocaleString("en-IN")}</span>
       </div>
 
       <button disabled={status === "processing" || !consent || (isMinor && !guardianConsent)} className="w-full rounded-full bg-gold py-3 font-600 text-midnight transition hover:bg-goldlite disabled:opacity-60">
