@@ -22,14 +22,15 @@ export default async function HomePage() {
   return (
     <>
 
+      {/* Marquee sits at very top (fixed top-0, h-8 = 32px) */}
+      <Marquee />
+
+      {/* Navbar sits just below marquee (fixed top-8) */}
       <Navbar />
 
-      <div className="h-[72px]" />
+      {/* spacer: 32px marquee + 112px header = 144px total */}
+      <div className="h-36" />
 
-      <Marquee />
-      <Marquee />
-      <Navbar />
-      <div className="h-8" />
       <main>
         <Hero />
         <About />

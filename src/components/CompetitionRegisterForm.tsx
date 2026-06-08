@@ -134,11 +134,11 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
       {isTeam && <Field name="teamName" label="Team name" errors={errors} />}
 
       <Field name="leaderName" label={isTeam ? "Team leader name" : "Full name"} errors={errors} />
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Field name="email" type="email" label={isTeam ? "Leader email" : "Email"} errors={errors} />
         <Field name="phone" label={isTeam ? "Leader number" : "Phone number"} errors={errors} />
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="text-sm font-500 text-ink/80">Age</label>
           <input name="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
@@ -151,7 +151,7 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
           </select>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Field name="city" label="Place / City" errors={errors} />
         <Field name="emergencyContact" label="Emergency contact" errors={errors} />
       </div>

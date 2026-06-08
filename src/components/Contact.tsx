@@ -58,15 +58,25 @@ export default function Contact() {
                 <p className="text-sm font-500">hi@nesummit.in</p>
               </div>
             </a>
+<<<<<<< HEAD
+            <a href="tel:+917042719992" className="flex items-center gap-4 rounded-2xl border border-[#D97706]/15 bg-[#D97706]/5 p-4 text-cream/80 transition-all duration-300 hover:border-gold/50 hover:bg-gold/10 hover:text-gold hover:translate-x-1 shadow-sm">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold text-lg">☎</span>
+=======
             <a href="tel:+917042719992" className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4 text-cream/80 transition-all duration-300 hover:border-gold/30 hover:bg-gold/5 hover:text-gold hover:translate-x-1 shadow-sm">
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/10 text-gold text-lg">☎</span>
+>>>>>>> 6dcfc9db2667d6f2b77bb43683c7b75d0704bf57
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">Call Us</p>
                 <p className="text-sm font-500">+91 70427 19992</p>
               </div>
             </a>
+<<<<<<< HEAD
+            <a href="https://wa.me/917042719992" className="flex items-center gap-4 rounded-2xl border border-[#D97706]/15 bg-[#D97706]/5 p-4 text-cream/80 transition-all duration-300 hover:border-gold/50 hover:bg-gold/10 hover:text-gold hover:translate-x-1 shadow-sm">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold text-lg">⦿</span>
+=======
             <a href="https://wa.me/917042719992" className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4 text-cream/80 transition-all duration-300 hover:border-gold/30 hover:bg-gold/5 hover:text-gold hover:translate-x-1 shadow-sm">
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/10 text-gold text-lg">⦿</span>
+>>>>>>> 6dcfc9db2667d6f2b77bb43683c7b75d0704bf57
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">WhatsApp</p>
                 <p className="text-sm font-500">Chat with support</p>
