@@ -65,7 +65,7 @@ function RegisterInner() {
 
   useEffect(() => {
     fetch("/api/registration-questions", { cache: "no-store" })
-      .then((r) => r.json()).then((d) => setQuestions(d.questions || [])).catch(() => {});
+      .then((r) => r.json()).then((d) => setQuestions(d.questions || [])).catch(() => { });
   }, []);
   function setAnswer(id: string, value: string | string[]) { setAnswers((a) => ({ ...a, [id]: value })); }
   function toggleMulti(id: string, opt: string) {
@@ -106,7 +106,7 @@ function RegisterInner() {
 
   async function releaseHold() {
     if (!regId) return;
-    await fetch("/api/portfolios/release", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ registrationId: regId }) }).catch(() => {});
+    await fetch("/api/portfolios/release", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ registrationId: regId }) }).catch(() => { });
   }
 
   function expireHold() {
