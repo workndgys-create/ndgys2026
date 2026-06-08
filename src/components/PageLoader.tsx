@@ -6,8 +6,6 @@ export default function PageLoader() {
   const [progress, setProgress] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
   const [visible, setVisible] = useState(true);
-
-<<<<<<< HEAD
   // ── Progress animation: 7 s easeInOutSine fill → 1.5 s hold → fade out ─────
   useEffect(() => {
     let raf = 0;
@@ -31,26 +29,6 @@ export default function PageLoader() {
           setFadeOut(true);
           setTimeout(() => setVisible(false), 900);
         }, holdAfter);
-=======
-  // ── Progress animation (easeOutCubic, 3.5 s) ──────────────────────────────
-  useEffect(() => {
-    let raf = 0;
-    const start = performance.now();
-    const duration = 3500;
-
-    function easeOutCubic(t: number) {
-      return 1 - Math.pow(1 - t, 3);
-    }
-
-    function tick(now: number) {
-      const t = Math.min(1, (now - start) / duration);
-      setProgress(Math.round(easeOutCubic(t) * 100));
-      if (t < 1) {
-        raf = requestAnimationFrame(tick);
-      } else {
-        setFadeOut(true);
-        setTimeout(() => setVisible(false), 600);
->>>>>>> 91a9070fd8e5905badb26d0e2aa576a0528ff5c9
       }
     }
 
@@ -65,11 +43,7 @@ export default function PageLoader() {
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-cream grain px-4 py-8 select-none"
       style={{
         opacity: fadeOut ? 0 : 1,
-<<<<<<< HEAD
         transition: "opacity 0.9s ease-in-out",
-=======
-        transition: "opacity 0.6s ease-out",
->>>>>>> 91a9070fd8e5905badb26d0e2aa576a0528ff5c9
         pointerEvents: fadeOut ? "none" : "auto",
       }}
     >
@@ -100,11 +74,7 @@ export default function PageLoader() {
             style={{
               backgroundImage: "url('/colored-1.svg')",
               clipPath: `inset(0 0 ${100 - progress}% 0)`,
-<<<<<<< HEAD
               transition: "clip-path 0.6s ease-in-out",
-=======
-              transition: "clip-path 0.3s ease-out",
->>>>>>> 91a9070fd8e5905badb26d0e2aa576a0528ff5c9
             }}
           />
         </div>
@@ -118,11 +88,7 @@ export default function PageLoader() {
           <div className="h-[2px] w-full bg-gold/15 rounded-full overflow-hidden">
             <div
               className="h-full bg-gold rounded-full"
-<<<<<<< HEAD
               style={{ width: `${progress}%`, transition: "width 0.6s ease-in-out" }}
-=======
-              style={{ width: `${progress}%`, transition: "width 0.3s ease-out" }}
->>>>>>> 91a9070fd8e5905badb26d0e2aa576a0528ff5c9
             />
           </div>
         </div>
