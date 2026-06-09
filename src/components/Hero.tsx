@@ -4,9 +4,9 @@ import CountdownTimer from "./CountdownTimer";
 export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-[#FFE8C8] min-h-[85vh] flex flex-col justify-between pt-44 pb-12 text-ink">
-      
+
       {/* ── Background image layer ── */}
-      <div 
+      <div
         className="absolute inset-0 z-0 bg-no-repeat pointer-events-none"
         style={{
           backgroundImage: "url('/ndgys home page bg.png')",
@@ -24,7 +24,7 @@ export default function Hero() {
         </p>
 
         {/* Bolder, Large Headline (sized nicely to fit the sky space) */}
-        <h1 
+        <h1
           className="relative z-10 font-display font-black text-[#2A1005] leading-[0.95] tracking-tight animate-fadeUp drop-shadow-[0_4px_10px_rgba(42,16,5,0.12)]"
           style={{ fontSize: "clamp(2.8rem, 7.5vw, 5.2rem)" }}
         >

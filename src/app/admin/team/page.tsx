@@ -3,11 +3,47 @@ import { useEffect, useState } from "react";
 import AdminShell, { Panel } from "@/components/admin/Shell";
 
 type Admin = { id: string; email: string; name: string | null; role: string; active: boolean; lastLoginAt: string | null };
-const ROLES = ["SUPER_ADMIN", "ADMIN", "VIEWER"];
+const ROLES = [
+  "SUPER_ADMIN",
+  "DIRECTOR",
+  "HR",
+  "DEVELOPER",
+  "FINANCE_LEAD",
+  "FINANCE_EXECUTIVE",
+  "DELEGATE_AFFAIRS_LEAD",
+  "DELEGATE_AFFAIRS_EXECUTIVE",
+  "VOLUNTEER_COORDINATOR",
+  "VOLUNTEER"
+];
 const ROLE_HELP: Record<string, string> = {
-  SUPER_ADMIN: "Full access incl. team & settings",
-  ADMIN: "Operations + content; no team/settings",
-  VIEWER: "Read-only"
+  SUPER_ADMIN: "Complete access to the platform",
+
+  DIRECTOR:
+    "Overall event operations and management",
+
+  HR:
+    "QR scanning, check-ins, badges and volunteer management",
+
+  DEVELOPER:
+    "Platform management, content, settings and system tools",
+
+  FINANCE_LEAD:
+    "Payments, invoices, financial reports and exports",
+
+  FINANCE_EXECUTIVE:
+    "View payment records only",
+
+  DELEGATE_AFFAIRS_LEAD:
+    "Registrations, delegations, support and messaging",
+
+  DELEGATE_AFFAIRS_EXECUTIVE:
+    "Registration support and messaging",
+
+  VOLUNTEER_COORDINATOR:
+    "Volunteer onboarding, tracking and QR scanning",
+
+  VOLUNTEER:
+    "QR scanning and check-in operations"
 };
 
 export default function TeamPage() {
@@ -97,7 +133,7 @@ export default function TeamPage() {
             <form onSubmit={create} className="space-y-3">
               <input name="name" placeholder="Name" className="w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold" />
               <input name="email" type="email" required placeholder="Email" className="w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold" />
-              <select name="role" defaultValue="ADMIN" className="w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold">
+              <select name="role" defaultValue="VOLUNTEER" className="w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold">
                 {ROLES.map((r) => <option key={r} value={r}>{r.replace("_", " ")} — {ROLE_HELP[r]}</option>)}
               </select>
               <input name="password" type="text" required minLength={8} placeholder="Temporary password (min 8 chars)" className="w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold" />

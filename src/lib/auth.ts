@@ -4,7 +4,17 @@ import { env } from "./env";
 const COOKIE = "ndgys_admin";
 const secret = () => new TextEncoder().encode(env.JWT_SECRET);
 
-export type AdminRole = "SUPER_ADMIN" | "ADMIN" | "VIEWER";
+export type AdminRole =
+  | "SUPER_ADMIN"
+  | "DIRECTOR"
+  | "HR"
+  | "DEVELOPER"
+  | "FINANCE_LEAD"
+  | "FINANCE_EXECUTIVE"
+  | "DELEGATE_AFFAIRS_LEAD"
+  | "DELEGATE_AFFAIRS_EXECUTIVE"
+  | "VOLUNTEER_COORDINATOR"
+  | "VOLUNTEER";
 export type AdminSession = { sub: string; email: string; role: AdminRole };
 
 export async function createSessionToken(p: AdminSession): Promise<string> {
@@ -25,9 +35,29 @@ export async function verifySessionToken(token: string): Promise<AdminSession | 
   }
 }
 
-/** Role hierarchy check. SUPER_ADMIN > ADMIN > VIEWER. */
-export function roleAtLeast(role: AdminRole, min: AdminRole): boolean {
-  const rank: Record<AdminRole, number> = { VIEWER: 1, ADMIN: 2, SUPER_ADMIN: 3 };
+export function roleAtLeast(
+  role: AdminRole,
+  min: AdminRole
+): boolean {
+  const rank: Record<AdminRole, number> = {
+    VOLUNTEER: 1,
+    VOLUNTEER_COORDINATOR: 2,
+
+    DELEGATE_AFFAIRS_EXECUTIVE: 3,
+    DELEGATE_AFFAIRS_LEAD: 4,
+
+    FINANCE_EXECUTIVE: 5,
+    FINANCE_LEAD: 6,
+
+    HR: 7,
+
+    DEVELOPER: 8,
+
+    DIRECTOR: 9,
+
+    SUPER_ADMIN: 10
+  };
+
   return rank[role] >= rank[min];
 }
 

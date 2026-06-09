@@ -49,7 +49,7 @@ export default function Contact() {
           <p className="mt-5 max-w-md text-cream/70 leading-relaxed">
             Reach the Summit team directly — for registrations, track questions or press enquiries. We are here to support you.
           </p>
-          
+
           <div className="mt-10 space-y-4 max-w-sm">
             <a href="mailto:hi@nesummit.in" className="flex items-center gap-4 rounded-2xl border border-[#D97706]/15 bg-[#D97706]/5 p-4 text-cream/80 transition-all duration-300 hover:border-gold/50 hover:bg-gold/10 hover:text-gold hover:translate-x-1 shadow-sm">
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold text-lg">✉</span>

@@ -15,8 +15,15 @@ enum RegistrationStatus {
 
 enum AdminRole {
   SUPER_ADMIN
-  ADMIN
-  VIEWER
+  DIRECTOR
+  HR
+  DEVELOPER
+  FINANCE_LEAD
+  FINANCE_EXECUTIVE
+  DELEGATE_AFFAIRS_LEAD
+  DELEGATE_AFFAIRS_EXECUTIVE
+  VOLUNTEER_COORDINATOR
+  VOLUNTEER
 }
 
 enum RegSource {
@@ -104,7 +111,7 @@ model AdminUser {
   email        String    @unique
   name         String?
   passwordHash String
-  role         AdminRole @default(ADMIN)
+  role         AdminRole @default(VOLUNTEER)
   active            Boolean   @default(true)
   lastLoginAt       DateTime?
   extraPermissions  String?   // JSON string[] of granted action overrides

@@ -24,7 +24,18 @@ export async function GET() {
 const createSchema = z.object({
   email: z.string().trim().email(),
   name: z.string().trim().max(120).optional().or(z.literal("")),
-  role: z.enum(["SUPER_ADMIN", "ADMIN", "VIEWER"]),
+  role: z.enum([
+  "SUPER_ADMIN",
+  "DIRECTOR",
+  "HR",
+  "DEVELOPER",
+  "FINANCE_LEAD",
+  "FINANCE_EXECUTIVE",
+  "DELEGATE_AFFAIRS_LEAD",
+  "DELEGATE_AFFAIRS_EXECUTIVE",
+  "VOLUNTEER_COORDINATOR",
+  "VOLUNTEER"
+]),
   password: z.string().min(8)
 });
 
