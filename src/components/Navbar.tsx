@@ -110,7 +110,7 @@ export default function Navbar() {
         className={`md:hidden overflow-hidden transition-all duration-300 ${open ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
           }`}
       >
-        <div className="border-t border-[#D97706]/30 bg-[#1F0A02]/98 backdrop-blur px-5 pb-6 pt-2">
+        <div className="border-t border-[#D97706]/30 bg-[#1F0A02] px-5 pb-6 pt-2">
           {[
             { href: "/", label: "Home" },
             ...about,
