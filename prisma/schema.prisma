@@ -60,7 +60,7 @@ model Registration {
   age               Int?
   city              String?
   gender            String?
-  emergencyContactName  String?
+  emergencyContact  String?
   howHeard          String?
   notes             String?
   consentAccepted   Boolean  @default(false)
