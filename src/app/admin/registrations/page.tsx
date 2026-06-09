@@ -58,7 +58,11 @@ export default function RegistrationsPage() {
     void (async () => {
       try {
         const r = await fetch("/api/public/tracks");
-        if (r.ok) setTracks(await r.json());
+        if (r.ok) {
+          const raw = await r.json();
+          const norm = (raw || []).map((t: any) => ({ slug: t.slug ?? t.value, name: t.name ?? t.label, fee: t.fee }));
+          setTracks(norm);
+        }
       } catch (_) { }
     })();
   }, []);
