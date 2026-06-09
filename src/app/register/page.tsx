@@ -222,7 +222,7 @@ function RegisterInner() {
       <Centered>
         <div className="w-full max-w-md text-center">
           <h1 className="font-display text-3xl font-700 text-ink">This track is full</h1>
-          <p className="mt-3 text-ink/70">{tracks.find((t) => t.slug === track)?.name} has reached capacity. Join the waitlist and we'll notify you if a seat frees up.</p>
+          <p className="mt-3 text-ink/70">{tracks.find((t) => t.value === track)?.label} has reached capacity. Join the waitlist and we'll notify you if a seat frees up.</p>
           <button onClick={joinWaitlist} className="mt-6 rounded-full bg-gold px-6 py-3 font-600 text-midnight hover:bg-goldlite">Join Waitlist</button>
           {message && <p className="mt-4 text-sm text-[#D97706]">{message}</p>}
           <div className="mt-4"><Link href="/#tracks" className="text-sm text-gold hover:underline">&larr; Choose another track</Link></div>
