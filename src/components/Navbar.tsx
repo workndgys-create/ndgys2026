@@ -51,7 +51,7 @@ export default function Navbar() {
         {/* Logo left */}
         <Link href="/" className="inline-block group shrink-0">
           <img
-            src="/NDGYS26.png"
+            src="/logos/file_0000000010307208bd10ca5200193894.png"
             alt="Global Youth Summit 2026"
             className="h-24 md:h-28 w-auto object-contain transition-all duration-300 group-hover:brightness-130 group-hover:drop-shadow-lg filter saturate-120 contrast-110 brightness-115"
           />
