@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       institution: data.institution || null, trackSlug: track.slug, trackName: track.name,
       experience: data.experience ?? null, amount, status: "PENDING", portfolioId, promoCode: appliedCode,
       age: data.age ?? null, city: data.city || null, gender: data.gender ?? null,
-      emergencyContact: data.emergencyContact || null, howHeard: howHeard || null, notes: data.notes || null,
+      emergencyContactName: data.emergencyContact || null, howHeard: howHeard || null, notes: data.notes || null,
       consentAccepted: true, guardianName: data.guardianName || null, guardianPhone: data.guardianPhone || null, guardianConsent: !!data.guardianConsent,
       customAnswers: answers.length ? JSON.stringify(answers) : null
     }

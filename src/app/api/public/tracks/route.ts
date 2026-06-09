@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-export const runtime = "nodejs";
-
 const FALLBACK_TRACKS = [
   { value: "unsc", label: "United Nations Security Council" },
   { value: "unga", label: "United Nations General Assembly" },
