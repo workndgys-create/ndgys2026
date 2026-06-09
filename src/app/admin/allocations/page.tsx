@@ -9,6 +9,9 @@ type Reg = { id: string; fullName: string; delegateId: string | null; portfolio:
 export default function AllocationsAdmin() {
   const [tracks, setTracks] = useState<{ value: string; label: string }[]>([]);
   const [track, setTrack] = useState("");
+  const [committees, setCommittees] = useState<
+    { slug: string; name: string; total: number; taken: number; portfolios: { name: string; taken: boolean }[] }[]
+  >([]);
   const [rows, setRows] = useState<Reg[] | null>(null);
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -33,6 +36,15 @@ export default function AllocationsAdmin() {
           const t = await r.json();
           setTracks(t);
           if (!track && t.length) setTrack(t[0].value);
+        }
+      } catch (_) { }
+    })();
+    void (async () => {
+      try {
+        const r = await fetch(`/api/public/portfolios`);
+        if (r.ok) {
+          const d = await r.json();
+          setCommittees(d.committees || []);
         }
       } catch (_) { }
     })();
@@ -66,6 +78,21 @@ export default function AllocationsAdmin() {
           Enter each delegate's country / role. Saved allocations appear live on the home page when <b>Settings → Allocations live</b> is on.
           {rows && <> · <b>{assigned}/{rows.length}</b> assigned in this committee.</>}
         </p>
+
+        {committees.length > 0 && (
+          <div className="mb-4 flex flex-wrap gap-3">
+            {committees.map((c) => (
+              <button
+                key={c.slug}
+                onClick={() => setTrack(c.slug)}
+                className={`rounded-full border px-3 py-1 text-sm ${track === c.slug ? "bg-midnight text-cream" : "bg-cream text-ink"}`}
+              >
+                <span className="font-600">{c.name}</span>
+                <span className="ml-2 text-xs text-slatey">{c.taken}/{c.total}</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {!rows ? (
           <p className="text-slatey">Loading…</p>
