@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requirePermission, audit } from "@/lib/adminSession";
-import { TRACKS } from "@/lib/validation";
 export const runtime = "nodejs";
 
 function resolveTrack(token: string): string | null {
-  const t = token.trim().toLowerCase();
-  const bySlug = TRACKS.find((x) => x.slug.toLowerCase() === t);
-  if (bySlug) return bySlug.slug;
-  const byName = TRACKS.find((x) => x.name.toLowerCase() === t || x.name.toLowerCase().includes(t));
-  return byName ? byName.slug : null;
+  return null; // placeholder, replaced in POST with DB lookup
 }
 
 /**
@@ -23,7 +18,17 @@ export async function POST(req: NextRequest) {
   if (!s) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const b = await req.json().catch(() => null);
   const text: string = (b?.text || "").toString();
-  const fixedTrack: string | null = b?.trackSlug ? resolveTrack(b.trackSlug) : null;
+  // load active tracks from DB (exclude archived)
+  const TRACKS = await prisma.track.findMany({ where: { archived: false }, select: { slug: true, name: true } });
+  function resolveTrackDb(token: string): string | null {
+    const t = token.trim().toLowerCase();
+    const bySlug = TRACKS.find((x) => x.slug.toLowerCase() === t);
+    if (bySlug) return bySlug.slug;
+    const byName = TRACKS.find((x) => x.name.toLowerCase() === t || x.name.toLowerCase().includes(t));
+    return byName ? byName.slug : null;
+  }
+
+  const fixedTrack: string | null = b?.trackSlug ? resolveTrackDb(b.trackSlug) : null;
   if (b?.trackSlug && !fixedTrack) return NextResponse.json({ error: "Unknown committee" }, { status: 422 });
   if (!text.trim()) return NextResponse.json({ error: "Nothing to import" }, { status: 422 });
 

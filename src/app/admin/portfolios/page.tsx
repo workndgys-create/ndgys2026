@@ -4,7 +4,7 @@ import CrudManager from "@/components/admin/Crud";
 import { useState } from "react";
 import { Panel } from "@/components/admin/Shell";
 
-const TRACK_OPTIONS = [
+const DEFAULT_TRACKS = [
   { value: "global-policy", label: "Global Policy Dialogue" }, { value: "climate", label: "Climate & Sustainability Forum" },
   { value: "technology", label: "Technology & Society Lab" }, { value: "entrepreneurship", label: "Youth Entrepreneurship Track" },
   { value: "human-rights", label: "Human Rights Council" }, { value: "press", label: "International Press Corps" },
@@ -13,21 +13,32 @@ const TRACK_OPTIONS = [
 const STATE: Record<string, string> = { AVAILABLE: "Available", HELD: "On hold", ASSIGNED: "Assigned" };
 
 export default function Page() {
+  const [tracks, setTracks] = useState(DEFAULT_TRACKS);
+  // fetch active tracks for selectors
+  if (typeof window !== "undefined") {
+    void (async () => {
+      try {
+        const r = await fetch("/api/public/tracks");
+        if (r.ok) setTracks(await r.json());
+      } catch (e) { /* ignore */ }
+    })();
+  }
   return (
     <AdminShell title="Portfolios">
       <BulkAdd />
       <CrudManager
         endpoint="/api/admin/portfolios"
+        bulkDelete={true}
         newLabel="Portfolio"
         hasPublished={false}
         columns={[
           { key: "name", label: "Portfolio", render: (r) => <span className="font-600 text-ink">{r.name}</span> },
-          { key: "trackSlug", label: "Committee", render: (r) => TRACK_OPTIONS.find((t) => t.value === r.trackSlug)?.label || r.trackSlug },
+          { key: "trackSlug", label: "Committee", render: (r) => tracks.find((t) => t.value === r.trackSlug)?.label || r.trackSlug },
           { key: "status", label: "Status", render: (r) => STATE[r.status] || r.status },
           { key: "order", label: "Order" }
         ]}
         fields={[
-          { name: "trackSlug", label: "Committee", type: "select", options: TRACK_OPTIONS, required: true },
+          { name: "trackSlug", label: "Committee", type: "select", options: tracks, required: true },
           { name: "name", label: "Portfolio (country / role)", required: true },
           { name: "order", label: "Sort order", type: "number" }
         ]}
@@ -37,7 +48,7 @@ export default function Page() {
 }
 
 function BulkAdd() {
-  const [trackSlug, setTrackSlug] = useState(TRACK_OPTIONS[0].value);
+  const [trackSlug, setTrackSlug] = useState(DEFAULT_TRACKS[0].value);
   const [mode, setMode] = useState<"committee" | "csv">("committee");
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);

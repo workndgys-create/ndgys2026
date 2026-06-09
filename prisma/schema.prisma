@@ -140,6 +140,7 @@ model Track {
   agenda     String
   difficulty String   @default("Intermediate")
   isOpen     Boolean  @default(true)
+  archived   Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -262,6 +263,7 @@ model Portfolio {
   name       String
   order      Int       @default(0)
   status     String    @default("AVAILABLE") // AVAILABLE | HELD | ASSIGNED
+  archived   Boolean   @default(false)
   heldUntil  DateTime?
   heldBy     String?   // Registration id currently holding it
   assignedTo String?   // Registration id it is assigned to (paid)

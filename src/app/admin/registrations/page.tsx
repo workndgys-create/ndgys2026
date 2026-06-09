@@ -45,8 +45,15 @@ export default function RegistrationsPage() {
     fetch(`/api/admin/registrations?${sp}`)
       .then(async (r) => {
         if (r.status === 401) return router.push("/admin/login");
+        if (!r.ok) {
+          const txt = await r.text().catch(() => "");
+          console.error("/api/admin/registrations failed", r.status, txt);
+          setData({ items: [], total: 0, page, pages: 0 } as Resp);
+          return;
+        }
         setData(await r.json());
       })
+      .catch((err) => { console.error("/api/admin/registrations error", err); setData({ items: [], total: 0, page, pages: 0 } as Resp); })
       .finally(() => setLoading(false));
   }, [q, status, track, page, router]);
 

@@ -18,17 +18,20 @@ export default function CrudManager({
   columns,
   hasPublished = true,
   newLabel = "New"
+  , bulkDelete = false
 }: {
   endpoint: string;
   fields: Field[];
   columns: Column[];
   hasPublished?: boolean;
   newLabel?: string;
+  bulkDelete?: boolean;
 }) {
   const [items, setItems] = useState<any[] | null>(null);
   const [editing, setEditing] = useState<any | null>(null);
   const [open, setOpen] = useState(false);
   const [err, setErr] = useState("");
+  const [selected, setSelected] = useState<Record<string, boolean>>({});
 
   function load() {
     fetch(endpoint)
@@ -85,8 +88,25 @@ export default function CrudManager({
     load();
   }
 
+  const actionNode = (
+    <div className="flex items-center gap-2">
+      <button onClick={startNew} className="rounded-full bg-midnight px-4 py-2 text-sm font-600 text-cream hover:bg-royal">+ {newLabel}</button>
+      {bulkDelete && (
+        <button onClick={async () => {
+          const ids = Object.entries(selected).filter(([, v]) => v).map(([k]) => k);
+          if (ids.length === 0) return alert("No items selected");
+          if (!confirm(`Are you sure you want to delete ${ids.length} selected items?`)) return;
+          const res = await fetch(`${endpoint}/bulk-delete`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ids }) });
+          if (!res.ok) { alert((await res.json().catch(() => ({}))).error || "Bulk delete failed"); return; }
+          setSelected({});
+          load();
+        }} className="rounded-full bg-red-600 px-4 py-2 text-sm font-600 text-cream hover:bg-red-700">Delete Selected</button>
+      )}
+    </div>
+  );
+
   return (
-    <Panel title="Manage" action={<button onClick={startNew} className="rounded-full bg-midnight px-4 py-2 text-sm font-600 text-cream hover:bg-royal">+ {newLabel}</button>}>
+    <Panel title="Manage" action={actionNode}>
       {!items ? (
         <p className="text-slatey">Loading…</p>
       ) : items.length === 0 ? (
@@ -99,11 +119,15 @@ export default function CrudManager({
           {err && <p className="mb-3 text-sm text-red-600">{err}</p>}
           <table className="w-full text-sm">
             <thead className="text-left text-xs uppercase tracking-wider text-slatey">
-              <tr>{columns.map((c) => <th key={c.key} className="px-3 py-2">{c.label}</th>)}{hasPublished && <th className="px-3 py-2">Live</th>}<th className="px-3 py-2 text-right">Actions</th></tr>
+              <tr>
+                {bulkDelete && <th className="px-3 py-2"><input type="checkbox" onChange={(e) => { const v = e.target.checked; const map: Record<string, boolean> = {}; (items||[]).forEach((it) => map[it.id] = v); setSelected(map); }} /></th>}
+                {columns.map((c) => <th key={c.key} className="px-3 py-2">{c.label}</th>)}{hasPublished && <th className="px-3 py-2">Live</th>}<th className="px-3 py-2 text-right">Actions</th>
+              </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">
               {items.map((row) => (
                 <tr key={row.id} className="hover:bg-cream/60">
+                  {bulkDelete && <td className="px-3 py-2.5 align-top"><input type="checkbox" checked={!!selected[row.id]} onChange={(e) => setSelected((s) => ({ ...s, [row.id]: e.target.checked }))} /></td>}
                   {columns.map((c) => <td key={c.key} className="px-3 py-2.5 align-top">{c.render ? c.render(row) : String(row[c.key] ?? "")}</td>)}
                   {hasPublished && (
                     <td className="px-3 py-2.5">

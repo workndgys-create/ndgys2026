@@ -8,7 +8,7 @@ export async function GET() {
   try {
     await releaseExpiredHolds();
     type P = { trackSlug: string; name: string; order: number; status: string };
-    const rows = (await prisma.portfolio.findMany({ orderBy: [{ order: "asc" }, { name: "asc" }] })) as unknown as P[];
+    const rows = (await prisma.portfolio.findMany({ where: { archived: false }, orderBy: [{ order: "asc" }, { name: "asc" }] })) as unknown as P[];
     const order = new Map<string, number>(TRACKS.map((t, i) => [t.slug as string, i]));
     const nameBySlug = new Map<string, string>(TRACKS.map((t) => [t.slug as string, t.name]));
 
