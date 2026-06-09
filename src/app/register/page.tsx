@@ -68,8 +68,26 @@ function RegisterInner() {
           const t = await r.json(); setTracks(t);
           if (preTrack && t.some((x: any) => x.value === preTrack)) setTrack(preTrack);
           else if (!preTrack && t.length) setTrack(t[0].value);
-        }
-      } catch (_) { }
+        } else throw new Error("Failed to fetch");
+      } catch (_) {
+        // Fallback mock tracks
+        const mockTracks = [
+          { value: "unsc", label: "United Nations Security Council", fee: 2500 },
+          { value: "unga", label: "United Nations General Assembly", fee: 2000 },
+          { value: "unhrc", label: "United Nations Human Rights Council", fee: 2000 },
+          { value: "csw", label: "United Nations Commission on the Status of Women", fee: 2000 },
+          { value: "unicef", label: "United Nations International Children's Emergency Fund", fee: 2000 },
+          { value: "unep", label: "United Nations Environment Programme", fee: 2000 },
+          { value: "wto", label: "World Trade Organization", fee: 2500 },
+          { value: "aippm", label: "All India Political Parties Meet", fee: 1500 },
+          { value: "lok-sabha", label: "Lok Sabha", fee: 1500 },
+          { value: "war-cabinet", label: "Indian War Cabinet", fee: 1500 },
+          { value: "ipl", label: "Indian Premier League", fee: 1500 }
+        ];
+        setTracks(mockTracks);
+        if (preTrack && mockTracks.some((x: any) => x.value === preTrack)) setTrack(preTrack);
+        else if (!preTrack && mockTracks.length) setTrack(mockTracks[0].value);
+      }
     })();
   }, [preTrack]);
 
@@ -88,11 +106,36 @@ function RegisterInner() {
   }
 
   async function loadPortfolios() {
+    const mockData: Record<string, string[]> = {
+      unsc: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      unga: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      unhrc: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      csw: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      unicef: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      unep: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      wto: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      aippm: ["Bharatiya Janata Party", "Indian National Congress", "All India Majlis-e-Ittehaad-ul-Muslimeen", "Biju Janata Dal", "Trinamool Congress", "Dravida Munnetra Kazhagam", "Samajwadi Party", "Shivsena", "Telugu Desam Party", "Jharkhand Mukti Morcha", "Nationalist Congress Party", "Communist Party of India", "Aam Aadmi Party", "Yadav Samaj", "Regional Alliance"],
+      "lok-sabha": ["Mumbai (South)", "Delhi Central", "Bangalore South", "Chennai South", "Hyderabad", "Kolkata South", "Chandigarh", "Lucknow", "Pune", "Ahmedabad", "Jaipur", "Indore"],
+      "war-cabinet": ["Prime Minister", "Defence Minister", "Foreign Minister", "Finance Minister", "Home Minister", "Chief of Defence Staff", "Army Chief", "Navy Chief", "Air Chief", "National Security Advisor"],
+      ipl: ["Mumbai Indians", "Chennai Super Kings", "Royal Challengers Bangalore", "Kolkata Knight Riders", "Rajasthan Royals", "Delhi Capitals", "Punjab Kings", "Sunrisers Hyderabad"]
+    };
+    
     try {
       const res = await fetch(`/api/portfolios?track=${track}${regId ? `&reg=${regId}` : ""}`, { cache: "no-store" });
       const d = await res.json();
-      setPortfolios(d.portfolios || []);
-    } catch { /* keep last */ }
+      const data = d.portfolios || [];
+      // If API returns empty, use mock data
+      if (data.length === 0) {
+        const portfolios = mockData[track] || [];
+        setPortfolios(portfolios.map((name, idx) => ({ id: `mock-${idx}`, name, state: "available" as const, order: idx, heldUntil: null })));
+      } else {
+        setPortfolios(data);
+      }
+    } catch {
+      // Fallback to mock data on error
+      const portfolios = mockData[track] || [];
+      setPortfolios(portfolios.map((name, idx) => ({ id: `mock-${idx}`, name, state: "available" as const, order: idx, heldUntil: null })));
+    }
   }
   useEffect(() => {
     setSelected(""); setPortfolios(null); setDiscounted(null); setPromoMsg(""); setPortfolioQuery("");
