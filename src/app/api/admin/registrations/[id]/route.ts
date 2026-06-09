@@ -58,7 +58,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
   try {
     await prisma.registration.delete({ where: { id } });
-    await audit(admin.email, "registration.delete", "Registration", id, null);
+    await audit(admin.email, "registration.delete", "Registration", id);
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("[admin/registrations] DELETE failed", { id, error });
