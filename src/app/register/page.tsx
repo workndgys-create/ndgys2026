@@ -36,7 +36,10 @@ function RegisterInner() {
 
   const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number }[]>([]);
   const [track, setTrack] = useState(preTrack);
+<<<<<<< HEAD
   const [committeeSearch, setCommitteeSearch] = useState("");
+=======
+>>>>>>> 81609fc493ad40613c8678808d91ebc03307ce68
   const [status, setStatus] = useState<"idle" | "processing" | "paid" | "error" | "full">("idle");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
@@ -69,8 +72,31 @@ function RegisterInner() {
           const t = await r.json(); setTracks(t);
           if (preTrack && t.some((x: any) => x.value === preTrack)) setTrack(preTrack);
           else if (!preTrack && t.length) setTrack(t[0].value);
+<<<<<<< HEAD
         }
       } catch (_) { }
+=======
+        } else throw new Error("Failed to fetch");
+      } catch (_) {
+        // Fallback mock tracks
+        const mockTracks = [
+          { value: "unsc", label: "United Nations Security Council", fee: 2500 },
+          { value: "unga", label: "United Nations General Assembly", fee: 2000 },
+          { value: "unhrc", label: "United Nations Human Rights Council", fee: 2000 },
+          { value: "csw", label: "United Nations Commission on the Status of Women", fee: 2000 },
+          { value: "unicef", label: "United Nations International Children's Emergency Fund", fee: 2000 },
+          { value: "unep", label: "United Nations Environment Programme", fee: 2000 },
+          { value: "wto", label: "World Trade Organization", fee: 2500 },
+          { value: "aippm", label: "All India Political Parties Meet", fee: 1500 },
+          { value: "lok-sabha", label: "Lok Sabha", fee: 1500 },
+          { value: "war-cabinet", label: "Indian War Cabinet", fee: 1500 },
+          { value: "ipl", label: "Indian Premier League", fee: 1500 }
+        ];
+        setTracks(mockTracks);
+        if (preTrack && mockTracks.some((x: any) => x.value === preTrack)) setTrack(preTrack);
+        else if (!preTrack && mockTracks.length) setTrack(mockTracks[0].value);
+      }
+>>>>>>> 81609fc493ad40613c8678808d91ebc03307ce68
     })();
   }, [preTrack]);
 
@@ -89,11 +115,44 @@ function RegisterInner() {
   }
 
   async function loadPortfolios() {
+<<<<<<< HEAD
     try {
       const res = await fetch(`/api/portfolios?track=${track}${regId ? `&reg=${regId}` : ""}`, { cache: "no-store" });
       const d = await res.json();
       setPortfolios(d.portfolios || []);
     } catch { /* keep last */ }
+=======
+    const mockData: Record<string, string[]> = {
+      unsc: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      unga: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      unhrc: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      csw: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      unicef: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      unep: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      wto: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      aippm: ["Bharatiya Janata Party", "Indian National Congress", "All India Majlis-e-Ittehaad-ul-Muslimeen", "Biju Janata Dal", "Trinamool Congress", "Dravida Munnetra Kazhagam", "Samajwadi Party", "Shivsena", "Telugu Desam Party", "Jharkhand Mukti Morcha", "Nationalist Congress Party", "Communist Party of India", "Aam Aadmi Party", "Yadav Samaj", "Regional Alliance"],
+      "lok-sabha": ["Mumbai (South)", "Delhi Central", "Bangalore South", "Chennai South", "Hyderabad", "Kolkata South", "Chandigarh", "Lucknow", "Pune", "Ahmedabad", "Jaipur", "Indore"],
+      "war-cabinet": ["Prime Minister", "Defence Minister", "Foreign Minister", "Finance Minister", "Home Minister", "Chief of Defence Staff", "Army Chief", "Navy Chief", "Air Chief", "National Security Advisor"],
+      ipl: ["Mumbai Indians", "Chennai Super Kings", "Royal Challengers Bangalore", "Kolkata Knight Riders", "Rajasthan Royals", "Delhi Capitals", "Punjab Kings", "Sunrisers Hyderabad"]
+    };
+    
+    try {
+      const res = await fetch(`/api/portfolios?track=${track}${regId ? `&reg=${regId}` : ""}`, { cache: "no-store" });
+      const d = await res.json();
+      const data = d.portfolios || [];
+      // If API returns empty, use mock data
+      if (data.length === 0) {
+        const portfolios = mockData[track] || [];
+        setPortfolios(portfolios.map((name, idx) => ({ id: `mock-${idx}`, name, state: "available" as const, order: idx, heldUntil: null })));
+      } else {
+        setPortfolios(data);
+      }
+    } catch {
+      // Fallback to mock data on error
+      const portfolios = mockData[track] || [];
+      setPortfolios(portfolios.map((name, idx) => ({ id: `mock-${idx}`, name, state: "available" as const, order: idx, heldUntil: null })));
+    }
+>>>>>>> 81609fc493ad40613c8678808d91ebc03307ce68
   }
   useEffect(() => {
     setSelected(""); setPortfolios(null); setDiscounted(null); setPromoMsg(""); setPortfolioQuery("");
@@ -294,9 +353,14 @@ function RegisterInner() {
 
           <div>
             <label className="text-sm font-500 text-ink/80">Committee</label>
+<<<<<<< HEAD
               <input value={committeeSearch} onChange={(e) => setCommitteeSearch(e.target.value)} placeholder="Search committee" className="mt-1 mb-2 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 sm:w-80" />
               <select name="track" value={track} onChange={(e) => setTrack(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
                 {tracks.filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase())).map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+=======
+              <select name="track" value={track} onChange={(e) => setTrack(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
+                {tracks.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+>>>>>>> 81609fc493ad40613c8678808d91ebc03307ce68
               </select>
           </div>
 
