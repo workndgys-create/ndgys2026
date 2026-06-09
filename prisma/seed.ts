@@ -56,20 +56,16 @@ async function main() {
     });
   }
   console.log(`OK Seeded ${TRACKS.length} tracks`);
-
-  let pCount = 0;
+  // Clean up existing portfolios and ensure only the seeded tracks exist.
+  await prisma.portfolio.deleteMany({});
+  // Remove any tracks not in the new TRACKS set, then ensure the new tracks are present.
+  const slugs = TRACKS.map((t) => t.slug);
+  await prisma.track.deleteMany({ where: { slug: { notIn: slugs } } });
   for (const t of TRACKS) {
-    const names = portfoliosFor(t.slug);
-    for (let i = 0; i < names.length; i++) {
-      await prisma.portfolio.upsert({
-        where: { trackSlug_name: { trackSlug: t.slug, name: names[i] } },
-        update: { order: i },
-        create: { trackSlug: t.slug, name: names[i], order: i }
-      });
-      pCount++;
-    }
+    // ensure track exists (upsert already used above) and mark as active
+    await prisma.track.upsert({ where: { slug: t.slug }, update: { archived: false, name: t.name, fee: t.fee, capacity: t.capacity, agenda: t.agenda, difficulty: t.difficulty }, create: { slug: t.slug, name: t.name, fee: t.fee, capacity: t.capacity, agenda: t.agenda, difficulty: t.difficulty } });
   }
-  console.log(`OK Seeded ${pCount} portfolios across committees`);
+  console.log(`OK Tracks reset to ${TRACKS.length} committees and portfolios cleared`);
 
   const speakers = [
     { slug: "amb-rao", name: "Amb. Nirupama Rao", title: "Former Foreign Secretary", bio: "A career diplomat sharing insights on multilateral negotiation.", order: 0 },

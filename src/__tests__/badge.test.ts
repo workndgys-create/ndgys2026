@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { generateBadgePdf, generateBadgeSheet } from "@/lib/badge";
 
-const d = { delegateId: "NDGYS-2026-AB12", fullName: "Aanya Rao", trackName: "Global Policy Dialogue", trackSlug: "global-policy", portfolio: "France" };
+const d = { delegateId: "NDGYS-2026-AB12", fullName: "Aanya Rao", trackName: "United Nations Security Council", trackSlug: "unsc", portfolio: "France" };
 
 describe("badge PDFs", () => {
   it("single badge is a valid PDF", async () => {

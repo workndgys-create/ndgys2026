@@ -16,56 +16,44 @@ function resolveTrack(token: string): string | null {
 export async function POST(req: NextRequest) {
   const s = await requirePermission("allocations.manage");
   if (!s) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  const b = await req.json().catch(() => null);
-  const text: string = (b?.text || "").toString();
-  // load active tracks from DB (exclude archived)
-  const TRACKS = await prisma.track.findMany({ where: { archived: false }, select: { slug: true, name: true } });
-  function resolveTrackDb(token: string): string | null {
-    const t = token.trim().toLowerCase();
-    const bySlug = TRACKS.find((x) => x.slug.toLowerCase() === t);
-    if (bySlug) return bySlug.slug;
-    const byName = TRACKS.find((x) => x.name.toLowerCase() === t || x.name.toLowerCase().includes(t));
-    return byName ? byName.slug : null;
-  }
+    const b = await req.json().catch(() => null);
+    const text: string = (b?.text || "").toString();
+    const trackSlug = typeof b?.trackSlug === "string" ? b.trackSlug : undefined;
 
-  const fixedTrack: string | null = b?.trackSlug ? resolveTrackDb(b.trackSlug) : null;
-  if (b?.trackSlug && !fixedTrack) return NextResponse.json({ error: "Unknown committee" }, { status: 422 });
-  if (!text.trim()) return NextResponse.json({ error: "Nothing to import" }, { status: 422 });
+    if (!trackSlug) return NextResponse.json({ error: "Choose a committee" }, { status: 422 });
+    // ensure committee exists and is active
+    const track = await prisma.track.findFirst({ where: { slug: trackSlug, archived: false } });
+    if (!track) return NextResponse.json({ error: "Unknown or inactive committee" }, { status: 422 });
+    if (!text.trim()) return NextResponse.json({ error: "Nothing to import" }, { status: 422 });
 
-  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-  const parsed: { trackSlug: string; name: string }[] = [];
-  const unresolved: string[] = [];
+    const lines = text.split(/\r?\n/).map((l) => l.replace(/^[-*]\s*/, "").trim()).filter(Boolean);
+    const names = Array.from(new Set(lines.map((l) => l.trim())));
 
-  for (const line of lines) {
-    if (fixedTrack) {
-      parsed.push({ trackSlug: fixedTrack, name: line.replace(/^[-*]\s*/, "").trim() });
-    } else {
-      const idx = line.indexOf(",");
-      if (idx === -1) { unresolved.push(line); continue; }
-      const slug = resolveTrack(line.slice(0, idx));
-      const name = line.slice(idx + 1).trim();
-      if (!slug || !name) { unresolved.push(line); continue; }
-      parsed.push({ trackSlug: slug, name });
+    // existing names for this track
+    const existing = await prisma.portfolio.findMany({ where: { trackSlug }, select: { name: true, order: true } });
+    const have = new Set(existing.map((e) => e.name.toLowerCase()));
+    let nextOrder = (existing.length ? Math.max(-1, ...existing.map((e) => e.order)) + 1 : 0);
+
+    let created = 0, skipped = 0, errors = 0;
+    const creations: { trackSlug: string; name: string; order: number }[] = [];
+    for (const n of names) {
+      if (!n) { errors++; continue; }
+      const key = n.toLowerCase();
+      if (have.has(key)) { skipped++; continue; }
+      creations.push({ trackSlug, name: n, order: nextOrder });
+      nextOrder++;
+      have.add(key);
+      created++;
     }
-  }
 
-  // existing names per track to skip duplicates + continue order numbering
-  const slugs = Array.from(new Set(parsed.map((p) => p.trackSlug)));
-  const existing = (await prisma.portfolio.findMany({ where: { trackSlug: { in: slugs } }, select: { trackSlug: true, name: true, order: true } })) as unknown as { trackSlug: string; name: string; order: number }[];
-  const have = new Set(existing.map((e) => `${e.trackSlug}::${e.name.toLowerCase()}`));
-  const nextOrder = new Map<string, number>();
-  for (const slug of slugs) nextOrder.set(slug, Math.max(-1, ...existing.filter((e) => e.trackSlug === slug).map((e) => e.order)) + 1);
-
-  let created = 0, skipped = 0;
-  for (const p of parsed) {
-    const key = `${p.trackSlug}::${p.name.toLowerCase()}`;
-    if (have.has(key)) { skipped++; continue; }
-    const order = nextOrder.get(p.trackSlug) ?? 0;
-    nextOrder.set(p.trackSlug, order + 1);
-    await prisma.portfolio.create({ data: { trackSlug: p.trackSlug, name: p.name, order } });
-    have.add(key); created++;
-  }
-
-  await audit(s.email, "portfolio.bulk", "Portfolio", undefined, `created=${created} skipped=${skipped}`);
-  return NextResponse.json({ ok: true, created, skipped, unresolved });
+    try {
+      if (creations.length > 0) {
+        await prisma.$transaction(creations.map((c) => prisma.portfolio.create({ data: c })));
+      }
+      await audit(s.email, "portfolio.bulk", "Portfolio", undefined, `created=${created} skipped=${skipped} errors=${errors}`);
+      return NextResponse.json({ ok: true, created, skipped, errors });
+    } catch (err) {
+      console.error("[admin/portfolios/bulk]", err);
+      return NextResponse.json({ error: "Failed to import portfolios" }, { status: 500 });
+    }
 }

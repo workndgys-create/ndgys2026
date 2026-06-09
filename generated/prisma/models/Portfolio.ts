@@ -40,6 +40,7 @@ export type PortfolioMinAggregateOutputType = {
   name: string | null
   order: number | null
   status: string | null
+  archived: boolean | null
   heldUntil: Date | null
   heldBy: string | null
   assignedTo: string | null
@@ -52,6 +53,7 @@ export type PortfolioMaxAggregateOutputType = {
   name: string | null
   order: number | null
   status: string | null
+  archived: boolean | null
   heldUntil: Date | null
   heldBy: string | null
   assignedTo: string | null
@@ -64,6 +66,7 @@ export type PortfolioCountAggregateOutputType = {
   name: number
   order: number
   status: number
+  archived: number
   heldUntil: number
   heldBy: number
   assignedTo: number
@@ -86,6 +89,7 @@ export type PortfolioMinAggregateInputType = {
   name?: true
   order?: true
   status?: true
+  archived?: true
   heldUntil?: true
   heldBy?: true
   assignedTo?: true
@@ -98,6 +102,7 @@ export type PortfolioMaxAggregateInputType = {
   name?: true
   order?: true
   status?: true
+  archived?: true
   heldUntil?: true
   heldBy?: true
   assignedTo?: true
@@ -110,6 +115,7 @@ export type PortfolioCountAggregateInputType = {
   name?: true
   order?: true
   status?: true
+  archived?: true
   heldUntil?: true
   heldBy?: true
   assignedTo?: true
@@ -209,6 +215,7 @@ export type PortfolioGroupByOutputType = {
   name: string
   order: number
   status: string
+  archived: boolean
   heldUntil: Date | null
   heldBy: string | null
   assignedTo: string | null
@@ -244,6 +251,7 @@ export type PortfolioWhereInput = {
   name?: Prisma.StringFilter<"Portfolio"> | string
   order?: Prisma.IntFilter<"Portfolio"> | number
   status?: Prisma.StringFilter<"Portfolio"> | string
+  archived?: Prisma.BoolFilter<"Portfolio"> | boolean
   heldUntil?: Prisma.DateTimeNullableFilter<"Portfolio"> | Date | string | null
   heldBy?: Prisma.StringNullableFilter<"Portfolio"> | string | null
   assignedTo?: Prisma.StringNullableFilter<"Portfolio"> | string | null
@@ -256,6 +264,7 @@ export type PortfolioOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   order?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  archived?: Prisma.SortOrder
   heldUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   heldBy?: Prisma.SortOrderInput | Prisma.SortOrder
   assignedTo?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -272,6 +281,7 @@ export type PortfolioWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Portfolio"> | string
   order?: Prisma.IntFilter<"Portfolio"> | number
   status?: Prisma.StringFilter<"Portfolio"> | string
+  archived?: Prisma.BoolFilter<"Portfolio"> | boolean
   heldUntil?: Prisma.DateTimeNullableFilter<"Portfolio"> | Date | string | null
   heldBy?: Prisma.StringNullableFilter<"Portfolio"> | string | null
   assignedTo?: Prisma.StringNullableFilter<"Portfolio"> | string | null
@@ -284,6 +294,7 @@ export type PortfolioOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   order?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  archived?: Prisma.SortOrder
   heldUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   heldBy?: Prisma.SortOrderInput | Prisma.SortOrder
   assignedTo?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -304,6 +315,7 @@ export type PortfolioScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Portfolio"> | string
   order?: Prisma.IntWithAggregatesFilter<"Portfolio"> | number
   status?: Prisma.StringWithAggregatesFilter<"Portfolio"> | string
+  archived?: Prisma.BoolWithAggregatesFilter<"Portfolio"> | boolean
   heldUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"Portfolio"> | Date | string | null
   heldBy?: Prisma.StringNullableWithAggregatesFilter<"Portfolio"> | string | null
   assignedTo?: Prisma.StringNullableWithAggregatesFilter<"Portfolio"> | string | null
@@ -316,6 +328,7 @@ export type PortfolioCreateInput = {
   name: string
   order?: number
   status?: string
+  archived?: boolean
   heldUntil?: Date | string | null
   heldBy?: string | null
   assignedTo?: string | null
@@ -328,6 +341,7 @@ export type PortfolioUncheckedCreateInput = {
   name: string
   order?: number
   status?: string
+  archived?: boolean
   heldUntil?: Date | string | null
   heldBy?: string | null
   assignedTo?: string | null
@@ -340,6 +354,7 @@ export type PortfolioUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   heldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   heldBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -352,6 +367,7 @@ export type PortfolioUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   heldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   heldBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -364,6 +380,7 @@ export type PortfolioCreateManyInput = {
   name: string
   order?: number
   status?: string
+  archived?: boolean
   heldUntil?: Date | string | null
   heldBy?: string | null
   assignedTo?: string | null
@@ -376,6 +393,7 @@ export type PortfolioUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   heldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   heldBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -388,6 +406,7 @@ export type PortfolioUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   order?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   heldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   heldBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -405,6 +424,7 @@ export type PortfolioCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   order?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  archived?: Prisma.SortOrder
   heldUntil?: Prisma.SortOrder
   heldBy?: Prisma.SortOrder
   assignedTo?: Prisma.SortOrder
@@ -421,6 +441,7 @@ export type PortfolioMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   order?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  archived?: Prisma.SortOrder
   heldUntil?: Prisma.SortOrder
   heldBy?: Prisma.SortOrder
   assignedTo?: Prisma.SortOrder
@@ -433,6 +454,7 @@ export type PortfolioMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   order?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  archived?: Prisma.SortOrder
   heldUntil?: Prisma.SortOrder
   heldBy?: Prisma.SortOrder
   assignedTo?: Prisma.SortOrder
@@ -451,6 +473,7 @@ export type PortfolioSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   name?: boolean
   order?: boolean
   status?: boolean
+  archived?: boolean
   heldUntil?: boolean
   heldBy?: boolean
   assignedTo?: boolean
@@ -463,6 +486,7 @@ export type PortfolioSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   name?: boolean
   order?: boolean
   status?: boolean
+  archived?: boolean
   heldUntil?: boolean
   heldBy?: boolean
   assignedTo?: boolean
@@ -475,6 +499,7 @@ export type PortfolioSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   name?: boolean
   order?: boolean
   status?: boolean
+  archived?: boolean
   heldUntil?: boolean
   heldBy?: boolean
   assignedTo?: boolean
@@ -487,13 +512,14 @@ export type PortfolioSelectScalar = {
   name?: boolean
   order?: boolean
   status?: boolean
+  archived?: boolean
   heldUntil?: boolean
   heldBy?: boolean
   assignedTo?: boolean
   createdAt?: boolean
 }
 
-export type PortfolioOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "trackSlug" | "name" | "order" | "status" | "heldUntil" | "heldBy" | "assignedTo" | "createdAt", ExtArgs["result"]["portfolio"]>
+export type PortfolioOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "trackSlug" | "name" | "order" | "status" | "archived" | "heldUntil" | "heldBy" | "assignedTo" | "createdAt", ExtArgs["result"]["portfolio"]>
 
 export type $PortfolioPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Portfolio"
@@ -504,6 +530,7 @@ export type $PortfolioPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     name: string
     order: number
     status: string
+    archived: boolean
     heldUntil: Date | null
     heldBy: string | null
     assignedTo: string | null
@@ -936,6 +963,7 @@ export interface PortfolioFieldRefs {
   readonly name: Prisma.FieldRef<"Portfolio", 'String'>
   readonly order: Prisma.FieldRef<"Portfolio", 'Int'>
   readonly status: Prisma.FieldRef<"Portfolio", 'String'>
+  readonly archived: Prisma.FieldRef<"Portfolio", 'Boolean'>
   readonly heldUntil: Prisma.FieldRef<"Portfolio", 'DateTime'>
   readonly heldBy: Prisma.FieldRef<"Portfolio", 'String'>
   readonly assignedTo: Prisma.FieldRef<"Portfolio", 'String'>

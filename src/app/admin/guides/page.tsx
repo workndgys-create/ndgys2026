@@ -2,18 +2,14 @@
 import { useEffect, useRef, useState } from "react";
 import AdminShell, { Panel } from "@/components/admin/Shell";
 
-const TRACK_OPTIONS = [
-  { value: "global-policy", label: "Global Policy Dialogue" }, { value: "climate", label: "Climate & Sustainability Forum" },
-  { value: "technology", label: "Technology & Society Lab" }, { value: "entrepreneurship", label: "Youth Entrepreneurship Track" },
-  { value: "human-rights", label: "Human Rights Council" }, { value: "press", label: "International Press Corps" },
-  { value: "leadership", label: "Leadership & Diplomacy Summit" }, { value: "crisis", label: "Continuous Crisis Committee" }
-];
+// load tracks from public API
 type Guide = { id: string; trackSlug: string; title: string; fileName: string; sizeBytes: number; uploadedAt: string };
 function kb(n: number) { return n > 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`; }
 
 export default function Page() {
   const [items, setItems] = useState<Guide[] | null>(null);
-  const [trackSlug, setTrackSlug] = useState(TRACK_OPTIONS[0].value);
+  const [tracks, setTracks] = useState<{ value: string; label: string }[]>([]);
+  const [trackSlug, setTrackSlug] = useState("");
   const [title, setTitle] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
@@ -21,6 +17,16 @@ export default function Page() {
 
   function load() { fetch("/api/admin/guides").then(async (r) => setItems(r.ok ? (await r.json()).items : [])); }
   useEffect(load, []);
+  useEffect(() => {
+    void (async () => {
+      try {
+        const r = await fetch("/api/public/tracks");
+        if (r.ok) {
+          const t = await r.json(); setTracks(t); if (!trackSlug && t.length) setTrackSlug(t[0].value);
+        }
+      } catch (_) { }
+    })();
+  }, []);
 
   async function upload(e: React.FormEvent) {
     e.preventDefault(); setMsg("");
@@ -47,7 +53,7 @@ export default function Page() {
           <div>
             <label className="text-sm font-500 text-ink/80">Committee</label>
             <select value={trackSlug} onChange={(e) => setTrackSlug(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5">
-              {TRACK_OPTIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+              {tracks.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
           </div>
           <div>
@@ -72,7 +78,7 @@ export default function Page() {
               <div key={g.id} className="flex items-center justify-between rounded-xl border border-ink/10 bg-paper p-4">
                 <div>
                   <p className="font-600 text-ink">{g.title}</p>
-                  <p className="text-xs text-slatey">{TRACK_OPTIONS.find((t) => t.value === g.trackSlug)?.label} · {g.fileName} · {kb(g.sizeBytes)}</p>
+                  <p className="text-xs text-slatey">{tracks.find((t) => t.value === g.trackSlug)?.label} · {g.fileName} · {kb(g.sizeBytes)}</p>
                 </div>
                 <button onClick={() => remove(g.id)} className="text-sm font-600 text-red-600 hover:underline">Delete</button>
               </div>

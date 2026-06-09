@@ -202,6 +202,7 @@ export const TrackScalarFieldEnum = {
   agenda: 'agenda',
   difficulty: 'difficulty',
   isOpen: 'isOpen',
+  archived: 'archived',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -350,6 +351,7 @@ export const PortfolioScalarFieldEnum = {
   name: 'name',
   order: 'order',
   status: 'status',
+  archived: 'archived',
   heldUntil: 'heldUntil',
   heldBy: 'heldBy',
   assignedTo: 'assignedTo',

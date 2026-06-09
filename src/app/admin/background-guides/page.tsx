@@ -2,13 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import AdminShell, { Panel } from "@/components/admin/Shell";
 
-const TRACK_OPTIONS = [
-  { value: "", label: "All MUN delegates" },
-  { value: "global-policy", label: "Global Policy Dialogue" }, { value: "climate", label: "Climate & Sustainability Forum" },
-  { value: "technology", label: "Technology & Society Lab" }, { value: "human-rights", label: "Human Rights Council" },
-  { value: "leadership", label: "Leadership & Diplomacy Summit" }, { value: "crisis", label: "Continuous Crisis Committee" },
-  { value: "press", label: "International Press Corps" }, { value: "entrepreneurship", label: "Youth Entrepreneurship Track" }
-];
+// load active tracks from public API
 type G = { id: string; title: string; trackSlug: string | null; fileName: string; sizeBytes: number; notifiedCount: number; notifiedAt: string | null; uploadedAt: string };
 function kb(n: number) { return n > 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`; }
 
@@ -16,6 +10,7 @@ export default function Page() {
   const [items, setItems] = useState<G[] | null>(null);
   const [title, setTitle] = useState("");
   const [trackSlug, setTrackSlug] = useState("");
+  const [tracks, setTracks] = useState<{ value: string; label: string }[]>([]);
   const [notify, setNotify] = useState(true);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
@@ -23,6 +18,15 @@ export default function Page() {
 
   function load() { fetch("/api/admin/background-guides").then(async (r) => setItems(r.ok ? (await r.json()).items : [])); }
   useEffect(load, []);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const r = await fetch("/api/public/tracks");
+        if (r.ok) setTracks(await r.json());
+      } catch (_) { }
+    })();
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setMsg("");
@@ -55,7 +59,8 @@ export default function Page() {
           <div>
             <label className="text-sm font-500 text-ink/80">Send to</label>
             <select value={trackSlug} onChange={(e) => setTrackSlug(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5">
-              {TRACK_OPTIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+              <option value="">All MUN delegates</option>
+              {tracks.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
           </div>
           <div className="sm:col-span-2">
@@ -80,7 +85,7 @@ export default function Page() {
               <div key={g.id} className="flex items-center justify-between rounded-xl border border-ink/10 bg-paper p-4">
                 <div>
                   <p className="font-600 text-ink">{g.title}</p>
-                  <p className="text-xs text-slatey">{TRACK_OPTIONS.find((t) => t.value === (g.trackSlug || ""))?.label} · {g.fileName} · {kb(g.sizeBytes)} · notified {g.notifiedCount}</p>
+                  <p className="text-xs text-slatey">{tracks.find((t) => t.value === (g.trackSlug || ""))?.label} · {g.fileName} · {kb(g.sizeBytes)} · notified {g.notifiedCount}</p>
                 </div>
                 <button onClick={() => remove(g.id)} className="text-sm font-600 text-red-600 hover:underline">Delete</button>
               </div>

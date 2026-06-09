@@ -45,6 +45,7 @@ export type TrackMinAggregateOutputType = {
   agenda: string | null
   difficulty: string | null
   isOpen: boolean | null
+  archived: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +59,7 @@ export type TrackMaxAggregateOutputType = {
   agenda: string | null
   difficulty: string | null
   isOpen: boolean | null
+  archived: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -71,6 +73,7 @@ export type TrackCountAggregateOutputType = {
   agenda: number
   difficulty: number
   isOpen: number
+  archived: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -96,6 +99,7 @@ export type TrackMinAggregateInputType = {
   agenda?: true
   difficulty?: true
   isOpen?: true
+  archived?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -109,6 +113,7 @@ export type TrackMaxAggregateInputType = {
   agenda?: true
   difficulty?: true
   isOpen?: true
+  archived?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -122,6 +127,7 @@ export type TrackCountAggregateInputType = {
   agenda?: true
   difficulty?: true
   isOpen?: true
+  archived?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -222,6 +228,7 @@ export type TrackGroupByOutputType = {
   agenda: string
   difficulty: string
   isOpen: boolean
+  archived: boolean
   createdAt: Date
   updatedAt: Date
   _count: TrackCountAggregateOutputType | null
@@ -258,6 +265,7 @@ export type TrackWhereInput = {
   agenda?: Prisma.StringFilter<"Track"> | string
   difficulty?: Prisma.StringFilter<"Track"> | string
   isOpen?: Prisma.BoolFilter<"Track"> | boolean
+  archived?: Prisma.BoolFilter<"Track"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Track"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Track"> | Date | string
 }
@@ -271,6 +279,7 @@ export type TrackOrderByWithRelationInput = {
   agenda?: Prisma.SortOrder
   difficulty?: Prisma.SortOrder
   isOpen?: Prisma.SortOrder
+  archived?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -287,6 +296,7 @@ export type TrackWhereUniqueInput = Prisma.AtLeast<{
   agenda?: Prisma.StringFilter<"Track"> | string
   difficulty?: Prisma.StringFilter<"Track"> | string
   isOpen?: Prisma.BoolFilter<"Track"> | boolean
+  archived?: Prisma.BoolFilter<"Track"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Track"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Track"> | Date | string
 }, "id" | "slug">
@@ -300,6 +310,7 @@ export type TrackOrderByWithAggregationInput = {
   agenda?: Prisma.SortOrder
   difficulty?: Prisma.SortOrder
   isOpen?: Prisma.SortOrder
+  archived?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TrackCountOrderByAggregateInput
@@ -321,6 +332,7 @@ export type TrackScalarWhereWithAggregatesInput = {
   agenda?: Prisma.StringWithAggregatesFilter<"Track"> | string
   difficulty?: Prisma.StringWithAggregatesFilter<"Track"> | string
   isOpen?: Prisma.BoolWithAggregatesFilter<"Track"> | boolean
+  archived?: Prisma.BoolWithAggregatesFilter<"Track"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Track"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Track"> | Date | string
 }
@@ -334,6 +346,7 @@ export type TrackCreateInput = {
   agenda: string
   difficulty?: string
   isOpen?: boolean
+  archived?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -347,6 +360,7 @@ export type TrackUncheckedCreateInput = {
   agenda: string
   difficulty?: string
   isOpen?: boolean
+  archived?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -360,6 +374,7 @@ export type TrackUpdateInput = {
   agenda?: Prisma.StringFieldUpdateOperationsInput | string
   difficulty?: Prisma.StringFieldUpdateOperationsInput | string
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -373,6 +388,7 @@ export type TrackUncheckedUpdateInput = {
   agenda?: Prisma.StringFieldUpdateOperationsInput | string
   difficulty?: Prisma.StringFieldUpdateOperationsInput | string
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -386,6 +402,7 @@ export type TrackCreateManyInput = {
   agenda: string
   difficulty?: string
   isOpen?: boolean
+  archived?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -399,6 +416,7 @@ export type TrackUpdateManyMutationInput = {
   agenda?: Prisma.StringFieldUpdateOperationsInput | string
   difficulty?: Prisma.StringFieldUpdateOperationsInput | string
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -412,6 +430,7 @@ export type TrackUncheckedUpdateManyInput = {
   agenda?: Prisma.StringFieldUpdateOperationsInput | string
   difficulty?: Prisma.StringFieldUpdateOperationsInput | string
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -425,6 +444,7 @@ export type TrackCountOrderByAggregateInput = {
   agenda?: Prisma.SortOrder
   difficulty?: Prisma.SortOrder
   isOpen?: Prisma.SortOrder
+  archived?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -443,6 +463,7 @@ export type TrackMaxOrderByAggregateInput = {
   agenda?: Prisma.SortOrder
   difficulty?: Prisma.SortOrder
   isOpen?: Prisma.SortOrder
+  archived?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -456,6 +477,7 @@ export type TrackMinOrderByAggregateInput = {
   agenda?: Prisma.SortOrder
   difficulty?: Prisma.SortOrder
   isOpen?: Prisma.SortOrder
+  archived?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -476,6 +498,7 @@ export type TrackSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   agenda?: boolean
   difficulty?: boolean
   isOpen?: boolean
+  archived?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["track"]>
@@ -489,6 +512,7 @@ export type TrackSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   agenda?: boolean
   difficulty?: boolean
   isOpen?: boolean
+  archived?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["track"]>
@@ -502,6 +526,7 @@ export type TrackSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   agenda?: boolean
   difficulty?: boolean
   isOpen?: boolean
+  archived?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["track"]>
@@ -515,11 +540,12 @@ export type TrackSelectScalar = {
   agenda?: boolean
   difficulty?: boolean
   isOpen?: boolean
+  archived?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TrackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "fee" | "capacity" | "agenda" | "difficulty" | "isOpen" | "createdAt" | "updatedAt", ExtArgs["result"]["track"]>
+export type TrackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "fee" | "capacity" | "agenda" | "difficulty" | "isOpen" | "archived" | "createdAt" | "updatedAt", ExtArgs["result"]["track"]>
 
 export type $TrackPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Track"
@@ -533,6 +559,7 @@ export type $TrackPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     agenda: string
     difficulty: string
     isOpen: boolean
+    archived: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["track"]>
@@ -966,6 +993,7 @@ export interface TrackFieldRefs {
   readonly agenda: Prisma.FieldRef<"Track", 'String'>
   readonly difficulty: Prisma.FieldRef<"Track", 'String'>
   readonly isOpen: Prisma.FieldRef<"Track", 'Boolean'>
+  readonly archived: Prisma.FieldRef<"Track", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Track", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Track", 'DateTime'>
 }

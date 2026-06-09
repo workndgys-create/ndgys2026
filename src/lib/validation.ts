@@ -3,22 +3,17 @@ import { z } from "zod";
 // Seed catalogue — mirrored into the DB `Track` table by prisma/seed.ts.
 // At runtime, routes read fees/capacity from the DB so admin edits take effect.
 export const TRACKS = [
-  { slug: "global-policy", name: "Global Policy Dialogue", fee: 2500, capacity: 60, difficulty: "Intermediate",
-    agenda: "Accountability for civilian protection under international humanitarian law and multilateral mechanisms." },
-  { slug: "climate", name: "Climate & Sustainability Forum", fee: 2500, capacity: 50, difficulty: "Intermediate",
-    agenda: "Financing a just energy transition — balancing growth, equity and the 1.5°C target." },
-  { slug: "technology", name: "Technology & Society Lab", fee: 2500, capacity: 50, difficulty: "Intermediate",
-    agenda: "Governing artificial intelligence: rights, safety and the digital public square." },
-  { slug: "entrepreneurship", name: "Youth Entrepreneurship Track", fee: 3000, capacity: 40, difficulty: "Beginner",
-    agenda: "Pitch, prototype and pressure-test ventures with founders and investors." },
-  { slug: "human-rights", name: "Human Rights Council", fee: 2500, capacity: 50, difficulty: "Intermediate",
-    agenda: "Protecting the rights of migrants in enforcement and border policy." },
-  { slug: "press", name: "International Press Corps", fee: 2000, capacity: 30, difficulty: "Beginner",
-    agenda: "Reporters, photographers and caricaturists documenting the Summit live." },
-  { slug: "leadership", name: "Leadership & Diplomacy Summit", fee: 3000, capacity: 40, difficulty: "Advanced",
-    agenda: "High-table diplomacy simulation on a live, evolving geopolitical crisis." },
-  { slug: "crisis", name: "Continuous Crisis Committee", fee: 3500, capacity: 25, difficulty: "Advanced",
-    agenda: "Classified. A continuous, fast-moving crisis that rewards quick thinking." }
+  { slug: "unsc", name: "United Nations Security Council", fee: 2500, capacity: 15, difficulty: "Advanced", agenda: "Security and peacekeeping issues." },
+  { slug: "unga", name: "United Nations General Assembly", fee: 2000, capacity: 60, difficulty: "Intermediate", agenda: "General multilateral discussions and global policy." },
+  { slug: "unhrc", name: "United Nations Human Rights Council", fee: 2000, capacity: 50, difficulty: "Intermediate", agenda: "Human rights protections and policy." },
+  { slug: "csw", name: "United Nations Commission on the Status of Women", fee: 2000, capacity: 40, difficulty: "Intermediate", agenda: "Gender equality and women's rights." },
+  { slug: "unicef", name: "United Nations International Children’s Emergency Fund (UNICEF)", fee: 2000, capacity: 40, difficulty: "Intermediate", agenda: "Child welfare and emergency response." },
+  { slug: "unep", name: "United Nations Environment Programme", fee: 2000, capacity: 50, difficulty: "Intermediate", agenda: "Environmental policy and sustainability." },
+  { slug: "wto", name: "World Trade Organization", fee: 2500, capacity: 50, difficulty: "Intermediate", agenda: "Global trade rules and disputes." },
+  { slug: "aippm", name: "All India Political Parties Meet", fee: 1500, capacity: 60, difficulty: "Beginner", agenda: "National multiparty dialogue and consensus building." },
+  { slug: "lok-sabha", name: "Lok Sabha", fee: 1500, capacity: 60, difficulty: "Beginner", agenda: "Parliamentary debate and lawmaking." },
+  { slug: "war-cabinet", name: "Indian War Cabinet", fee: 1500, capacity: 30, difficulty: "Advanced", agenda: "Crisis governance and strategic decision-making." },
+  { slug: "ipl", name: "Indian Premier League", fee: 1500, capacity: 40, difficulty: "Beginner", agenda: "Sports governance and league administration." }
 ] as const;
 
 export const seedTrackBySlug = (slug: string) => TRACKS.find((t) => t.slug === slug);

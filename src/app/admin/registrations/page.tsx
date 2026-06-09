@@ -11,16 +11,7 @@ type Reg = {
 type Resp = { items: Reg[]; total: number; page: number; pages: number };
 type Track = { slug: string; name: string };
 
-const TRACK_OPTS: Track[] = [
-  { slug: "global-policy", name: "Global Policy Dialogue" },
-  { slug: "climate", name: "Climate & Sustainability Forum" },
-  { slug: "technology", name: "Technology & Society Lab" },
-  { slug: "entrepreneurship", name: "Youth Entrepreneurship Track" },
-  { slug: "human-rights", name: "Human Rights Council" },
-  { slug: "press", name: "International Press Corps" },
-  { slug: "leadership", name: "Leadership & Diplomacy Summit" },
-  { slug: "crisis", name: "Continuous Crisis Committee" }
-];
+// load tracks from public API
 
 export default function RegistrationsPage() {
   const router = useRouter();
@@ -31,6 +22,7 @@ export default function RegistrationsPage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
+  const [tracks, setTracks] = useState<Track[]>([]);
   const [badgeError, setBadgeError] = useState("");
   const [viewReg, setViewReg] = useState<any | null>(null);
   const [viewLoading, setViewLoading] = useState(false);
@@ -61,6 +53,15 @@ export default function RegistrationsPage() {
     const t = setTimeout(load, 250);
     return () => clearTimeout(t);
   }, [load]);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const r = await fetch("/api/public/tracks");
+        if (r.ok) setTracks(await r.json());
+      } catch (_) { }
+    })();
+  }, []);
 
   async function changeStatus(id: string, next: string) {
     await fetch(`/api/admin/registrations/${id}`, {
@@ -131,7 +132,7 @@ export default function RegistrationsPage() {
         </select>
         <select value={track} onChange={(e) => { setPage(1); setTrack(e.target.value); }} className="rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold">
           <option value="">All tracks</option>
-          {TRACK_OPTS.map((t) => <option key={t.slug} value={t.slug}>{t.name}</option>)}
+          {tracks.map((t) => <option key={t.slug} value={t.slug}>{t.name}</option>)}
         </select>
         <a href="/api/admin/registrations/export" className="rounded-full border border-ink/15 px-4 py-2 text-sm font-600 text-ink hover:border-gold">Export CSV</a>
         <button onClick={() => setShowAdd(true)} className="rounded-full bg-midnight px-4 py-2 text-sm font-600 text-cream hover:bg-royal">+ Offline</button>
@@ -195,7 +196,7 @@ export default function RegistrationsPage() {
         </div>
       )}
 
-      {showAdd && <OfflineModal tracks={TRACK_OPTS} onClose={() => setShowAdd(false)} onSaved={() => { setShowAdd(false); load(); }} />}
+      {showAdd && <OfflineModal tracks={tracks} onClose={() => setShowAdd(false)} onSaved={() => { setShowAdd(false); load(); }} />}
       {badgeError && <p className="mt-3 text-sm text-red-600">{badgeError}</p>}
       {actionMessage && <p className="mt-3 text-sm text-slatey">{actionMessage}</p>}
 

@@ -7,16 +7,19 @@ const INK        = "#2C0F04";
 const SLATE      = "#8B6914";
 const CREAM      = "#FFE8C8";
 
-// Committee accent colours for the badge band — warm Indian heritage palette.
+// Committee accent colours for the badge band — palette mapped to canonical committees.
 const TRACK_COLOURS: Record<string, string> = {
-  "global-policy":    "#6B2D0A",  // deep terracotta
-  "climate":          "#2E7D5B",  // forest green (kept — contextually meaningful)
-  "technology":       "#7C3400",  // burnt sienna
-  "entrepreneurship": "#D97706",  // saffron
-  "human-rights":     "#A23B5E",  // heritage rose
-  "press":            "#5A3A28",  // warm leather
-  "leadership":       "#4A2008",  // midnight brown
-  "crisis":           "#9C2B2B"   // deep red
+  "unsc":       "#6B2D0A", // deep terracotta
+  "unga":       "#2E7D5B", // forest green
+  "unhrc":      "#A23B5E", // heritage rose
+  "csw":        "#D97706", // saffron
+  "unicef":     "#3B82F6", // bright blue
+  "unep":       "#16A34A", // green
+  "wto":        "#7C3AED", // purple
+  "aippm":      "#FF8A00", // orange
+  "lok-sabha":  "#92400E", // copper
+  "war-cabinet":"#9C2B2B", // deep red
+  "ipl":        "#F472B6"  // pink (sports)
 };
 
 export interface BadgeData {

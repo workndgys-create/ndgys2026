@@ -4,15 +4,11 @@ import AdminShell, { Panel } from "@/components/admin/Shell";
 
 type Reg = { id: string; fullName: string; delegateId: string | null; portfolio: string | null };
 
-const TRACKS: [string, string][] = [
-  ["global-policy", "Global Policy Dialogue"], ["climate", "Climate & Sustainability Forum"],
-  ["technology", "Technology & Society Lab"], ["entrepreneurship", "Youth Entrepreneurship Track"],
-  ["human-rights", "Human Rights Council"], ["press", "International Press Corps"],
-  ["leadership", "Leadership & Diplomacy Summit"], ["crisis", "Continuous Crisis Committee"]
-];
+// load active tracks from public API
 
 export default function AllocationsAdmin() {
-  const [track, setTrack] = useState(TRACKS[0][0]);
+  const [tracks, setTracks] = useState<{ value: string; label: string }[]>([]);
+  const [track, setTrack] = useState("");
   const [rows, setRows] = useState<Reg[] | null>(null);
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -29,6 +25,18 @@ export default function AllocationsAdmin() {
       });
   }, [track]);
   useEffect(load, [load]);
+  useEffect(() => {
+    void (async () => {
+      try {
+        const r = await fetch("/api/public/tracks");
+        if (r.ok) {
+          const t = await r.json();
+          setTracks(t);
+          if (!track && t.length) setTrack(t[0].value);
+        }
+      } catch (_) { }
+    })();
+  }, []);
 
   async function save(id: string) {
     setSavingId(id);
@@ -50,7 +58,7 @@ export default function AllocationsAdmin() {
         title="Assign portfolios"
         action={
           <select value={track} onChange={(e) => setTrack(e.target.value)} className="rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold">
-            {TRACKS.map(([slug, name]) => <option key={slug} value={slug}>{name}</option>)}
+            {tracks.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
         }
       >

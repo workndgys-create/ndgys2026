@@ -5,12 +5,7 @@ import AdminShell, { Panel } from "@/components/admin/Shell";
 
 type Ann = { id: string; title: string; body: string; audience: string; trackSlug: string | null; publishedAt: string };
 
-const TRACK_OPTS = [
-  ["global-policy", "Global Policy Dialogue"], ["climate", "Climate & Sustainability Forum"],
-  ["technology", "Technology & Society Lab"], ["entrepreneurship", "Youth Entrepreneurship Track"],
-  ["human-rights", "Human Rights Council"], ["press", "International Press Corps"],
-  ["leadership", "Leadership & Diplomacy Summit"], ["crisis", "Continuous Crisis Committee"]
-] as const;
+// load public tracks instead of hardcoded options
 
 export default function AnnouncementsPage() {
   const router = useRouter();
@@ -18,6 +13,16 @@ export default function AnnouncementsPage() {
   const [audience, setAudience] = useState("ALL");
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
+  const [tracks, setTracks] = useState<{ value: string; label: string }[]>([]);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const r = await fetch("/api/public/tracks");
+        if (r.ok) setTracks(await r.json());
+      } catch (_) { /* ignore */ }
+    })();
+  }, []);
 
   function load() {
     fetch("/api/admin/announcements").then(async (r) => {
@@ -56,7 +61,7 @@ export default function AnnouncementsPage() {
               </select>
               {audience === "TRACK" && (
                 <select name="trackSlug" required className="rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold">
-                  {TRACK_OPTS.map(([slug, name]) => <option key={slug} value={slug}>{name}</option>)}
+                  {tracks.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
               )}
             </div>
