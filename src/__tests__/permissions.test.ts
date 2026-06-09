@@ -6,16 +6,16 @@ describe("can() — role tiers", () => {
     expect(can({ role: "SUPER_ADMIN" }, "team.manage")).toBe(true);
     expect(can({ role: "SUPER_ADMIN" }, "settings.manage")).toBe(true);
   });
-  it("ADMIN manages content/registrations but not team or settings", () => {
-    expect(can({ role: "ADMIN" }, "content.manage")).toBe(true);
-    expect(can({ role: "ADMIN" }, "registrations.manage")).toBe(true);
-    expect(can({ role: "ADMIN" }, "team.manage")).toBe(false);
-    expect(can({ role: "ADMIN" }, "settings.manage")).toBe(false);
+  it("DIRECTOR manages content/registrations but not team or settings", () => {
+    expect(can({ role: "DIRECTOR" }, "content.manage")).toBe(true);
+    expect(can({ role: "DIRECTOR" }, "registrations.manage")).toBe(true);
+    expect(can({ role: "DIRECTOR" }, "team.manage")).toBe(false);
+    expect(can({ role: "DIRECTOR" }, "settings.manage")).toBe(false);
   });
-  it("VIEWER is read-only", () => {
-    expect(can({ role: "VIEWER" }, "registrations.read")).toBe(true);
-    expect(can({ role: "VIEWER" }, "registrations.manage")).toBe(false);
-    expect(can({ role: "VIEWER" }, "content.manage")).toBe(false);
+  it("DELEGATE_AFFAIRS_EXECUTIVE is read-only for manage actions", () => {
+    expect(can({ role: "DELEGATE_AFFAIRS_EXECUTIVE" }, "registrations.read")).toBe(true);
+    expect(can({ role: "DELEGATE_AFFAIRS_EXECUTIVE" }, "registrations.manage")).toBe(false);
+    expect(can({ role: "DELEGATE_AFFAIRS_EXECUTIVE" }, "content.manage")).toBe(false);
   });
 });
 
@@ -38,7 +38,7 @@ describe("effectivePermissions + canFromList", () => {
     expect(canFromList(list, "team.manage")).toBe(true);
   });
   it("viewer list excludes manage actions", () => {
-    const list = effectivePermissions({ role: "VIEWER" });
+    const list = effectivePermissions({ role: "DELEGATE_AFFAIRS_EXECUTIVE" });
     expect(canFromList(list, "registrations.read")).toBe(true);
     expect(canFromList(list, "registrations.manage")).toBe(false);
   });

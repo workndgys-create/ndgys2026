@@ -4,12 +4,7 @@ import CrudManager from "@/components/admin/Crud";
 import { useEffect, useState } from "react";
 import { Panel } from "@/components/admin/Shell";
 
-const DEFAULT_TRACKS = [
-  { value: "global-policy", label: "Global Policy Dialogue" }, { value: "climate", label: "Climate & Sustainability Forum" },
-  { value: "technology", label: "Technology & Society Lab" }, { value: "entrepreneurship", label: "Youth Entrepreneurship Track" },
-  { value: "human-rights", label: "Human Rights Council" }, { value: "press", label: "International Press Corps" },
-  { value: "leadership", label: "Leadership & Diplomacy Summit" }, { value: "crisis", label: "Continuous Crisis Committee" }
-];
+// tracks are loaded from /api/public/tracks
 const STATE: Record<string, string> = { AVAILABLE: "Available", HELD: "On hold", ASSIGNED: "Assigned" };
 
 export default function Page() {
@@ -129,7 +124,7 @@ function BulkAdd({ tracks, refreshTracks }: { tracks: { value: string; label: st
       )}
       <textarea
         value={text} onChange={(e) => setText(e.target.value)} rows={8}
-        placeholder={mode === "committee" ? "United States\nUnited Kingdom\nFrance\n..." : "global-policy, United States\nclimate, Brazil\ncrisis, Minister of Defence\n..."}
+        placeholder={mode === "committee" ? "United States\nUnited Kingdom\nFrance\n..." : "unsc, United States\nunga, Brazil\nwar-cabinet, Minister of Defence\n..."}
         className="w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 font-mono text-sm outline-none focus:border-gold"
       />
       <div className="mt-3 flex items-center gap-3">

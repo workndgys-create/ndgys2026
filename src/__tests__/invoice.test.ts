@@ -9,7 +9,7 @@ describe("generateInvoicePdf", () => {
       delegateId: "NDGYS-2026-AB12",
       fullName: "Aanya Rao",
       email: "aanya@example.com",
-      trackName: "Global Policy Dialogue",
+      trackName: "United Nations Security Council",
       amount: 250000
     });
     expect(pdf.length).toBeGreaterThan(800);

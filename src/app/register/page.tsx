@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useRef, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { TRACKS } from "@/lib/validation";
 
 declare global {
   interface Window { Cashfree?: any; }
@@ -33,9 +32,11 @@ const HEARD = [
 
 function RegisterInner() {
   const params = useSearchParams();
-  const preTrack = params.get("track") || TRACKS[0].slug;
+  const preTrack = params.get("track") || "";
 
+  const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number }[]>([]);
   const [track, setTrack] = useState(preTrack);
+  const [committeeSearch, setCommitteeSearch] = useState("");
   const [status, setStatus] = useState<"idle" | "processing" | "paid" | "error" | "full">("idle");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
@@ -60,8 +61,20 @@ function RegisterInner() {
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => { if (TRACKS.some((t) => t.slug === preTrack)) setTrack(preTrack); }, [preTrack]);
-  const fee = useMemo(() => TRACKS.find((t) => t.slug === track)?.fee ?? 0, [track]);
+  useEffect(() => {
+    void (async () => {
+      try {
+        const r = await fetch("/api/public/tracks");
+        if (r.ok) {
+          const t = await r.json(); setTracks(t);
+          if (preTrack && t.some((x: any) => x.value === preTrack)) setTrack(preTrack);
+          else if (!preTrack && t.length) setTrack(t[0].value);
+        }
+      } catch (_) { }
+    })();
+  }, [preTrack]);
+
+  const fee = useMemo(() => tracks.find((t) => t.value === track)?.fee ?? 0, [track, tracks]);
 
   useEffect(() => {
     fetch("/api/registration-questions", { cache: "no-store" })
@@ -281,9 +294,10 @@ function RegisterInner() {
 
           <div>
             <label className="text-sm font-500 text-ink/80">Committee</label>
-            <select name="track" value={track} onChange={(e) => setTrack(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
-              {TRACKS.map((t) => <option key={t.slug} value={t.slug}>{t.name}</option>)}
-            </select>
+              <input value={committeeSearch} onChange={(e) => setCommitteeSearch(e.target.value)} placeholder="Search committee" className="mt-1 mb-2 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 sm:w-80" />
+              <select name="track" value={track} onChange={(e) => setTrack(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
+                {tracks.filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase())).map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+              </select>
           </div>
 
           <div>

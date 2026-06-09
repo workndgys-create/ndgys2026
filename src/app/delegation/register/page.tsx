@@ -1,7 +1,6 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
-import { TRACKS } from "@/lib/validation";
 
 declare global {
   interface Window { Cashfree?: any; }
@@ -21,9 +20,11 @@ type Member = { fullName: string; email: string; phone: string; track: string };
 
 export default function DelegationRegisterPage() {
   const [members, setMembers] = useState<Member[]>([
-    { fullName: "", email: "", phone: "", track: TRACKS[0].slug },
-    { fullName: "", email: "", phone: "", track: TRACKS[0].slug }
+    { fullName: "", email: "", phone: "", track: "" },
+    { fullName: "", email: "", phone: "", track: "" }
   ]);
+  const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number }[]>([]);
+  const [committeeSearch, setCommitteeSearch] = useState("");
   const [bulkOpen, setBulkOpen] = useState(false);
   const [bulkText, setBulkText] = useState("");
   const [bulkMsg, setBulkMsg] = useState("");
@@ -35,20 +36,20 @@ export default function DelegationRegisterPage() {
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
 
-  const feeOf = (slug: string) => TRACKS.find((t) => t.slug === slug)?.fee ?? 0;
+  const feeOf = (slug: string) => tracks.find((t) => t.value === slug)?.fee ?? 0;
   const subtotal = useMemo(() => members.reduce((s, m) => s + feeOf(m.track), 0), [members]);
   const total = Math.max(0, subtotal - discount);
 
-  function addMember() { if (members.length < 40) setMembers((m) => [...m, { fullName: "", email: "", phone: "", track: TRACKS[0].slug }]); }
+  function addMember() { if (members.length < 40) setMembers((m) => [...m, { fullName: "", email: "", phone: "", track: tracks[0]?.value || "" }]); }
   function removeMember(i: number) { if (members.length > 1) setMembers((m) => m.filter((_, idx) => idx !== i)); }
   function setM(i: number, k: keyof Member, v: string) { setMembers((m) => m.map((mm, idx) => (idx === i ? { ...mm, [k]: v } : mm))); }
 
   function matchTrack(token: string): string {
     const t = token.trim().toLowerCase();
-    const bySlug = TRACKS.find((x) => x.slug.toLowerCase() === t);
-    if (bySlug) return bySlug.slug;
-    const byName = TRACKS.find((x) => x.name.toLowerCase() === t || x.name.toLowerCase().includes(t));
-    return byName ? byName.slug : TRACKS[0].slug;
+    const bySlug = tracks.find((x) => x.value.toLowerCase() === t);
+    if (bySlug) return bySlug.value;
+    const byName = tracks.find((x) => x.label.toLowerCase() === t || x.label.toLowerCase().includes(t));
+    return byName ? byName.value : (tracks[0]?.value || "");
   }
 
   function importBulk() {
@@ -62,7 +63,7 @@ export default function DelegationRegisterPage() {
       const name = cols[0];
       // committee = last column that is neither the name, email nor phone
       const committeeCol = [...cols].reverse().find((c) => c !== name && c !== emailCol && c !== phoneCol) || "";
-      parsed.push({ fullName: name, email: emailCol, phone: phoneCol, track: committeeCol ? matchTrack(committeeCol) : TRACKS[0].slug });
+      parsed.push({ fullName: name, email: emailCol, phone: phoneCol, track: committeeCol ? matchTrack(committeeCol) : (tracks[0]?.value || "") });
     }
     if (!parsed.length) { setBulkMsg("Could not read any rows."); return; }
     setMembers(parsed.slice(0, 40));
@@ -105,6 +106,18 @@ export default function DelegationRegisterPage() {
     else if (v.status === 202) { setMessage("Payment is processing — confirmation emails will arrive shortly if it succeeded."); setStatus("error"); }
     else { setMessage("Payment could not be verified. If charged, contact us."); setStatus("error"); }
   }
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const r = await fetch('/api/public/tracks');
+        if (r.ok) {
+          const t = await r.json(); setTracks(t);
+          if (members.length && !members[0].track && t.length) setMembers((m) => m.map((mm) => ({ ...mm, track: t[0].value })));
+        }
+      } catch (_) {}
+    })();
+  }, []);
 
   if (status === "paid") {
     return (
@@ -160,9 +173,12 @@ export default function DelegationRegisterPage() {
                   <input value={m.fullName} onChange={(e) => setM(i, "fullName", e.target.value)} placeholder={`Delegate ${i + 1} name`} className="col-span-4 rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold" />
                   <input value={m.email} onChange={(e) => setM(i, "email", e.target.value)} placeholder="Email (optional)" className="col-span-3 rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold" />
                   <input value={m.phone} onChange={(e) => setM(i, "phone", e.target.value)} placeholder="Number" className="col-span-2 rounded-lg border border-ink/15 bg-cream px-2 py-2 text-sm outline-none focus:border-gold" />
-                  <select value={m.track} onChange={(e) => setM(i, "track", e.target.value)} className="col-span-2 rounded-lg border border-ink/15 bg-cream px-2 py-2 text-sm outline-none focus:border-gold">
-                    {TRACKS.map((t) => <option key={t.slug} value={t.slug}>{t.name}</option>)}
-                  </select>
+                  <div className="col-span-2">
+                    <input value={committeeSearch} onChange={(e) => setCommitteeSearch(e.target.value)} placeholder="Search committee" className="mb-1 w-full rounded-lg border border-ink/15 bg-cream px-2 py-1 text-sm outline-none focus:border-gold" />
+                    <select value={m.track} onChange={(e) => setM(i, "track", e.target.value)} className="w-full rounded-lg border border-ink/15 bg-cream px-2 py-2 text-sm outline-none focus:border-gold">
+                      {tracks.filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase())).map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                    </select>
+                  </div>
                   <button type="button" onClick={() => removeMember(i)} disabled={members.length <= 1} className="col-span-1 rounded-lg border border-ink/15 text-sm text-red-600 hover:border-red-300 disabled:opacity-30">&times;</button>
                 </div>
               ))}
