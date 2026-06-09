@@ -36,10 +36,6 @@ function RegisterInner() {
 
   const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number }[]>([]);
   const [track, setTrack] = useState(preTrack);
-<<<<<<< HEAD
-  const [committeeSearch, setCommitteeSearch] = useState("");
-=======
->>>>>>> 81609fc493ad40613c8678808d91ebc03307ce68
   const [status, setStatus] = useState<"idle" | "processing" | "paid" | "error" | "full">("idle");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
@@ -72,10 +68,6 @@ function RegisterInner() {
           const t = await r.json(); setTracks(t);
           if (preTrack && t.some((x: any) => x.value === preTrack)) setTrack(preTrack);
           else if (!preTrack && t.length) setTrack(t[0].value);
-<<<<<<< HEAD
-        }
-      } catch (_) { }
-=======
         } else throw new Error("Failed to fetch");
       } catch (_) {
         // Fallback mock tracks
@@ -96,7 +88,6 @@ function RegisterInner() {
         if (preTrack && mockTracks.some((x: any) => x.value === preTrack)) setTrack(preTrack);
         else if (!preTrack && mockTracks.length) setTrack(mockTracks[0].value);
       }
->>>>>>> 81609fc493ad40613c8678808d91ebc03307ce68
     })();
   }, [preTrack]);
 
@@ -115,13 +106,6 @@ function RegisterInner() {
   }
 
   async function loadPortfolios() {
-<<<<<<< HEAD
-    try {
-      const res = await fetch(`/api/portfolios?track=${track}${regId ? `&reg=${regId}` : ""}`, { cache: "no-store" });
-      const d = await res.json();
-      setPortfolios(d.portfolios || []);
-    } catch { /* keep last */ }
-=======
     const mockData: Record<string, string[]> = {
       unsc: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
       unga: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
@@ -152,7 +136,6 @@ function RegisterInner() {
       const portfolios = mockData[track] || [];
       setPortfolios(portfolios.map((name, idx) => ({ id: `mock-${idx}`, name, state: "available" as const, order: idx, heldUntil: null })));
     }
->>>>>>> 81609fc493ad40613c8678808d91ebc03307ce68
   }
   useEffect(() => {
     setSelected(""); setPortfolios(null); setDiscounted(null); setPromoMsg(""); setPortfolioQuery("");
@@ -353,14 +336,8 @@ function RegisterInner() {
 
           <div>
             <label className="text-sm font-500 text-ink/80">Committee</label>
-<<<<<<< HEAD
-              <input value={committeeSearch} onChange={(e) => setCommitteeSearch(e.target.value)} placeholder="Search committee" className="mt-1 mb-2 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 sm:w-80" />
-              <select name="track" value={track} onChange={(e) => setTrack(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
-                {tracks.filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase())).map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-=======
               <select name="track" value={track} onChange={(e) => setTrack(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
                 {tracks.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
->>>>>>> 81609fc493ad40613c8678808d91ebc03307ce68
               </select>
           </div>
 

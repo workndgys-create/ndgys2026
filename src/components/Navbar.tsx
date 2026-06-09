@@ -111,11 +111,7 @@ export default function Navbar() {
         className={`md:hidden overflow-hidden transition-all duration-300 ${open ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
           }`}
       >
-<<<<<<< HEAD
-        <div className="border-t border-[#D97706]/30 bg-[#1F0A02] px-5 pb-6 pt-2">
-=======
         <div className="border-t border-[#D97706]/30 bg-[#1F0A02]/98 backdrop-blur px-5 pb-6 pt-2">
->>>>>>> 81609fc493ad40613c8678808d91ebc03307ce68
           {[
             { href: "/", label: "Home" },
             ...about,
@@ -213,11 +209,7 @@ function Dropdown({
         )}
       </button>
       <div
-<<<<<<< HEAD
-        className={`absolute left-0 top-full mt-3 w-56 rounded-xl border border-[#D97706]/30 bg-[#1F0A02] p-2 shadow-2xl transition-all duration-300 ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"
-=======
         className={`absolute left-0 top-full mt-3 w-56 rounded-xl border border-[#D97706]/30 bg-[#1F0A02]/98 p-2 shadow-2xl backdrop-blur-md transition-all duration-300 ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"
->>>>>>> 81609fc493ad40613c8678808d91ebc03307ce68
           }`}
       >
         {items.map((i) => {
