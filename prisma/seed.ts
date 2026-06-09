@@ -8,28 +8,30 @@ const COUNTRIES = [
   "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan",
   "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"
 ];
-const PRESS_ROLES = [
-  "Reuters - Correspondent", "Associated Press - Correspondent", "BBC - Correspondent", "Al Jazeera - Correspondent",
-  "The Hindu - Correspondent", "Photojournalist I", "Photojournalist II", "Caricaturist I", "Caricaturist II",
-  "Editor-in-Chief", "Deputy Editor", "Social Media Lead"
+const INDIAN_PARTIES = [
+  "Bharatiya Janata Party", "Indian National Congress", "All India Majlis-e-Ittehaad-ul-Muslimeen",
+  "Biju Janata Dal", "Trinamool Congress", "Dravida Munnetra Kazhagam", "Samajwadi Party",
+  "Shivsena", "Telugu Desam Party", "Jharkhand Mukti Morcha", "Nationalist Congress Party",
+  "Communist Party of India", "Aam Aadmi Party", "Yadav Samaj", "Regional Alliance"
 ];
-const CRISIS_ROLES = [
-  "Head of State", "Minister of Defence", "Minister of Foreign Affairs", "Minister of Finance",
-  "Intelligence Chief", "Army Chief", "Navy Chief", "Air Chief", "National Security Advisor",
-  "Chief of Staff", "Cabinet Secretary", "Press Secretary"
+const LOK_SABHA_SEATS = [
+  "Mumbai (South)", "Delhi Central", "Bangalore South", "Chennai South", "Hyderabad",
+  "Kolkata South", "Chandigarh", "Lucknow", "Pune", "Ahmedabad", "Jaipur", "Indore"
 ];
-const LEADERSHIP_ROLES = [
-  "Secretary-General", "Deputy Secretary-General", "President of the Assembly", "Special Envoy I",
-  "Special Envoy II", "Bloc Leader - West", "Bloc Leader - East", "Bloc Leader - Non-Aligned",
-  "Rapporteur", "Legal Counsel", "Chief Negotiator", "Observer"
+const WAR_CABINET_POSTS = [
+  "Prime Minister", "Defence Minister", "Foreign Minister", "Finance Minister", "Home Minister",
+  "Chief of Defence Staff", "Army Chief", "Navy Chief", "Air Chief", "National Security Advisor"
 ];
-const ENTRE_ROLES = Array.from({ length: 20 }, (_, i) => `Founder Seat ${i + 1}`);
+const IPL_TEAMS = [
+  "Mumbai Indians", "Chennai Super Kings", "Royal Challengers Bangalore", "Kolkata Knight Riders",
+  "Rajasthan Royals", "Delhi Capitals", "Punjab Kings", "Sunrisers Hyderabad"
+];
 
 function portfoliosFor(slug: string): string[] {
-  if (slug === "press") return PRESS_ROLES;
-  if (slug === "crisis") return CRISIS_ROLES;
-  if (slug === "leadership") return LEADERSHIP_ROLES;
-  if (slug === "entrepreneurship") return ENTRE_ROLES;
+  if (slug === "aippm") return INDIAN_PARTIES;
+  if (slug === "lok-sabha") return LOK_SABHA_SEATS;
+  if (slug === "war-cabinet") return WAR_CABINET_POSTS;
+  if (slug === "ipl") return IPL_TEAMS;
   return COUNTRIES;
 }
 
