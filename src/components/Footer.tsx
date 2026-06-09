@@ -71,7 +71,7 @@ export default function Footer() {
           <div>
             <Link href="/" className="inline-block">
               <img
-                src="/NDGYS26.png"
+                src="/NDGYS26(1).png"
                 alt="NDGYS 4.0 Logo"
                 className="h-16 w-auto object-contain md:h-20"
               />

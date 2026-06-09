@@ -50,11 +50,15 @@ export default function Navbar() {
     >
       <nav className="mx-auto max-w-6xl px-5 flex items-center justify-between h-full">
         {/* Logo left */}
-        <Link href="/" className="inline-block group shrink-0">
+        <Link href="/" className="flex h-full shrink-0 items-center py-2 group">
           <img
-            src="/logos/IMG_7820_textwhite.png"
-            alt="Global Youth Summit 2026"
-            className="h-24 md:h-28 w-auto object-contain transition-all duration-300 group-hover:brightness-130 group-hover:drop-shadow-lg filter saturate-120 contrast-110 brightness-115"
+            src="/NDGYS26(1).png"
+            alt="NDGYS 4.0 Logo"
+            className={`w-auto object-contain object-left transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-md ${
+              scrolled
+                ? "max-h-11 max-w-[120px] sm:max-w-[150px] md:max-h-12 md:max-w-[170px]"
+                : "max-h-12 max-w-[130px] sm:max-w-[160px] md:max-h-14 md:max-w-[190px]"
+            }`}
           />
         </Link>
 
