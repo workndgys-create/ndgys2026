@@ -40,3 +40,28 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   await audit(admin.email, "portfolio" in (body || {}) ? "registration.portfolio" : "registration.status", "Registration", params.id, JSON.stringify(data));
   return NextResponse.json({ ok: true, registration: { id: updated.id, status: updated.status, portfolio: updated.portfolio } });
 }
+
+export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+  const admin = await requirePermission("registrations.read");
+  if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const id = params.id;
+  const reg = await prisma.registration.findUnique({ where: { id }, include: { invoice: true } });
+  if (!reg) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json({ registration: reg });
+}
+
+export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+  const admin = await requirePermission("registrations.manage");
+  if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const id = params.id;
+  const existing = await prisma.registration.findUnique({ where: { id } });
+  if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  try {
+    await prisma.registration.delete({ where: { id } });
+    await audit(admin.email, "registration.delete", "Registration", id, null);
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("[admin/registrations] DELETE failed", { id, error });
+    return NextResponse.json({ error: "Failed to delete" }, { status: 500 });
+  }
+}

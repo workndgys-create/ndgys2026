@@ -32,6 +32,9 @@ export default function RegistrationsPage() {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [badgeError, setBadgeError] = useState("");
+  const [viewReg, setViewReg] = useState<any | null>(null);
+  const [viewLoading, setViewLoading] = useState(false);
+  const [actionMessage, setActionMessage] = useState("");
 
   const load = useCallback(() => {
     setLoading(true);
@@ -68,6 +71,40 @@ export default function RegistrationsPage() {
     } catch (error) {
       setBadgeError(error instanceof Error ? error.message : "Could not download badge.");
     }
+  }
+
+  async function viewRegistration(id: string) {
+    setViewLoading(true);
+    setViewReg(null);
+    try {
+      const r = await fetch(`/api/admin/registrations/${id}`);
+      if (r.status === 401) return router.push("/admin/login");
+      const data = await r.json();
+      if (data.registration) setViewReg(data.registration);
+      else setActionMessage("Could not load registration.");
+    } catch (err) {
+      setActionMessage(err instanceof Error ? err.message : "Failed to load registration.");
+    } finally {
+      setViewLoading(false);
+    }
+  }
+
+  async function deleteRegistration(id: string) {
+    if (!confirm("Are you sure you want to delete this registration?")) return;
+    try {
+      const r = await fetch(`/api/admin/registrations/${id}`, { method: "DELETE" });
+      if (r.status === 401) return router.push("/admin/login");
+      const data = await r.json();
+      if (r.ok && data.ok) {
+        setData((cur) => cur ? { ...cur, items: cur.items.filter((it) => it.id !== id), total: cur.total - 1 } : cur);
+        setActionMessage("Registration deleted.");
+      } else {
+        setActionMessage(data.error || "Failed to delete registration.");
+      }
+    } catch (err) {
+      setActionMessage(err instanceof Error ? err.message : "Failed to delete registration.");
+    }
+    setTimeout(() => setActionMessage(""), 3000);
   }
 
   return (
@@ -114,19 +151,23 @@ export default function RegistrationsPage() {
                 <Td><span className="text-xs uppercase tracking-wide text-slatey">{r.source}</span></Td>
                 <Td><StatusPill s={r.status} /></Td>
                 <Td>
-                  <select
-                    defaultValue=""
-                    onChange={(e) => { if (e.target.value) changeStatus(r.id, e.target.value); e.target.value = ""; }}
-                    className="rounded-md border border-ink/15 bg-cream px-2 py-1 text-xs"
-                  >
-                    <option value="">Set status…</option>
-                    <option value="PAID">Mark Paid</option>
-                    <option value="PENDING">Mark Pending</option>
-                    <option value="CANCELLED">Mark Cancelled</option>
-                  </select>
-                  {r.delegateId && (
-                    <button onClick={() => downloadBadge(r.id, r.delegateId)} className="ml-2 rounded-md border border-ink/15 px-2 py-1 text-xs font-600 text-ink hover:border-gold">Badge</button>
-                  )}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button onClick={() => viewRegistration(r.id)} className="rounded-md border border-ink/15 px-2 py-1 text-xs font-600 text-ink hover:border-gold">View</button>
+                    {r.delegateId && (
+                      <button onClick={() => downloadBadge(r.id, r.delegateId)} className="rounded-md border border-ink/15 px-2 py-1 text-xs font-600 text-ink hover:border-gold">Badge</button>
+                    )}
+                    <select
+                      defaultValue=""
+                      onChange={(e) => { if (e.target.value) changeStatus(r.id, e.target.value); e.target.value = ""; }}
+                      className="rounded-md border border-ink/15 bg-cream px-2 py-1 text-xs"
+                    >
+                      <option value="">Set status…</option>
+                      <option value="PAID">Mark Paid</option>
+                      <option value="PENDING">Mark Pending</option>
+                      <option value="CANCELLED">Mark Cancelled</option>
+                    </select>
+                    <button onClick={() => deleteRegistration(r.id)} className="ml-1 rounded-md bg-red-600 px-2 py-1 text-xs font-600 text-cream hover:bg-red-700">Delete</button>
+                  </div>
                 </Td>
               </tr>
             ))}
@@ -149,6 +190,37 @@ export default function RegistrationsPage() {
 
       {showAdd && <OfflineModal tracks={TRACK_OPTS} onClose={() => setShowAdd(false)} onSaved={() => { setShowAdd(false); load(); }} />}
       {badgeError && <p className="mt-3 text-sm text-red-600">{badgeError}</p>}
+      {actionMessage && <p className="mt-3 text-sm text-slatey">{actionMessage}</p>}
+
+      {viewReg !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setViewReg(null)}>
+          <div className="w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
+            <Panel title={viewReg ? `Registration: ${viewReg.fullName}` : "Loading…"}>
+              {viewLoading && !viewReg && <p className="text-slatey">Loading…</p>}
+              {viewReg && (
+                <div className="space-y-2 text-sm">
+                  <div><strong>Full Name:</strong> {viewReg.fullName}</div>
+                  <div><strong>Delegate ID:</strong> {viewReg.delegateId || "—"}</div>
+                  <div><strong>Email:</strong> {viewReg.email}</div>
+                  <div><strong>Phone:</strong> {viewReg.phone}</div>
+                  <div><strong>Track:</strong> {viewReg.trackName}</div>
+                  <div><strong>Amount:</strong> ₹{(viewReg.amount || 0).toLocaleString("en-IN")}</div>
+                  <div><strong>Payment Status:</strong> {viewReg.status}</div>
+                  <div><strong>Source:</strong> {viewReg.source}</div>
+                  <div><strong>Registered At:</strong> {new Date(viewReg.createdAt).toLocaleString()}</div>
+                  <div><strong>Day 1 Checked In:</strong> {viewReg.checkedInDay1 ? "Yes" : "No"}</div>
+                  <div><strong>Day 2 Checked In:</strong> {viewReg.checkedInDay2 ? "Yes" : "No"}</div>
+                  {viewReg.invoice && <div><strong>Invoice:</strong> #{viewReg.invoice.number} · ₹{viewReg.invoice.amount}</div>}
+                  {viewReg.notes && <div><strong>Notes:</strong> {viewReg.notes}</div>}
+                </div>
+              )}
+              <div className="flex justify-end pt-4">
+                <button onClick={() => setViewReg(null)} className="rounded-full border border-ink/15 px-4 py-2">Close</button>
+              </div>
+            </Panel>
+          </div>
+        </div>
+      )}
     </AdminShell>
   );
 }
