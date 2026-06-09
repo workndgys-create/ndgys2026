@@ -36,19 +36,19 @@ export async function POST(req: NextRequest) {
   if (amount == null || amount <= 0) return NextResponse.json({ error: "This competition is not open for paid registration." }, { status: 422 });
 
   const refId = await generateCompetitionRefId();
-  const entry = await prisma.competitionRegistration.create({
-    data: {
-      refId, competitionId: c.id, competitionTitle: c.title, participation,
-      teamName: participation === "GROUP" ? (d.teamName || null) : null,
-      leaderName: d.leaderName, email: d.email, phone: d.phone, institution: d.institution || null,
-      members: JSON.stringify(d.members), teamSize: participation === "GROUP" ? d.members.length : 1,
-      age: d.age ?? null, city: d.city || null, gender: d.gender ?? null, emergencyContact: d.emergencyContact || null,
-      pastExperience: d.pastExperience || null, howHeard: howHeard || null, notes: d.notes || null,
-      answers: d.answers && d.answers.length ? JSON.stringify(d.answers) : null,
-      consentAccepted: true, guardianName: d.guardianName || null, guardianPhone: d.guardianPhone || null, guardianConsent: !!d.guardianConsent,
-      amount, status: "PENDING"
-    }
-  });
+  const createPayload: any = {
+    refId, competitionId: c.id, competitionTitle: c.title, participation,
+    teamName: participation === "GROUP" ? (d.teamName || null) : null,
+    leaderName: d.leaderName, email: d.email, phone: d.phone, institution: d.institution || null,
+    members: JSON.stringify(d.members), teamSize: participation === "GROUP" ? d.members.length : 1,
+    age: d.age ?? null, city: d.city || null, gender: d.gender ?? null, emergencyContact: d.emergencyContact || null,
+    pastExperience: d.pastExperience || null, howHeard: howHeard || null, notes: d.notes || null,
+    answers: d.answers && d.answers.length ? JSON.stringify(d.answers) : null,
+    consentAccepted: true, guardianName: d.guardianName || null, guardianPhone: d.guardianPhone || null, guardianConsent: !!d.guardianConsent,
+    amount, status: "PENDING"
+  };
+
+  const entry = await prisma.competitionRegistration.create({ data: createPayload });
 
   try {
     const order = await createCashfreeOrder({

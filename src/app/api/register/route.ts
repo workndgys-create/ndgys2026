@@ -67,17 +67,17 @@ export async function POST(req: NextRequest) {
   }
 
   // Create the PENDING registration first (so the hold can reference it)
-  const reg = await prisma.registration.create({
-    data: {
-      fullName: data.fullName, email: data.email, phone: data.phone,
-      institution: data.institution || null, trackSlug: track.slug, trackName: track.name,
-      experience: data.experience ?? null, amount, status: "PENDING", portfolioId, promoCode: appliedCode,
-      age: data.age ?? null, city: data.city || null, gender: data.gender ?? null,
-      emergencyContact: data.emergencyContact || null, howHeard: howHeard || null, notes: data.notes || null,
-      consentAccepted: true, guardianName: data.guardianName || null, guardianPhone: data.guardianPhone || null, guardianConsent: !!data.guardianConsent,
-      customAnswers: answers.length ? JSON.stringify(answers) : null
-    }
-  });
+  const createPayload: any = {
+    fullName: data.fullName, email: data.email, phone: data.phone,
+    institution: data.institution || null, trackSlug: track.slug, trackName: track.name,
+    experience: data.experience ?? null, amount, status: "PENDING", portfolioId, promoCode: appliedCode,
+    age: data.age ?? null, city: data.city || null, gender: data.gender ?? null,
+    emergencyContact: data.emergencyContact || null, howHeard: howHeard || null, notes: data.notes || null,
+    consentAccepted: true, guardianName: data.guardianName || null, guardianPhone: data.guardianPhone || null, guardianConsent: !!data.guardianConsent,
+    customAnswers: answers.length ? JSON.stringify(answers) : null
+  };
+
+  const reg = await prisma.registration.create({ data: createPayload });
 
   // Atomically hold the portfolio for the configured window
   const hold = await holdPortfolio(portfolioId, reg.id);

@@ -21,13 +21,13 @@ describe("can() — role tiers", () => {
 
 describe("can() — per-user overrides", () => {
   it("extraPermissions grants beyond the role", () => {
-    expect(can({ role: "VIEWER", extraPermissions: JSON.stringify(["registrations.manage"]) }, "registrations.manage")).toBe(true);
+    expect(can({ role: "DELEGATE_AFFAIRS_EXECUTIVE", extraPermissions: JSON.stringify(["registrations.manage"]) }, "registrations.manage")).toBe(true);
   });
   it("deniedPermissions revokes even from the role", () => {
-    expect(can({ role: "ADMIN", deniedPermissions: JSON.stringify(["content.manage"]) }, "content.manage")).toBe(false);
+    expect(can({ role: "DIRECTOR", deniedPermissions: JSON.stringify(["content.manage"]) }, "content.manage")).toBe(false);
   });
   it("denied beats extra", () => {
-    expect(can({ role: "VIEWER", extraPermissions: JSON.stringify(["settings.manage"]), deniedPermissions: JSON.stringify(["settings.manage"]) }, "settings.manage")).toBe(false);
+    expect(can({ role: "DELEGATE_AFFAIRS_EXECUTIVE", extraPermissions: JSON.stringify(["settings.manage"]), deniedPermissions: JSON.stringify(["settings.manage"]) }, "settings.manage")).toBe(false);
   });
 });
 
