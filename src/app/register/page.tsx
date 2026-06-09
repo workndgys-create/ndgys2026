@@ -36,7 +36,6 @@ function RegisterInner() {
 
   const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number }[]>([]);
   const [track, setTrack] = useState(preTrack);
-  const [committeeSearch, setCommitteeSearch] = useState("");
   const [status, setStatus] = useState<"idle" | "processing" | "paid" | "error" | "full">("idle");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
@@ -294,9 +293,8 @@ function RegisterInner() {
 
           <div>
             <label className="text-sm font-500 text-ink/80">Committee</label>
-              <input value={committeeSearch} onChange={(e) => setCommitteeSearch(e.target.value)} placeholder="Search committee" className="mt-1 mb-2 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 sm:w-80" />
               <select name="track" value={track} onChange={(e) => setTrack(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
-                {tracks.filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase())).map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                {tracks.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
               </select>
           </div>
 
