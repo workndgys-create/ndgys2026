@@ -14,6 +14,26 @@ export default async function VerifyPage({ params }: { params: { id: string } })
   }
 
   const valid = reg && reg.status === "PAID";
+  // Auto-record check-in when QR is scanned
+  if (valid) {
+    const today = new Date().toISOString().slice(0, 10);
+    try {
+      if (today === "2026-08-22") {
+        await prisma.registration.update({
+          where: { delegateId: params.id },
+          data: { checkedInDay1: true }
+        });
+      } else if (today === "2026-08-23") {
+        await prisma.registration.update({
+          where: { delegateId: params.id },
+          data: { checkedInDay2: true }
+        });
+      }
+  } catch {
+    // silent — don't block the page if recording fails
+  }
+}
+
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-midnight px-5">
