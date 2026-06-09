@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AdminShell, { Panel } from "@/components/admin/Shell";
 
@@ -11,6 +11,21 @@ export default function CheckinPage() {
   const [results, setResults] = useState<Result[]>([]);
   const [counts, setCounts] = useState<{ day1: number; day2: number; total: number } | null>(null);
   const [searched, setSearched] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadCounts() {
+      const r = await fetch(`/api/admin/checkin`);
+      if (r.status === 401) return router.push("/admin/login");
+      const data = await r.json();
+      if (!mounted) return;
+      setCounts(data.day1Count !== undefined ? { day1: data.day1Count, day2: data.day2Count, total: data.totalUnique } : null);
+    }
+    loadCounts();
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
 
   async function search(e: React.FormEvent) {
     e.preventDefault();
