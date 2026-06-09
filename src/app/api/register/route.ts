@@ -47,6 +47,17 @@ export async function POST(req: NextRequest) {
 
   const track = await prisma.track.findUnique({ where: { slug: data.track } });
   if (!track) return NextResponse.json({ error: "Unknown track" }, { status: 422 });
+  if ((track.difficulty || "").toLowerCase() === "beginner") {
+    if (typeof data.age !== "number" || data.age < 12 || data.age > 16) {
+      return NextResponse.json(
+        {
+          error: "Beginner committees are only open to delegates aged 12-16.",
+          issues: { age: ["Beginner committees are only open to delegates aged 12-16."] }
+        },
+        { status: 422 }
+      );
+    }
+  }
   if (!track.isOpen) return NextResponse.json({ error: "Registration for this track is closed" }, { status: 409 });
 
   const paidCount = await prisma.registration.count({ where: { trackSlug: track.slug, status: "PAID" } });
