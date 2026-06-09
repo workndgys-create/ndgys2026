@@ -1,7 +1,6 @@
 import { currentDelegate } from "@/lib/delegateSession";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import CancelRegistration from "@/components/dashboard/CancelRegistration";
 
 export const dynamic = "force-dynamic";
 
@@ -33,8 +32,6 @@ export default async function RegistrationPage() {
           Invoice is generated after payment. <Link href="/register" className="font-600 underline">Complete payment</Link>
         </div>
       )}
-
-      <CancelRegistration status={reg.status} />
     </div>
   );
 }

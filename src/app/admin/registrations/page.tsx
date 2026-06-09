@@ -172,7 +172,6 @@ export default function RegistrationsPage() {
                       <option value="">Set status…</option>
                       <option value="PAID">Mark Paid</option>
                       <option value="PENDING">Mark Pending</option>
-                      <option value="CANCELLED">Mark Cancelled</option>
                     </select>
                     <button onClick={() => deleteRegistration(r.id)} className="ml-1 rounded-md bg-red-600 px-2 py-1 text-xs font-600 text-cream hover:bg-red-700">Delete</button>
                   </div>
