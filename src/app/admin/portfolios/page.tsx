@@ -76,7 +76,7 @@ function BulkAdd() {
       </div>
       {mode === "committee" && (
         <select value={trackSlug} onChange={(e) => setTrackSlug(e.target.value)} className="mb-3 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 sm:w-80">
-          {TRACK_OPTIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+          {DEFAULT_TRACKS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
         </select>
       )}
       <textarea
