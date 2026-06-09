@@ -16,12 +16,12 @@ function loadCashfree(): Promise<boolean> {
   });
 }
 
-type Member = { fullName: string; email: string; phone: string; track: string };
+type Member = { fullName: string; email: string; phone: string; track: string; experience?: string };
 
 export default function DelegationRegisterPage() {
-  const [members, setMembers] = useState<Member[]>([
-    { fullName: "", email: "", phone: "", track: "" },
-    { fullName: "", email: "", phone: "", track: "" }
+  const [members, setMembers] = useState<Member[]>([ 
+    { fullName: "", email: "", phone: "", track: "", experience: "beginner" },
+    { fullName: "", email: "", phone: "", track: "", experience: "beginner" }
   ]);
   const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number }[]>([]);
   const [committeeSearch, setCommitteeSearch] = useState("");
@@ -40,7 +40,7 @@ export default function DelegationRegisterPage() {
   const subtotal = useMemo(() => members.reduce((s, m) => s + feeOf(m.track), 0), [members]);
   const total = Math.max(0, subtotal - discount);
 
-  function addMember() { if (members.length < 40) setMembers((m) => [...m, { fullName: "", email: "", phone: "", track: tracks[0]?.value || "" }]); }
+  function addMember() { if (members.length < 40) setMembers((m) => [...m, { fullName: "", email: "", phone: "", track: tracks[0]?.value || "", experience: "beginner" }]); }
   function removeMember(i: number) { if (members.length > 1) setMembers((m) => m.filter((_, idx) => idx !== i)); }
   function setM(i: number, k: keyof Member, v: string) { setMembers((m) => m.map((mm, idx) => (idx === i ? { ...mm, [k]: v } : mm))); }
 
@@ -113,7 +113,7 @@ export default function DelegationRegisterPage() {
         const r = await fetch('/api/public/tracks');
         if (r.ok) {
           const t = await r.json(); setTracks(t);
-          if (members.length && !members[0].track && t.length) setMembers((m) => m.map((mm) => ({ ...mm, track: t[0].value })));
+          if (members.length && !members[0].track && t.length) setMembers((m) => m.map((mm) => ({ ...mm, track: t[0].value, experience: mm.experience ?? "beginner" })));
         }
       } catch (_) {}
     })();
@@ -175,8 +175,23 @@ export default function DelegationRegisterPage() {
                   <input value={m.phone} onChange={(e) => setM(i, "phone", e.target.value)} placeholder="Number" className="col-span-2 rounded-lg border border-ink/15 bg-cream px-2 py-2 text-sm outline-none focus:border-gold" />
                   <div className="col-span-2">
                     <input value={committeeSearch} onChange={(e) => setCommitteeSearch(e.target.value)} placeholder="Search committee" className="mb-1 w-full rounded-lg border border-ink/15 bg-cream px-2 py-1 text-sm outline-none focus:border-gold" />
-                    <select value={m.track} onChange={(e) => setM(i, "track", e.target.value)} className="w-full rounded-lg border border-ink/15 bg-cream px-2 py-2 text-sm outline-none focus:border-gold">
-                      {tracks.filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase())).map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                    <select
+                      value={`${m.track}::${m.experience ?? "beginner"}`}
+                      onChange={(e) => {
+                        const val = e.target.value || "";
+                        const parts = val.split("::");
+                        const slug = parts[0] || "";
+                        const level = parts[1] || "beginner";
+                        setM(i, "track", slug);
+                        setM(i, "experience", level);
+                      }}
+                      className="w-full rounded-lg border border-ink/15 bg-cream px-2 py-2 text-sm outline-none focus:border-gold"
+                    >
+                      {tracks.filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase())).flatMap((t) => [
+                        <option key={`${t.value}::beginner`} value={`${t.value}::beginner`}>{`${t.label} – Beginner`}</option>,
+                        <option key={`${t.value}::intermediate`} value={`${t.value}::intermediate`}>{`${t.label} – Intermediate`}</option>,
+                        <option key={`${t.value}::advanced`} value={`${t.value}::advanced`}>{`${t.label} – Advanced`}</option>
+                      ])}
                     </select>
                   </div>
                   <button type="button" onClick={() => removeMember(i)} disabled={members.length <= 1} className="col-span-1 rounded-lg border border-ink/15 text-sm text-red-600 hover:border-red-300 disabled:opacity-30">&times;</button>

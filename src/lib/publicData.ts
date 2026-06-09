@@ -18,13 +18,15 @@ export async function getPublicTracks(): Promise<PublicTrack[]> {
   try {
     const [tracks, paid] = await Promise.all([
       prisma.track.findMany({ orderBy: { createdAt: "asc" } }),
-      prisma.registration.groupBy({ by: ["trackSlug"], where: { status: "PAID" }, _count: true })
+        // Count only registrations that have been allocated a portfolio (and paid).
+        prisma.registration.groupBy({ by: ["trackSlug"], where: { status: "PAID", NOT: { portfolio: null } }, _count: true })
     ]);
     if (tracks.length === 0) throw new Error("empty");
+    // `paid` here represents count of allocations (PAID + portfolio set)
     const paidMap = new Map((paid as unknown as { trackSlug: string; _count: number }[]).map((p) => [p.trackSlug, p._count]));
     return tracks.map((t: { slug: string; name: string; fee: number; capacity: number; agenda: string; difficulty: string; isOpen: boolean }) => {
-      const used = paidMap.get(t.slug) ?? 0;
-      const seatsRemaining = Math.max(0, t.capacity - used);
+      const allocated = paidMap.get(t.slug) ?? 0;
+      const seatsRemaining = Math.max(0, t.capacity - allocated);
       return { slug: t.slug, name: t.name, fee: t.fee, capacity: t.capacity, agenda: t.agenda, difficulty: t.difficulty, isOpen: t.isOpen, seatsRemaining, full: seatsRemaining === 0 || !t.isOpen };
     });
   } catch (error) {
