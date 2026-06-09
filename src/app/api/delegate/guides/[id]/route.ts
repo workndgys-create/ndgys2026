@@ -51,8 +51,19 @@ export async function GET(
     return new NextResponse(body, {
       headers: {
         "Content-Type": guide.mime || "application/pdf",
-        "Content-Disposition": `attachment; filename="${(
-          guide.fileName || "guide.pdf"
+        const safeFileName =
+  guide.fileName
+    .normalize("NFKD")
+    .replace(/[^\x20-\x7E]/g, "_")
+    .replace(/"/g, "");
+
+return new NextResponse(body, {
+  headers: {
+    "Content-Type": guide.mime || "application/pdf",
+    "Content-Disposition": `attachment; filename="${safeFileName}"`,
+    "Content-Length": String(body.length),
+  },
+});
         ).replace(/"/g, "")}"`,
         "Content-Length": String(body.byteLength),
         "Cache-Control": "private, no-store",
