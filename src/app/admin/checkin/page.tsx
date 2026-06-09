@@ -9,7 +9,7 @@ export default function CheckinPage() {
   const router = useRouter();
   const [q, setQ] = useState("");
   const [results, setResults] = useState<Result[]>([]);
-  const [count, setCount] = useState<number | null>(null);
+  const [counts, setCounts] = useState<{ day1: number; day2: number; total: number } | null>(null);
   const [searched, setSearched] = useState(false);
 
   async function search(e: React.FormEvent) {
@@ -19,7 +19,9 @@ export default function CheckinPage() {
     if (r.status === 401) return router.push("/admin/login");
     const data = await r.json();
     setResults(data.results || []);
-    setCount(data.checkedInCount ?? null);
+    setCounts(
+      data.day1Count !== undefined ? { day1: data.day1Count, day2: data.day2Count, total: data.totalUnique } : null
+    );
     setSearched(true);
   }
 
@@ -30,14 +32,35 @@ export default function CheckinPage() {
       body: JSON.stringify({ id, day, value })
     });
     if (r.ok) {
-      const { registration } = await r.json();
+      const { registration, day1Count, day2Count, totalUnique } = await r.json();
       setResults((cur) => cur.map((x) => (x.id === id ? { ...x, checkedInDay1: registration.checkedInDay1, checkedInDay2: registration.checkedInDay2 } : x)));
+      setCounts({ day1: day1Count, day2: day2Count, total: totalUnique });
     }
   }
 
   return (
     <AdminShell title="Check-in">
-      <Panel title="Find a delegate" action={count !== null ? <span className="text-sm text-slatey">{count} checked in</span> : null}>
+      <Panel
+        title="Find a delegate"
+        action={
+          counts ? (
+            <div className="flex items-center gap-3">
+              <div className="rounded-xl bg-paper px-3 py-2 text-center">
+                <div className="text-lg font-700 text-ink">{counts.day1}</div>
+                <div className="text-xs text-slatey">Day 1 Checked In</div>
+              </div>
+              <div className="rounded-xl bg-paper px-3 py-2 text-center">
+                <div className="text-lg font-700 text-ink">{counts.day2}</div>
+                <div className="text-xs text-slatey">Day 2 Checked In</div>
+              </div>
+              <div className="rounded-xl bg-paper px-3 py-2 text-center">
+                <div className="text-lg font-700 text-ink">{counts.total}</div>
+                <div className="text-xs text-slatey">Total Unique Checked In</div>
+              </div>
+            </div>
+          ) : null
+        }
+      >
         <form onSubmit={search} className="flex gap-2">
           <input
             value={q}
