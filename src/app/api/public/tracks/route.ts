@@ -17,7 +17,10 @@ const FALLBACK_TRACKS = [
 export async function GET(req: NextRequest) {
   try {
     const tracks = await prisma.track.findMany({ where: { archived: false }, select: { slug: true, name: true, fee: true, difficulty: true } });
-    return NextResponse.json(tracks.map((t) => ({ value: t.slug, label: t.name, fee: t.fee, difficulty: t.difficulty })));
+    // derive capacity from actual portfolios
+    const counts = await prisma.portfolio.groupBy({ by: ["trackSlug"], _count: true });
+    const capMap = new Map((counts as unknown as { trackSlug: string; _count: number }[]).map((c) => [c.trackSlug, c._count]));
+    return NextResponse.json(tracks.map((t) => ({ value: t.slug, label: t.name, fee: t.fee, difficulty: t.difficulty, capacity: capMap.get(t.slug) ?? 0 })));
   } catch (e) {
     // If the DB isn't available during build/export, return a sensible fallback so export can continue.
     console.error("/api/public/tracks - prisma error:", e);

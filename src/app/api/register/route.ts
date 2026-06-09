@@ -61,7 +61,9 @@ export async function POST(req: NextRequest) {
   if (!track.isOpen) return NextResponse.json({ error: "Registration for this track is closed" }, { status: 409 });
 
   const paidCount = await prisma.registration.count({ where: { trackSlug: track.slug, status: "PAID" } });
-  if (paidCount >= track.capacity) return NextResponse.json({ error: "Track is full", full: true }, { status: 409 });
+  // derive capacity from actual portfolios for this track
+  const portfolioCount = await prisma.portfolio.count({ where: { trackSlug: track.slug } });
+  if (paidCount >= portfolioCount) return NextResponse.json({ error: "Track is full", full: true }, { status: 409 });
 
   // Validate the portfolio belongs to this committee
   const portfolio = await prisma.portfolio.findUnique({ where: { id: portfolioId } });
