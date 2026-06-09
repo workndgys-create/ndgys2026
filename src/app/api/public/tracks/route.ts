@@ -5,7 +5,7 @@ const FALLBACK_TRACKS = [
   { value: "unga", label: "United Nations General Assembly", fee: 2000 },
   { value: "unhrc", label: "United Nations Human Rights Council", fee: 2000 },
   { value: "csw", label: "United Nations Commission on the Status of Women", fee: 2000 },
-  { value: "unicef", label: "United Nations International Children’s Emergency Fund (UNICEF)", fee: 2000 },
+  { value: "unicef", label: "United Nations International Children's Emergency Fund", fee: 2000 },
   { value: "unep", label: "United Nations Environment Programme", fee: 2000 },
   { value: "wto", label: "World Trade Organization", fee: 2500 },
   { value: "aippm", label: "All India Political Parties Meet", fee: 1500 },

@@ -8,7 +8,7 @@ const faqs = [
   { cat: "About", q: "When and where is it taking place?", a: "22–23 August 2026 at IIT Delhi, New Delhi." },
   { cat: "Registration", q: "Who can participate?", a: "Open to school and college students across India. There is a track suited to every level, from first-timers to seasoned delegates." },
   { cat: "Registration", q: "How do I register and pay?", a: "Click Register, choose your track, fill in your details and pay securely online. You'll receive an instant email confirmation once payment succeeds." },
-  { cat: "Tracks", q: "Which committees are offered?", a: "We offer 11 committees: United Nations Security Council; United Nations General Assembly; United Nations Human Rights Council; United Nations Commission on the Status of Women; United Nations International Children's Emergency Fund (UNICEF); United Nations Environment Programme; World Trade Organization; All India Political Parties Meet; Lok Sabha; Indian War Cabinet; and the Indian Premier League." },
+  { cat: "Tracks", q: "How many tracks are offered?", a: "Eight tracks spanning policy, climate, technology, entrepreneurship, human rights, press, leadership and a continuous crisis committee." },
   { cat: "Tracks", q: "Can I change my track later?", a: "Yes — email the team before allotments are finalised and we'll do our best to accommodate the switch." },
   { cat: "General", q: "Is there a fee?", a: "Standard tracks are ₹2,500; flagship and crisis tracks are higher. The fee is shown on each track card before payment." }
 ];

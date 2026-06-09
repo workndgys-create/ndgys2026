@@ -7,7 +7,7 @@ export const TRACKS = [
   { slug: "unga", name: "United Nations General Assembly", fee: 2000, capacity: 60, difficulty: "Intermediate", agenda: "General multilateral discussions and global policy." },
   { slug: "unhrc", name: "United Nations Human Rights Council", fee: 2000, capacity: 50, difficulty: "Intermediate", agenda: "Human rights protections and policy." },
   { slug: "csw", name: "United Nations Commission on the Status of Women", fee: 2000, capacity: 40, difficulty: "Intermediate", agenda: "Gender equality and women's rights." },
-  { slug: "unicef", name: "United Nations International Children’s Emergency Fund (UNICEF)", fee: 2000, capacity: 40, difficulty: "Intermediate", agenda: "Child welfare and emergency response." },
+  { slug: "unicef", name: "United Nations International Children's Emergency Fund", fee: 2000, capacity: 40, difficulty: "Intermediate", agenda: "Child welfare and emergency response." },
   { slug: "unep", name: "United Nations Environment Programme", fee: 2000, capacity: 50, difficulty: "Intermediate", agenda: "Environmental policy and sustainability." },
   { slug: "wto", name: "World Trade Organization", fee: 2500, capacity: 50, difficulty: "Intermediate", agenda: "Global trade rules and disputes." },
   { slug: "aippm", name: "All India Political Parties Meet", fee: 1500, capacity: 60, difficulty: "Beginner", agenda: "National multiparty dialogue and consensus building." },
