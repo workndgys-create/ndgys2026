@@ -42,16 +42,16 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-8 z-50 transition-all duration-300 border-b bg-[#1F0A02] ${
-        scrolled
+      className={`fixed inset-x-0 top-8 z-50 transition-all duration-300 border-b bg-[#1F0A02] ${scrolled
           ? "shadow-lg shadow-[#1F0A02]/30 border-[#D97706]/40 h-24"
           : "border-[#D97706]/20 h-28"
-      }`}
+        }`}
     >
       <nav className="mx-auto max-w-6xl px-5 flex items-center justify-between h-full">
         {/* Logo left */}
         <Link href="/" className="flex h-full shrink-0 items-center py-2 group">
           <img
+<<<<<<< HEAD
             src="/NDGYS26(1).png"
             alt="NDGYS 4.0 Logo"
             className={`w-auto object-contain object-left transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-md ${
@@ -59,6 +59,11 @@ export default function Navbar() {
                 ? "max-h-11 max-w-[120px] sm:max-w-[150px] md:max-h-12 md:max-w-[170px]"
                 : "max-h-12 max-w-[130px] sm:max-w-[160px] md:max-h-14 md:max-w-[190px]"
             }`}
+=======
+            src="/logos/nwmlogo.png"
+            alt="Global Youth Summit 2026"
+            className="h-24 md:h-28 w-auto object-contain transition-all duration-300 group-hover:brightness-130 group-hover:drop-shadow-lg filter saturate-120 contrast-110 brightness-115"
+>>>>>>> 84fe150b62bfdd3a2fe1682538d77a7ac8f24e32
           />
         </Link>
 
@@ -87,8 +92,8 @@ export default function Navbar() {
           <Link
             href="/register"
             className={`group relative overflow-hidden rounded-full px-6 py-2.5 text-sm font-700 transition-all duration-300 shadow-md ${isActive("/register")
-                ? "bg-[#B45309] text-white shadow-[#B45309]/20"
-                : "bg-[#D97706] text-white shadow-[#D97706]/20 hover:bg-[#B45309] hover:shadow-[#B45309]/30 hover:-translate-y-0.5 active:translate-y-0"
+              ? "bg-[#B45309] text-white shadow-[#B45309]/20"
+              : "bg-[#D97706] text-white shadow-[#D97706]/20 hover:bg-[#B45309] hover:shadow-[#B45309]/30 hover:-translate-y-0.5 active:translate-y-0"
               }`}
           >
             <span className="relative z-10">Register Now ↗</span>
@@ -127,8 +132,8 @@ export default function Navbar() {
               href={i.href}
               onClick={() => setOpen(false)}
               className={`flex items-center justify-between border-b border-[#D97706]/10 py-3 text-sm transition ${isActive(i.href)
-                  ? "text-[#F59E0B] font-600"
-                  : "text-[#FFF8E7]/80 hover:text-[#F59E0B]"
+                ? "text-[#F59E0B] font-600"
+                : "text-[#FFF8E7]/80 hover:text-[#F59E0B]"
                 }`}
             >
               {i.label}
@@ -224,8 +229,8 @@ function Dropdown({
               href={i.href}
               onClick={() => setActive(null)}
               className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm transition ${itemActive
-                  ? "bg-[#D97706]/20 text-[#F59E0B] font-600"
-                  : "text-[#FFF8E7]/90 hover:bg-white/5 hover:text-[#F59E0B]"
+                ? "bg-[#D97706]/20 text-[#F59E0B] font-600"
+                : "text-[#FFF8E7]/90 hover:bg-white/5 hover:text-[#F59E0B]"
                 }`}
             >
               {i.label}
