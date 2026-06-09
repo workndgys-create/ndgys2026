@@ -29,12 +29,13 @@ const HEARD = [
   "Friend / Word of mouth",
   "Other",
 ];
+const BEGINNER_TRACKS = new Set(["aippm", "lok-sabha", "ipl"]);
 
 function RegisterInner() {
   const params = useSearchParams();
   const preTrack = params.get("track") || "";
 
-  const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number }[]>([]);
+  const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number; difficulty?: string }[]>([]);
   const [track, setTrack] = useState(preTrack);
   // `selectTrackValue` holds the combined dropdown value: `${slug}::${level}`
   const [selectTrackValue, setSelectTrackValue] = useState<string>("");
@@ -58,6 +59,8 @@ function RegisterInner() {
   const [age, setAge] = useState<string>("");
   const [consent, setConsent] = useState(false);
   const [guardianConsent, setGuardianConsent] = useState(false);
+  const isBeginnerTrack =
+    (tracks.find((t) => t.value === track)?.difficulty || "").toLowerCase() === "beginner" || BEGINNER_TRACKS.has(track);
   const isMinor = age !== "" && Number(age) > 0 && Number(age) < 18;
   const [questions, setQuestions] = useState<CustomQ[]>([]);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
@@ -200,6 +203,14 @@ function RegisterInner() {
     e.preventDefault();
     setErrors({}); setMessage("");
     if (!selected) { setMessage("Please select an available portfolio first."); setStatus("error"); return; }
+    if (isBeginnerTrack) {
+      const n = Number(age);
+      if (!Number.isFinite(n) || n < 12 || n > 16) {
+        setMessage("Beginner committees are only open to delegates aged 12-16.");
+        setStatus("error");
+        return;
+      }
+    }
     if (!consent) { setMessage("Please accept the Terms and Code of Conduct to continue."); setStatus("error"); return; }
     if (isMinor && !guardianConsent) { setMessage("Parent/guardian consent is required for delegates under 18."); setStatus("error"); return; }
     for (const q of questions) {
@@ -310,7 +321,8 @@ function RegisterInner() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-500 text-ink/80">Age</label>
-              <input name="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+              <input name="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} min={isBeginnerTrack ? 12 : undefined} max={isBeginnerTrack ? 16 : undefined} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+              {isBeginnerTrack && <p className="mt-1 text-xs text-amber-700">For beginner committees, only ages 12-16 are eligible.</p>}
               {errors.age && <p className="mt-1 text-xs text-red-600">{errors.age[0]}</p>}
             </div>
             <div>

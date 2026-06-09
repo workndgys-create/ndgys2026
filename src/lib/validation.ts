@@ -17,6 +17,10 @@ export const TRACKS = [
 ] as const;
 
 export const seedTrackBySlug = (slug: string) => TRACKS.find((t) => t.slug === slug);
+export const BEGINNER_TRACK_SLUGS = new Set(
+  TRACKS.filter((t) => t.difficulty.toLowerCase() === "beginner").map((t) => t.slug)
+);
+export const isBeginnerTrackSlug = (slug: string) => BEGINNER_TRACK_SLUGS.has(slug as (typeof TRACKS)[number]["slug"]);
 
 export const GENDERS = ["male", "female", "other"] as const;
 export const HEARD_OPTIONS = ["Instagram", "WhatsApp", "School / College", "Friend / Word of mouth", "Other"] as const;
@@ -43,6 +47,14 @@ export const registrationSchema = z.object({
   // honeypot — must be empty
   company: z.string().max(0).optional()
 }).superRefine((v, ctx) => {
+  if (isBeginnerTrackSlug(v.track)) {
+    if (typeof v.age !== "number") {
+      ctx.addIssue({ code: "custom", path: ["age"], message: "Age is required for beginner committees (12-16 only)." });
+    } else if (v.age < 12 || v.age > 16) {
+      ctx.addIssue({ code: "custom", path: ["age"], message: "Beginner committees are only open to delegates aged 12-16." });
+    }
+  }
+
   if (typeof v.age === "number" && v.age < 18) {
     if (!v.guardianName || !v.guardianName.trim()) ctx.addIssue({ code: "custom", path: ["guardianName"], message: "Parent/guardian name is required for delegates under 18" });
     if (!v.guardianPhone || !v.guardianPhone.trim()) ctx.addIssue({ code: "custom", path: ["guardianPhone"], message: "Parent/guardian contact is required for delegates under 18" });

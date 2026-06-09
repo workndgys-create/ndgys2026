@@ -7,15 +7,15 @@ export const runtime = "nodejs";
 export async function GET() {
   try {
     await releaseExpiredHolds();
-    type P = { trackSlug: string; name: string; order: number; status: string };
-    const rows = (await prisma.portfolio.findMany({ where: { archived: false }, orderBy: [{ order: "asc" }, { name: "asc" }] })) as unknown as P[];
+    type P = { trackSlug: string; name: string; order: number; status: string; archived: boolean };
+    const rows = (await prisma.portfolio.findMany({ orderBy: [{ order: "asc" }, { name: "asc" }] })) as unknown as P[];
     const order = new Map<string, number>(TRACKS.map((t, i) => [t.slug as string, i]));
     const nameBySlug = new Map<string, string>(TRACKS.map((t) => [t.slug as string, t.name]));
 
-    const byTrack = new Map<string, { name: string; taken: boolean }[]>();
+    const byTrack = new Map<string, { name: string; taken: boolean; archived: boolean }[]>();
     for (const r of rows) {
       const list = byTrack.get(r.trackSlug) ?? [];
-      list.push({ name: r.name, taken: r.status === "ASSIGNED" });
+      list.push({ name: r.name, taken: r.status === "ASSIGNED", archived: !!r.archived });
       byTrack.set(r.trackSlug, list);
     }
 
