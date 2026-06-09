@@ -48,23 +48,16 @@ export async function GET(
     // PrismaPg returns Uint8Array for Bytes columns
     const body = new Uint8Array(guide.data);
 
+    // Sanitize filename for HTTP headers
+    const safeFileName = (guide.fileName || "guide.pdf")
+      .normalize("NFKD")
+      .replace(/[^\x20-\x7E]/g, "_")
+      .replace(/"/g, "");
+
     return new NextResponse(body, {
       headers: {
         "Content-Type": guide.mime || "application/pdf",
-        const safeFileName =
-  guide.fileName
-    .normalize("NFKD")
-    .replace(/[^\x20-\x7E]/g, "_")
-    .replace(/"/g, "");
-
-return new NextResponse(body, {
-  headers: {
-    "Content-Type": guide.mime || "application/pdf",
-    "Content-Disposition": `attachment; filename="${safeFileName}"`,
-    "Content-Length": String(body.length),
-  },
-});
-        ).replace(/"/g, "")}"`,
+        "Content-Disposition": `attachment; filename="${safeFileName}"`,
         "Content-Length": String(body.byteLength),
         "Cache-Control": "private, no-store",
       },
