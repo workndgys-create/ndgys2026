@@ -56,6 +56,12 @@ async function main() {
     });
   }
   console.log(`OK Seeded ${TRACKS.length} tracks`);
+  // If UPSERT_ONLY is set, stop here to avoid destructive cleanup (useful for safe updates).
+  if (process.env.UPSERT_ONLY) {
+    console.log("UPSERT_ONLY set — tracks upserted, skipping portfolio deletion and track removals.");
+    return;
+  }
+
   // Clean up existing portfolios and ensure only the seeded tracks exist.
   await prisma.portfolio.deleteMany({});
   // Remove any tracks not in the new TRACKS set, then ensure the new tracks are present.
