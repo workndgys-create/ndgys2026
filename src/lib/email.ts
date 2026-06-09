@@ -1,7 +1,4 @@
-import { Resend } from "resend";
 import { env } from "./env";
-
-const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
 
 export interface Attachment {
   filename: string;
@@ -9,28 +6,67 @@ export interface Attachment {
 }
 export interface MailInput {
   to: string;
-  subject: string;
-  html: string;
+  subject?: string;
+  html?: string;
+  template?: string;
+  templateData?: Record<string, unknown>;
   attachments?: Attachment[];
 }
 
 /** Sends via Resend; logs and resolves (never throws) when RESEND_API_KEY is absent. */
-export async function sendMail({ to, subject, html, attachments }: MailInput): Promise<{ sent: boolean }> {
-  if (!resend) {
-    console.info(`[email:skipped] to=${to} subject="${subject}" (RESEND_API_KEY not set)`);
+export async function sendMail({ to, subject, html, template, templateData, attachments }: MailInput): Promise<{ sent: boolean }> {
+  if (!env.RESEND_API_KEY) {
+    console.info(`[email:skipped] to=${to} subject="${subject ?? template ?? "(no subject)"}" (RESEND_API_KEY not set)`);
     return { sent: false };
   }
+
+  const payload: Record<string, unknown> = {
+    from: env.MAIL_FROM,
+    to
+  };
+
+const attachmentsPayload = attachments?.length
+    ? attachments.map((a) => ({ filename: a.filename, content: a.content.toString("base64") }))
+    : undefined;
+
+  if (template && templateData) {
+    payload.template = {
+      id: template,
+      variables: templateData
+    };
+    payload.subject = subject || "Announcement";
+  } else {
+    if (html) payload.html = html;
+    if (subject) payload.subject = subject;
+  }
+
+  if (attachmentsPayload) {
+    payload.attachments = attachmentsPayload;
+  }
+
+  console.log("[email:sending]", JSON.stringify(payload, null, 2));
+
   try {
-    await resend.emails.send({
-      from: env.MAIL_FROM,
-      to,
-      subject,
-      html,
-      attachments: attachments?.map((a) => ({ filename: a.filename, content: a.content }))
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
     });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error("[email:error] Resend returned error:", to, result);
+      return { sent: false };
+    }
+
+    console.log("[email:sent] to", to);
     return { sent: true };
   } catch (err) {
-    console.error("[email:error]", err);
+    console.error("[email:error] Exception:", to, err);
     return { sent: false };
   }
 }

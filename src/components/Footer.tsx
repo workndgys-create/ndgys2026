@@ -69,11 +69,11 @@ export default function Footer() {
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           {/* brand column */}
           <div>
-            <Link href="/" className="inline-block">
+            <Link href="/" className="inline-block max-w-full">
               <img
-                src="/NDGYS26.png"
+                src="/NDGYS26(1).png"
                 alt="NDGYS 4.0 Logo"
-                className="h-16 w-auto object-contain md:h-20"
+                className="max-h-16 w-auto max-w-[220px] object-contain object-left md:max-h-20 md:max-w-[260px]"
               />
             </Link>
             <p className="mt-3 max-w-xs text-sm text-cream/60">
