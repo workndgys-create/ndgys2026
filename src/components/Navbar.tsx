@@ -51,9 +51,19 @@ export default function Navbar() {
         {/* Logo left */}
         <Link href="/" className="flex h-full shrink-0 items-center py-2 group">
           <img
+<<<<<<< HEAD
             src="/logos/nwmlogo.png"
             alt="Global Youth Summit 2026"
             className={`w-auto object-contain transition-all duration-300 group-hover:brightness-130 group-hover:drop-shadow-lg ${scrolled ? "h-24 md:h-28" : "h-28 md:h-32"}`}
+=======
+            src="/NDGYS26(1).png"
+            alt="NDGYS 4.0 Logo"
+            className={`w-auto object-contain object-left transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-md ${
+              scrolled
+                ? "max-h-11 max-w-[120px] sm:max-w-[150px] md:max-h-12 md:max-w-[170px]"
+                : "max-h-12 max-w-[130px] sm:max-w-[160px] md:max-h-14 md:max-w-[190px]"
+            }`}
+>>>>>>> 3011315 (Enhance portfolio data structure to include archived status and update UI accordingly)
           />
         </Link>
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const POLL_MS = 30000;
 
-type Portfolio = { name: string; taken: boolean };
+type Portfolio = { name: string; taken: boolean; archived?: boolean };
 type Committee = { slug: string; name: string; total: number; taken: number; portfolios: Portfolio[] };
 type Payload = { committees: Committee[]; generatedAt: string };
 
@@ -82,9 +82,9 @@ export default function PortfolioAllocationsBoard() {
               </div>
               <div className="flex flex-wrap gap-1.5 p-4">
                 {c.portfolios.map((p) => (
-                  <span key={p.name} title={p.taken ? "Allotted" : "Available"}
-                    className={`rounded-md px-2 py-1 text-xs font-500 ${p.taken ? "bg-midnight text-cream" : "bg-cream text-ink/70 ring-1 ring-ink/10"}`}>
-                    {p.name}
+                  <span key={p.name} title={p.archived ? "Archived" : p.taken ? "Allotted" : "Available"}
+                    className={`rounded-md px-2 py-1 text-xs font-500 ${p.archived ? "bg-slate-100 text-slate-500 ring-1 ring-slate-300" : p.taken ? "bg-midnight text-cream" : "bg-cream text-ink/70 ring-1 ring-ink/10"}`}>
+                    {p.name}{p.archived ? " (archived)" : ""}
                   </span>
                 ))}
               </div>
