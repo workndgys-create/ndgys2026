@@ -15,11 +15,11 @@ export default async function RegistrationPage() {
 
   return (
     <div className="max-w-xl">
-      <h1 className="font-display text-3xl font-700 text-ink">My Registration</h1>
+      <h1 className="font-display text-3xl font-700 text-ink">My Participation</h1>
       <div className="mt-6 rounded-2xl border border-ink/10 bg-paper p-6">
-        <Row k="Delegate ID" v={reg.delegateId ?? "—"} />
-        <Row k="Track" v={reg.trackName} />
-        <Row k="Portfolio / Allotment" v={reg.portfolio ?? "To be announced"} />
+        <Row k="Participant ID" v={reg.delegateId ?? "—"} />
+        <Row k="Event" v={reg.trackName} />
+        <Row k="Assignment" v={reg.portfolio ?? "To be announced"} />
         <Row k="Amount" v={`₹${reg.amount.toLocaleString("en-IN")}`} />
         <Row k="Status" v={reg.status} />
         <Row k="Invoice No." v={invoice?.number ?? "—"} />

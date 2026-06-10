@@ -28,6 +28,9 @@ export interface BadgeData {
   trackName: string;
   trackSlug?: string;
   portfolio?: string | null;
+  institution?: string | null;
+  city?: string | null;
+  categoryLabel?: string;
 }
 
 // Lanyard badge size ~100 x 150 mm (1mm = 2.83465pt)
@@ -53,25 +56,36 @@ async function drawBadge(doc: PDFKit.PDFDocument, x: number, y: number, d: Badge
   doc.rect(x, y + 70, w, 8).fill(accent);
 
   // Name
-  doc.fillColor(INK).font("Helvetica-Bold").fontSize(20).text(d.fullName, x + 16, y + 96, { width: w - 32, align: "center" });
+  doc.fillColor(INK).font("Helvetica-Bold").fontSize(19).text(d.fullName, x + 16, y + 92, { width: w - 32, align: "center" });
 
   // Portfolio / role
+  const category = d.categoryLabel || "Assignment";
   if (d.portfolio) {
-    doc.fillColor(accent).font("Helvetica-Bold").fontSize(13).text(d.portfolio, x + 16, y + 126, { width: w - 32, align: "center" });
+    doc.fillColor(SLATE).font("Helvetica").fontSize(8).text(category.toUpperCase(), x + 16, y + 122, { width: w - 32, align: "center" });
+    doc.fillColor(accent).font("Helvetica-Bold").fontSize(13).text(d.portfolio, x + 16, y + 132, { width: w - 32, align: "center" });
   }
-  // Committee
-  doc.fillColor(SLATE).font("Helvetica").fontSize(10).text(d.trackName, x + 16, d.portfolio ? y + 146 : y + 130, { width: w - 32, align: "center" });
+
+  // Event/track info
+  doc.fillColor(SLATE).font("Helvetica").fontSize(8).text("EVENT", x + 16, d.portfolio ? y + 150 : y + 126, { width: w - 32, align: "center" });
+  doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(10).text(d.trackName, x + 16, d.portfolio ? y + 160 : y + 136, { width: w - 32, align: "center" });
+
+  // Affiliation block
+  const affiliation = [d.institution, d.city].filter(Boolean).join(" · ");
+  if (affiliation) {
+    doc.fillColor(SLATE).font("Helvetica").fontSize(8).text(affiliation, x + 16, y + 175, { width: w - 32, align: "center" });
+  }
 
   // QR
   const qr = await qrPngBuffer(d.delegateId).catch(() => null);
   const qrSize = 120;
+  const qrY = affiliation ? y + 190 : y + 182;
   if (qr) {
-    doc.image(qr, x + (w - qrSize) / 2, y + 180, { width: qrSize });
+    doc.image(qr, x + (w - qrSize) / 2, qrY, { width: qrSize });
   }
 
   // Delegate id
-  doc.fillColor(INK).font("Courier-Bold").fontSize(12).text(d.delegateId, x + 16, y + 312, { width: w - 32, align: "center" });
-  doc.fillColor(SLATE).font("Helvetica").fontSize(7).text("Scan at check-in · DELEGATE", x + 16, y + 330, { width: w - 32, align: "center" });
+  doc.fillColor(INK).font("Courier-Bold").fontSize(12).text(d.delegateId, x + 16, y + 320, { width: w - 32, align: "center" });
+  doc.fillColor(SLATE).font("Helvetica").fontSize(7).text("Scan at check-in · PARTICIPANT", x + 16, y + 338, { width: w - 32, align: "center" });
 
   // Border
   doc.roundedRect(x, y, BADGE_W, BADGE_H, 10).lineWidth(1).strokeColor("#D97706").stroke();
