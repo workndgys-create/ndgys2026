@@ -6,7 +6,7 @@ import { downloadFileFromUrl } from "@/lib/download";
 
 type Reg = {
   id: string; delegateId: string | null; fullName: string; email: string; phone: string;
-  trackSlug: string; trackName: string; amount: number; status: string; source: string; createdAt: string;
+  trackSlug: string; trackName: string; portfolio: string | null; amount: number; status: string; source: string; createdAt: string;
 };
 type Resp = { items: Reg[]; total: number; page: number; pages: number };
 type Track = { slug: string; name: string };
@@ -142,11 +142,11 @@ export default function RegistrationsPage() {
         <table className="w-full text-sm">
           <thead className="bg-cream text-left text-xs uppercase tracking-wider text-slatey">
             <tr>
-              <Th>Delegate</Th><Th>Email</Th><Th>Track</Th><Th>Amount</Th><Th>Source</Th><Th>Status</Th><Th>Actions</Th>
+              <Th>Delegate</Th><Th>Email</Th><Th>Track</Th><Th>Portfolio</Th><Th>Amount</Th><Th>Source</Th><Th>Status</Th><Th>Actions</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink/5">
-            {loading && <tr><td colSpan={7} className="px-4 py-10 text-center text-slatey">Loading…</td></tr>}
+            {loading && <tr><td colSpan={8} className="px-4 py-10 text-center text-slatey">Loading…</td></tr>}
             {!loading && data?.items.map((r) => (
               <tr key={r.id} className="hover:bg-cream/60">
                 <Td>
@@ -155,6 +155,7 @@ export default function RegistrationsPage() {
                 </Td>
                 <Td className="text-slatey">{r.email}<div className="text-xs">{r.phone}</div></Td>
                 <Td>{r.trackName}</Td>
+                <Td>{r.portfolio || <span className="text-slatey">—</span>}</Td>
                 <Td>₹{r.amount.toLocaleString("en-IN")}</Td>
                 <Td><span className="text-xs uppercase tracking-wide text-slatey">{r.source}</span></Td>
                 <Td><StatusPill s={r.status} /></Td>
@@ -179,7 +180,7 @@ export default function RegistrationsPage() {
               </tr>
             ))}
             {!loading && data?.items.length === 0 && (
-              <tr><td colSpan={7} className="px-4 py-10 text-center text-slatey">No registrations match.</td></tr>
+              <tr><td colSpan={8} className="px-4 py-10 text-center text-slatey">No registrations match.</td></tr>
             )}
           </tbody>
         </table>
@@ -211,6 +212,7 @@ export default function RegistrationsPage() {
                   <div><strong>Email:</strong> {viewReg.email}</div>
                   <div><strong>Phone:</strong> {viewReg.phone}</div>
                   <div><strong>Track:</strong> {viewReg.trackName}</div>
+                  <div><strong>Portfolio:</strong> {viewReg.portfolio || "—"}</div>
                   <div><strong>Amount:</strong> ₹{(viewReg.amount || 0).toLocaleString("en-IN")}</div>
                   <div><strong>Payment Status:</strong> {viewReg.status}</div>
                   <div><strong>Source:</strong> {viewReg.source}</div>
