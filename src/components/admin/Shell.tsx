@@ -15,7 +15,7 @@ const GROUPS: NavGroup[] = [
     { href: "/admin/form-builder", label: "Form Builder", icon: "✎", perm: "content.manage" },
     { href: "/admin/allocations", label: "Allocations", icon: "⚑", perm: "allocations.manage" },
     { href: "/admin/portfolios", label: "Portfolios", icon: "▥", perm: "allocations.manage" },
-    { href: "/admin/checkin", label: "Check-in", icon: "✓", perm: "checkin.manage" },
+    { href: "/admin/checkin", label: "Check-in", icon: "✓", perm: "checkin.scan" },
     { href: "/admin/badges", label: "Badges", icon: "▦", perm: "badges.read" },
     { href: "/admin/competition-entries", label: "Competition Entries", icon: "▣", perm: "registrations.read" },
     { href: "/admin/delegations", label: "Delegations", icon: "▤", perm: "registrations.read" },
