@@ -14,6 +14,7 @@ export default function ScannerPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const detectorRef = useRef<any>(null);
   const scanCooldownRef = useRef(false);
+  const activeRef = useRef(false);
 
   useEffect(() => {
     let mounted = true;
@@ -86,6 +87,7 @@ export default function ScannerPage() {
       video.srcObject = stream;
       await video.play();
       videoRef.current = video;
+      activeRef.current = true;
       setCameraActive(true);
 
       // use BarcodeDetector if available
@@ -93,11 +95,12 @@ export default function ScannerPage() {
       if (BarcodeDetector) {
         detectorRef.current = new BarcodeDetector({ formats: ["qr_code"] });
         const loop = async () => {
-          if (!cameraActive || scanCooldownRef.current) return;
+          if (!activeRef.current || scanCooldownRef.current) return;
           try {
             const barcodes = await detectorRef.current.detect(videoRef.current as HTMLVideoElement);
             if (barcodes && barcodes.length) {
               const raw = barcodes[0].rawValue || barcodes[0].rawText || "";
+              console.debug("Barcode detected:", raw, barcodes[0]);
               if (raw) {
                 scanCooldownRef.current = true;
                 setQ(raw);
@@ -126,6 +129,7 @@ export default function ScannerPage() {
       s.getTracks().forEach((t) => t.stop());
       video.srcObject = null;
     }
+    activeRef.current = false;
     setCameraActive(false);
   }
 
