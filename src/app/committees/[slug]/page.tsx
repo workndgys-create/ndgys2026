@@ -41,6 +41,18 @@ export default async function CommitteeDetail({ params }: { params: { slug: stri
               <Stat label="Seats left" value={t.full ? "Full" : String(t.seatsRemaining)} />
             </div>
 
+              {String(t.name).trim().toLowerCase() === "international press" && (
+                <div className="mt-6 rounded-2xl border border-ink/10 bg-cream p-4">
+                  <h3 className="font-display text-lg font-700 text-ink">Portfolios</h3>
+                  <ul className="mt-2 list-inside list-disc pl-4 text-ink/80">
+                    <li>Journalist</li>
+                    <li>Caricature</li>
+                    <li>Photographer</li>
+                  </ul>
+                  <p className="mt-3 font-display text-lg font-700 text-ink">Seats Remaining: {t.seatsRemaining} / {t.capacity}</p>
+                </div>
+              )}
+
             <div className="mt-5">
               <div className="h-2.5 w-full overflow-hidden rounded-full bg-ink/10">
                 <div className="h-full rounded-full bg-gold" style={{ width: `${filledPct}%` }} />
