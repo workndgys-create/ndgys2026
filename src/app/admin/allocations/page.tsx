@@ -47,6 +47,11 @@ export default function AllocationsAdmin() {
   }, []);
 
   const assigned = rows?.filter((r) => r.portfolio).length ?? 0;
+  const selectedCommittee = committees.find((c) => c.slug === track);
+  const isInternationalPress = selectedCommittee && String(selectedCommittee.name).trim().toLowerCase() === "international press";
+  const committeeTotal = selectedCommittee?.total ?? null;
+  const committeeTaken = selectedCommittee?.taken ?? null;
+  const committeeRemaining = committeeTotal != null && committeeTaken != null ? Math.max(0, committeeTotal - committeeTaken) : null;
 
   return (
     <AdminShell title="Portfolio allocations">
@@ -61,6 +66,12 @@ export default function AllocationsAdmin() {
         <p className="mb-4 text-sm text-slatey">
           Read-only view of participant-selected portfolios. Portfolios are assigned only through the registration form.
           {rows && <> · <b>{assigned}/{rows.length}</b> assigned in this committee.</>}
+          {isInternationalPress && committeeTotal != null && committeeRemaining != null && (
+            <>
+              <br />
+              <span className="mt-2 inline-block text-sm text-ink">Total Seats: <b>{committeeTotal}</b> · Seats Remaining: <b>{committeeRemaining}</b></span>
+            </>
+          )}
         </p>
 
         {committees.length > 0 && (
