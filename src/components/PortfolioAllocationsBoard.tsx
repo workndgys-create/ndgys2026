@@ -9,10 +9,12 @@ type Committee = { slug: string; name: string; total: number; taken: number; por
 type Payload = { committees: Committee[]; generatedAt: string };
 
 export default function PortfolioAllocationsBoard() {
+  const INITIAL_PORTFOLIO_COUNT = 24;
   const [data, setData] = useState<Payload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [filter, setFilter] = useState("all");
+  const [expandedByCommittee, setExpandedByCommittee] = useState<Record<string, boolean>>({});
   const [secsAgo, setSecsAgo] = useState(0);
 
   const fetchData = useCallback(async () => {
@@ -71,6 +73,8 @@ export default function PortfolioAllocationsBoard() {
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         {committees.map((c) => {
           const pct = c.total ? Math.round((c.taken / c.total) * 100) : 0;
+          const expanded = !!expandedByCommittee[c.slug];
+          const canExpand = c.portfolios.length > INITIAL_PORTFOLIO_COUNT;
           return (
             <article key={c.slug} className="overflow-hidden rounded-2xl border border-ink/10 bg-paper">
               <div className="border-b border-ink/5 px-5 py-4">
@@ -81,13 +85,28 @@ export default function PortfolioAllocationsBoard() {
                 <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-ink/10"><div className="h-full rounded-full bg-gold" style={{ width: `${pct}%` }} /></div>
               </div>
               <div className="flex flex-wrap gap-1.5 p-4">
-                {c.portfolios.map((p) => (
+                {(expanded ? c.portfolios : c.portfolios.slice(0, INITIAL_PORTFOLIO_COUNT)).map((p) => (
                   <span key={p.name} title={p.archived ? "Archived" : p.taken ? "Allotted" : "Available"}
                     className={`rounded-md px-2 py-1 text-xs font-500 ${p.archived ? "bg-slate-100 text-slate-500 ring-1 ring-slate-300" : p.taken ? "bg-midnight text-cream" : "bg-cream text-ink/70 ring-1 ring-ink/10"}`}>
                     {p.name}{p.archived ? " (archived)" : ""}
                   </span>
                 ))}
               </div>
+              {!expanded && canExpand && (
+                <div className="px-4 pb-4 text-xs text-slatey">
+                  +{c.portfolios.length - INITIAL_PORTFOLIO_COUNT} more portfolios hidden
+                </div>
+              )}
+              {canExpand && (
+                <div className="px-4 pb-4">
+                  <button
+                    onClick={() => setExpandedByCommittee((prev) => ({ ...prev, [c.slug]: !prev[c.slug] }))}
+                    className="rounded-full border border-ink/15 bg-paper px-4 py-1.5 text-xs font-600 text-ink hover:border-gold"
+                  >
+                    {expanded ? "Show fewer portfolios" : "Expand to see more portfolios"}
+                  </button>
+                </div>
+              )}
             </article>
           );
         })}
