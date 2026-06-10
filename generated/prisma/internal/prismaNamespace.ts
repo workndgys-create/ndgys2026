@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   Registration: 'Registration',
+  RegistrationPhoto: 'RegistrationPhoto',
   Invoice: 'Invoice',
   ContactMessage: 'ContactMessage',
   AdminUser: 'AdminUser',
@@ -424,7 +425,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "registration" | "invoice" | "contactMessage" | "adminUser" | "adminAction" | "track" | "speaker" | "scheduleItem" | "resource" | "announcement" | "waitlist" | "magicLinkToken" | "competition" | "event" | "setting" | "portfolio" | "competitionRegistration" | "promoCode" | "delegation" | "committeeGuide" | "backgroundGuide" | "secretariatMember" | "sponsor" | "accommodationOption" | "registrationQuestion"
+    modelProps: "registration" | "registrationPhoto" | "invoice" | "contactMessage" | "adminUser" | "adminAction" | "track" | "speaker" | "scheduleItem" | "resource" | "announcement" | "waitlist" | "magicLinkToken" | "competition" | "event" | "setting" | "portfolio" | "competitionRegistration" | "promoCode" | "delegation" | "committeeGuide" | "backgroundGuide" | "secretariatMember" | "sponsor" | "accommodationOption" | "registrationQuestion"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -499,6 +500,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.RegistrationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.RegistrationCountAggregateOutputType> | number
+        }
+      }
+    }
+    RegistrationPhoto: {
+      payload: Prisma.$RegistrationPhotoPayload<ExtArgs>
+      fields: Prisma.RegistrationPhotoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RegistrationPhotoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegistrationPhotoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RegistrationPhotoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegistrationPhotoPayload>
+        }
+        findFirst: {
+          args: Prisma.RegistrationPhotoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegistrationPhotoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RegistrationPhotoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegistrationPhotoPayload>
+        }
+        findMany: {
+          args: Prisma.RegistrationPhotoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegistrationPhotoPayload>[]
+        }
+        create: {
+          args: Prisma.RegistrationPhotoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegistrationPhotoPayload>
+        }
+        createMany: {
+          args: Prisma.RegistrationPhotoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RegistrationPhotoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegistrationPhotoPayload>[]
+        }
+        delete: {
+          args: Prisma.RegistrationPhotoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegistrationPhotoPayload>
+        }
+        update: {
+          args: Prisma.RegistrationPhotoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegistrationPhotoPayload>
+        }
+        deleteMany: {
+          args: Prisma.RegistrationPhotoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RegistrationPhotoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RegistrationPhotoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegistrationPhotoPayload>[]
+        }
+        upsert: {
+          args: Prisma.RegistrationPhotoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegistrationPhotoPayload>
+        }
+        aggregate: {
+          args: Prisma.RegistrationPhotoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRegistrationPhoto>
+        }
+        groupBy: {
+          args: Prisma.RegistrationPhotoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RegistrationPhotoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RegistrationPhotoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RegistrationPhotoCountAggregateOutputType> | number
         }
       }
     }
@@ -2361,6 +2436,17 @@ export const RegistrationScalarFieldEnum = {
 export type RegistrationScalarFieldEnum = (typeof RegistrationScalarFieldEnum)[keyof typeof RegistrationScalarFieldEnum]
 
 
+export const RegistrationPhotoScalarFieldEnum = {
+  id: 'id',
+  registrationId: 'registrationId',
+  mime: 'mime',
+  data: 'data',
+  createdAt: 'createdAt'
+} as const
+
+export type RegistrationPhotoScalarFieldEnum = (typeof RegistrationPhotoScalarFieldEnum)[keyof typeof RegistrationPhotoScalarFieldEnum]
+
+
 export const InvoiceScalarFieldEnum = {
   id: 'id',
   number: 'number',
@@ -2858,6 +2944,20 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'Bytes'
+ */
+export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+/**
+ * Reference to a field of type 'Bytes[]'
+ */
+export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
+    
+
+
+/**
  * Reference to a field of type 'AdminRole'
  */
 export type EnumAdminRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AdminRole'>
@@ -2882,20 +2982,6 @@ export type EnumAnnouncementAudienceFieldRefInput<$PrismaModel> = FieldRefInputT
  * Reference to a field of type 'AnnouncementAudience[]'
  */
 export type ListEnumAnnouncementAudienceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AnnouncementAudience[]'>
-    
-
-
-/**
- * Reference to a field of type 'Bytes'
- */
-export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
-    
-
-
-/**
- * Reference to a field of type 'Bytes[]'
- */
-export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
     
 
 
@@ -3023,6 +3109,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   registration?: Prisma.RegistrationOmit
+  registrationPhoto?: Prisma.RegistrationPhotoOmit
   invoice?: Prisma.InvoiceOmit
   contactMessage?: Prisma.ContactMessageOmit
   adminUser?: Prisma.AdminUserOmit

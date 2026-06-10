@@ -13,9 +13,6 @@ export default function AllocationsAdmin() {
     { slug: string; name: string; total: number; taken: number; portfolios: { name: string; taken: boolean }[] }[]
   >([]);
   const [rows, setRows] = useState<Reg[] | null>(null);
-  const [draft, setDraft] = useState<Record<string, string>>({});
-  const [savingId, setSavingId] = useState<string | null>(null);
-  const [savedId, setSavedId] = useState<string | null>(null);
 
   const load = useCallback(() => {
     setRows(null);
@@ -24,7 +21,6 @@ export default function AllocationsAdmin() {
         const d = await r.json();
         const items: Reg[] = (d.items || []).map((x: any) => ({ id: x.id, fullName: x.fullName, delegateId: x.delegateId, portfolio: x.portfolio }));
         setRows(items);
-        setDraft(Object.fromEntries(items.map((i) => [i.id, i.portfolio ?? ""])));
       });
   }, [track]);
   useEffect(load, [load]);
@@ -50,24 +46,12 @@ export default function AllocationsAdmin() {
     })();
   }, []);
 
-  async function save(id: string) {
-    setSavingId(id);
-    const res = await fetch(`/api/admin/registrations/${id}`, {
-      method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ portfolio: draft[id] })
-    });
-    setSavingId(null);
-    if (res.ok) {
-      setRows((cur) => cur?.map((r) => (r.id === id ? { ...r, portfolio: draft[id] || null } : r)) ?? cur);
-      setSavedId(id); setTimeout(() => setSavedId((s) => (s === id ? null : s)), 1500);
-    }
-  }
-
   const assigned = rows?.filter((r) => r.portfolio).length ?? 0;
 
   return (
     <AdminShell title="Portfolio allocations">
       <Panel
-        title="Assign portfolios"
+        title="Assigned portfolios"
         action={
           <select value={track} onChange={(e) => setTrack(e.target.value)} className="rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold">
             {tracks.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
@@ -75,7 +59,7 @@ export default function AllocationsAdmin() {
         }
       >
         <p className="mb-4 text-sm text-slatey">
-          Enter each delegate's country / role. Saved allocations appear live on the home page when <b>Settings → Allocations live</b> is on.
+          Read-only view of participant-selected portfolios. Portfolios are assigned only through the registration form.
           {rows && <> · <b>{assigned}/{rows.length}</b> assigned in this committee.</>}
         </p>
 
@@ -106,20 +90,9 @@ export default function AllocationsAdmin() {
                   <p className="font-600 text-ink">{r.fullName}</p>
                   <p className="font-mono text-xs text-slatey">{r.delegateId || "—"}</p>
                 </div>
-                <input
-                  value={draft[r.id] ?? ""}
-                  onChange={(e) => setDraft((d) => ({ ...d, [r.id]: e.target.value }))}
-                  onKeyDown={(e) => { if (e.key === "Enter") save(r.id); }}
-                  placeholder="e.g. France / Editor-in-Chief"
-                  className="min-w-[200px] flex-1 rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold"
-                />
-                <button
-                  onClick={() => save(r.id)}
-                  disabled={savingId === r.id || (draft[r.id] ?? "") === (r.portfolio ?? "")}
-                  className="rounded-full bg-midnight px-4 py-2 text-sm font-600 text-cream hover:bg-royal disabled:opacity-40"
-                >
-                  {savingId === r.id ? "Saving…" : savedId === r.id ? "Saved ✓" : "Save"}
-                </button>
+                <div className={`min-w-[220px] flex-1 rounded-lg border px-3 py-2 text-sm ${r.portfolio ? "border-ink/15 bg-cream text-ink" : "border-amber-300 bg-amber-50 text-amber-900"}`}>
+                  {r.portfolio || "Not assigned yet"}
+                </div>
               </li>
             ))}
           </ul>

@@ -6,7 +6,7 @@ import { downloadFileFromUrl } from "@/lib/download";
 
 type Reg = {
   id: string; delegateId: string | null; fullName: string; email: string; phone: string;
-  trackSlug: string; trackName: string; amount: number; status: string; source: string; createdAt: string;
+  trackSlug: string; trackName: string; portfolio: string | null; amount: number; status: string; source: string; createdAt: string;
 };
 type Resp = { items: Reg[]; total: number; page: number; pages: number };
 type Track = { slug: string; name: string };
@@ -142,11 +142,11 @@ export default function RegistrationsPage() {
         <table className="w-full text-sm">
           <thead className="bg-cream text-left text-xs uppercase tracking-wider text-slatey">
             <tr>
-              <Th>Delegate</Th><Th>Email</Th><Th>Track</Th><Th>Amount</Th><Th>Source</Th><Th>Status</Th><Th>Actions</Th>
+              <Th>Delegate</Th><Th>Email</Th><Th>Track</Th><Th>Portfolio</Th><Th>Amount</Th><Th>Source</Th><Th>Status</Th><Th>Actions</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink/5">
-            {loading && <tr><td colSpan={7} className="px-4 py-10 text-center text-slatey">Loading…</td></tr>}
+            {loading && <tr><td colSpan={8} className="px-4 py-10 text-center text-slatey">Loading…</td></tr>}
             {!loading && data?.items.map((r) => (
               <tr key={r.id} className="hover:bg-cream/60">
                 <Td>
@@ -155,6 +155,7 @@ export default function RegistrationsPage() {
                 </Td>
                 <Td className="text-slatey">{r.email}<div className="text-xs">{r.phone}</div></Td>
                 <Td>{r.trackName}</Td>
+                <Td>{r.portfolio || <span className="text-slatey">—</span>}</Td>
                 <Td>₹{r.amount.toLocaleString("en-IN")}</Td>
                 <Td><span className="text-xs uppercase tracking-wide text-slatey">{r.source}</span></Td>
                 <Td><StatusPill s={r.status} /></Td>
@@ -179,7 +180,7 @@ export default function RegistrationsPage() {
               </tr>
             ))}
             {!loading && data?.items.length === 0 && (
-              <tr><td colSpan={7} className="px-4 py-10 text-center text-slatey">No registrations match.</td></tr>
+              <tr><td colSpan={8} className="px-4 py-10 text-center text-slatey">No registrations match.</td></tr>
             )}
           </tbody>
         </table>
@@ -205,20 +206,35 @@ export default function RegistrationsPage() {
             <Panel title={viewReg ? `Registration: ${viewReg.fullName}` : "Loading…"}>
               {viewLoading && !viewReg && <p className="text-slatey">Loading…</p>}
               {viewReg && (
-                <div className="space-y-2 text-sm">
-                  <div><strong>Full Name:</strong> {viewReg.fullName}</div>
-                  <div><strong>Delegate ID:</strong> {viewReg.delegateId || "—"}</div>
-                  <div><strong>Email:</strong> {viewReg.email}</div>
-                  <div><strong>Phone:</strong> {viewReg.phone}</div>
-                  <div><strong>Track:</strong> {viewReg.trackName}</div>
-                  <div><strong>Amount:</strong> ₹{(viewReg.amount || 0).toLocaleString("en-IN")}</div>
-                  <div><strong>Payment Status:</strong> {viewReg.status}</div>
-                  <div><strong>Source:</strong> {viewReg.source}</div>
-                  <div><strong>Registered At:</strong> {new Date(viewReg.createdAt).toLocaleString()}</div>
-                  <div><strong>Day 1 Checked In:</strong> {viewReg.checkedInDay1 ? "Yes" : "No"}</div>
-                  <div><strong>Day 2 Checked In:</strong> {viewReg.checkedInDay2 ? "Yes" : "No"}</div>
-                  {viewReg.invoice && <div><strong>Invoice:</strong> #{viewReg.invoice.number} · ₹{viewReg.invoice.amount}</div>}
-                  {viewReg.notes && <div><strong>Notes:</strong> {viewReg.notes}</div>}
+                <div className="space-y-4">
+                  <div className="flex justify-center">
+                    <div className="h-32 w-28 overflow-hidden rounded-xl border border-ink/15 shadow-sm bg-cream flex items-center justify-center">
+                      <img
+                        src={`/api/registrations/${viewReg.id}/photo`}
+                        alt="Passport Photo"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="%239CA3AF"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>';
+                        }}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div><strong>Full Name:</strong> {viewReg.fullName}</div>
+                    <div><strong>Delegate ID:</strong> {viewReg.delegateId || "—"}</div>
+                    <div><strong>Email:</strong> {viewReg.email}</div>
+                    <div><strong>Phone:</strong> {viewReg.phone}</div>
+                    <div><strong>Track:</strong> {viewReg.trackName}</div>
+                    <div><strong>Portfolio:</strong> {viewReg.portfolio || "—"}</div>
+                    <div><strong>Amount:</strong> ₹{(viewReg.amount || 0).toLocaleString("en-IN")}</div>
+                    <div><strong>Payment Status:</strong> {viewReg.status}</div>
+                    <div><strong>Source:</strong> {viewReg.source}</div>
+                    <div><strong>Registered At:</strong> {new Date(viewReg.createdAt).toLocaleString()}</div>
+                    <div><strong>Day 1 Checked In:</strong> {viewReg.checkedInDay1 ? "Yes" : "No"}</div>
+                    <div><strong>Day 2 Checked In:</strong> {viewReg.checkedInDay2 ? "Yes" : "No"}</div>
+                    {viewReg.invoice && <div><strong>Invoice:</strong> #{viewReg.invoice.number} · ₹{viewReg.invoice.amount}</div>}
+                    {viewReg.notes && <div><strong>Notes:</strong> {viewReg.notes}</div>}
+                  </div>
                 </div>
               )}
               <div className="flex justify-end pt-4">

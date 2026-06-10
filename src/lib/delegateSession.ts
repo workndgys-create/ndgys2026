@@ -4,9 +4,9 @@ import { verifyDelegateSession, delegateCookieName } from "./delegateAuth";
 import { generateDelegateId } from "./ids";
 
 /**
- * Returns the delegate's PAID registration, or null.
- * The delegate panel is only assigned once payment is confirmed, so a session
- * without a PAID registration resolves to null (no panel access).
+ * Returns the participant's PAID registration, or null.
+ * The participant portal unlocks once payment is confirmed, so a session
+ * without a PAID registration resolves to null (no portal access).
  */
 export async function currentDelegate() {
   const token = cookies().get(delegateCookieName)?.value;
