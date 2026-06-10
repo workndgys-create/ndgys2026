@@ -4,6 +4,10 @@ import { registrationSchema, contactSchema, seedTrackBySlug, TRACKS } from "@/li
 describe("registrationSchema", () => {
   const base = { fullName: "Aanya Rao", email: "a@b.com", phone: "+91 9876543210", track: TRACKS[0].slug, institution: "Delhi Public School" };
   it("accepts a valid registration", () => expect(registrationSchema.safeParse(base).success).toBe(true));
+  it("accepts a registration with optional photo fields", () => {
+    const withPhoto = { ...base, photoData: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=", photoMime: "image/png" };
+    expect(registrationSchema.safeParse(withPhoto).success).toBe(true);
+  });
   it("rejects a short name", () => expect(registrationSchema.safeParse({ ...base, fullName: "A" }).success).toBe(false));
   it("rejects a bad email", () => expect(registrationSchema.safeParse({ ...base, email: "nope" }).success).toBe(false));
   it("rejects an invalid phone", () => expect(registrationSchema.safeParse({ ...base, phone: "abc" }).success).toBe(false));

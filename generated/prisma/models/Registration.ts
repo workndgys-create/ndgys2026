@@ -485,6 +485,7 @@ export type RegistrationWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   invoice?: Prisma.XOR<Prisma.InvoiceNullableScalarRelationFilter, Prisma.InvoiceWhereInput> | null
+  photo?: Prisma.XOR<Prisma.RegistrationPhotoNullableScalarRelationFilter, Prisma.RegistrationPhotoWhereInput> | null
 }
 
 export type RegistrationOrderByWithRelationInput = {
@@ -527,6 +528,7 @@ export type RegistrationOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   invoice?: Prisma.InvoiceOrderByWithRelationInput
+  photo?: Prisma.RegistrationPhotoOrderByWithRelationInput
 }
 
 export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
@@ -572,6 +574,7 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   invoice?: Prisma.XOR<Prisma.InvoiceNullableScalarRelationFilter, Prisma.InvoiceWhereInput> | null
+  photo?: Prisma.XOR<Prisma.RegistrationPhotoNullableScalarRelationFilter, Prisma.RegistrationPhotoWhereInput> | null
 }, "id" | "delegateId" | "gatewayOrderId">
 
 export type RegistrationOrderByWithAggregationInput = {
@@ -704,6 +707,7 @@ export type RegistrationCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   invoice?: Prisma.InvoiceCreateNestedOneWithoutRegistrationInput
+  photo?: Prisma.RegistrationPhotoCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateInput = {
@@ -746,6 +750,7 @@ export type RegistrationUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   invoice?: Prisma.InvoiceUncheckedCreateNestedOneWithoutRegistrationInput
+  photo?: Prisma.RegistrationPhotoUncheckedCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationUpdateInput = {
@@ -788,6 +793,7 @@ export type RegistrationUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoice?: Prisma.InvoiceUpdateOneWithoutRegistrationNestedInput
+  photo?: Prisma.RegistrationPhotoUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateInput = {
@@ -830,6 +836,7 @@ export type RegistrationUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoice?: Prisma.InvoiceUncheckedUpdateOneWithoutRegistrationNestedInput
+  photo?: Prisma.RegistrationPhotoUncheckedUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationCreateManyInput = {
@@ -1137,6 +1144,20 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
+export type RegistrationCreateNestedOneWithoutPhotoInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutPhotoInput, Prisma.RegistrationUncheckedCreateWithoutPhotoInput>
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutPhotoInput
+  connect?: Prisma.RegistrationWhereUniqueInput
+}
+
+export type RegistrationUpdateOneRequiredWithoutPhotoNestedInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutPhotoInput, Prisma.RegistrationUncheckedCreateWithoutPhotoInput>
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutPhotoInput
+  upsert?: Prisma.RegistrationUpsertWithoutPhotoInput
+  connect?: Prisma.RegistrationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationUpdateToOneWithWhereWithoutPhotoInput, Prisma.RegistrationUpdateWithoutPhotoInput>, Prisma.RegistrationUncheckedUpdateWithoutPhotoInput>
+}
+
 export type RegistrationCreateNestedOneWithoutInvoiceInput = {
   create?: Prisma.XOR<Prisma.RegistrationCreateWithoutInvoiceInput, Prisma.RegistrationUncheckedCreateWithoutInvoiceInput>
   connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutInvoiceInput
@@ -1149,6 +1170,190 @@ export type RegistrationUpdateOneRequiredWithoutInvoiceNestedInput = {
   upsert?: Prisma.RegistrationUpsertWithoutInvoiceInput
   connect?: Prisma.RegistrationWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationUpdateToOneWithWhereWithoutInvoiceInput, Prisma.RegistrationUpdateWithoutInvoiceInput>, Prisma.RegistrationUncheckedUpdateWithoutInvoiceInput>
+}
+
+export type RegistrationCreateWithoutPhotoInput = {
+  id?: string
+  delegateId?: string | null
+  fullName: string
+  email: string
+  phone: string
+  institution?: string | null
+  trackSlug: string
+  trackName: string
+  experience?: string | null
+  amount: number
+  status?: $Enums.RegistrationStatus
+  source?: $Enums.RegSource
+  portfolio?: string | null
+  portfolioId?: string | null
+  delegationId?: string | null
+  promoCode?: string | null
+  nudgedAt?: Date | string | null
+  cancelledAt?: Date | string | null
+  rosterOptIn?: boolean
+  age?: number | null
+  city?: string | null
+  gender?: string | null
+  emergencyContact?: string | null
+  howHeard?: string | null
+  notes?: string | null
+  consentAccepted?: boolean
+  guardianName?: string | null
+  guardianPhone?: string | null
+  guardianConsent?: boolean
+  customAnswers?: string | null
+  dietary?: string | null
+  accessibility?: string | null
+  checkedInDay1?: boolean
+  checkedInDay2?: boolean
+  gatewayOrderId?: string | null
+  gatewayPaymentId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  invoice?: Prisma.InvoiceCreateNestedOneWithoutRegistrationInput
+}
+
+export type RegistrationUncheckedCreateWithoutPhotoInput = {
+  id?: string
+  delegateId?: string | null
+  fullName: string
+  email: string
+  phone: string
+  institution?: string | null
+  trackSlug: string
+  trackName: string
+  experience?: string | null
+  amount: number
+  status?: $Enums.RegistrationStatus
+  source?: $Enums.RegSource
+  portfolio?: string | null
+  portfolioId?: string | null
+  delegationId?: string | null
+  promoCode?: string | null
+  nudgedAt?: Date | string | null
+  cancelledAt?: Date | string | null
+  rosterOptIn?: boolean
+  age?: number | null
+  city?: string | null
+  gender?: string | null
+  emergencyContact?: string | null
+  howHeard?: string | null
+  notes?: string | null
+  consentAccepted?: boolean
+  guardianName?: string | null
+  guardianPhone?: string | null
+  guardianConsent?: boolean
+  customAnswers?: string | null
+  dietary?: string | null
+  accessibility?: string | null
+  checkedInDay1?: boolean
+  checkedInDay2?: boolean
+  gatewayOrderId?: string | null
+  gatewayPaymentId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  invoice?: Prisma.InvoiceUncheckedCreateNestedOneWithoutRegistrationInput
+}
+
+export type RegistrationCreateOrConnectWithoutPhotoInput = {
+  where: Prisma.RegistrationWhereUniqueInput
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutPhotoInput, Prisma.RegistrationUncheckedCreateWithoutPhotoInput>
+}
+
+export type RegistrationUpsertWithoutPhotoInput = {
+  update: Prisma.XOR<Prisma.RegistrationUpdateWithoutPhotoInput, Prisma.RegistrationUncheckedUpdateWithoutPhotoInput>
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutPhotoInput, Prisma.RegistrationUncheckedCreateWithoutPhotoInput>
+  where?: Prisma.RegistrationWhereInput
+}
+
+export type RegistrationUpdateToOneWithWhereWithoutPhotoInput = {
+  where?: Prisma.RegistrationWhereInput
+  data: Prisma.XOR<Prisma.RegistrationUpdateWithoutPhotoInput, Prisma.RegistrationUncheckedUpdateWithoutPhotoInput>
+}
+
+export type RegistrationUpdateWithoutPhotoInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  delegateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackSlug?: Prisma.StringFieldUpdateOperationsInput | string
+  trackName?: Prisma.StringFieldUpdateOperationsInput | string
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  source?: Prisma.EnumRegSourceFieldUpdateOperationsInput | $Enums.RegSource
+  portfolio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  portfolioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  delegationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nudgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rosterOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  howHeard?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  consentAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianConsent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  customAnswers?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dietary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accessibility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkedInDay1?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInDay2?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gatewayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invoice?: Prisma.InvoiceUpdateOneWithoutRegistrationNestedInput
+}
+
+export type RegistrationUncheckedUpdateWithoutPhotoInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  delegateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trackSlug?: Prisma.StringFieldUpdateOperationsInput | string
+  trackName?: Prisma.StringFieldUpdateOperationsInput | string
+  experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  source?: Prisma.EnumRegSourceFieldUpdateOperationsInput | $Enums.RegSource
+  portfolio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  portfolioId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  delegationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  promoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nudgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rosterOptIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  howHeard?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  consentAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianConsent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  customAnswers?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dietary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accessibility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkedInDay1?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInDay2?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gatewayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invoice?: Prisma.InvoiceUncheckedUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationCreateWithoutInvoiceInput = {
@@ -1190,6 +1395,7 @@ export type RegistrationCreateWithoutInvoiceInput = {
   gatewayPaymentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  photo?: Prisma.RegistrationPhotoCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutInvoiceInput = {
@@ -1231,6 +1437,7 @@ export type RegistrationUncheckedCreateWithoutInvoiceInput = {
   gatewayPaymentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  photo?: Prisma.RegistrationPhotoUncheckedCreateNestedOneWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutInvoiceInput = {
@@ -1288,6 +1495,7 @@ export type RegistrationUpdateWithoutInvoiceInput = {
   gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  photo?: Prisma.RegistrationPhotoUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutInvoiceInput = {
@@ -1329,6 +1537,7 @@ export type RegistrationUncheckedUpdateWithoutInvoiceInput = {
   gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  photo?: Prisma.RegistrationPhotoUncheckedUpdateOneWithoutRegistrationNestedInput
 }
 
 
@@ -1373,6 +1582,7 @@ export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   createdAt?: boolean
   updatedAt?: boolean
   invoice?: boolean | Prisma.Registration$invoiceArgs<ExtArgs>
+  photo?: boolean | Prisma.Registration$photoArgs<ExtArgs>
 }, ExtArgs["result"]["registration"]>
 
 export type RegistrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1501,6 +1711,7 @@ export type RegistrationSelectScalar = {
 export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "delegateId" | "fullName" | "email" | "phone" | "institution" | "trackSlug" | "trackName" | "experience" | "amount" | "status" | "source" | "portfolio" | "portfolioId" | "delegationId" | "promoCode" | "nudgedAt" | "cancelledAt" | "rosterOptIn" | "age" | "city" | "gender" | "emergencyContact" | "howHeard" | "notes" | "consentAccepted" | "guardianName" | "guardianPhone" | "guardianConsent" | "customAnswers" | "dietary" | "accessibility" | "checkedInDay1" | "checkedInDay2" | "gatewayOrderId" | "gatewayPaymentId" | "createdAt" | "updatedAt", ExtArgs["result"]["registration"]>
 export type RegistrationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invoice?: boolean | Prisma.Registration$invoiceArgs<ExtArgs>
+  photo?: boolean | Prisma.Registration$photoArgs<ExtArgs>
 }
 export type RegistrationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 export type RegistrationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1509,6 +1720,7 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
   name: "Registration"
   objects: {
     invoice: Prisma.$InvoicePayload<ExtArgs> | null
+    photo: Prisma.$RegistrationPhotoPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1944,6 +2156,7 @@ readonly fields: RegistrationFieldRefs;
 export interface Prisma__RegistrationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   invoice<T extends Prisma.Registration$invoiceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$invoiceArgs<ExtArgs>>): Prisma.Prisma__InvoiceClient<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  photo<T extends Prisma.Registration$photoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$photoArgs<ExtArgs>>): Prisma.Prisma__RegistrationPhotoClient<runtime.Types.Result.GetResult<Prisma.$RegistrationPhotoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2420,6 +2633,25 @@ export type Registration$invoiceArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   include?: Prisma.InvoiceInclude<ExtArgs> | null
   where?: Prisma.InvoiceWhereInput
+}
+
+/**
+ * Registration.photo
+ */
+export type Registration$photoArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RegistrationPhoto
+   */
+  select?: Prisma.RegistrationPhotoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RegistrationPhoto
+   */
+  omit?: Prisma.RegistrationPhotoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RegistrationPhotoInclude<ExtArgs> | null
+  where?: Prisma.RegistrationPhotoWhereInput
 }
 
 /**

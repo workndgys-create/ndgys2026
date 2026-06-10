@@ -42,6 +42,8 @@ export const registrationSchema = z.object({
   guardianPhone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
   guardianConsent: z.coerce.boolean().optional(),
   customAnswers: z.array(z.object({ questionId: z.string(), label: z.string().max(300), value: z.union([z.string().max(2000), z.array(z.string().max(500))]) })).optional(),
+  photoData: z.string().optional(),
+  photoMime: z.string().optional(),
   // honeypot — must be empty
   company: z.string().max(0).optional()
 }).superRefine((v, ctx) => {
