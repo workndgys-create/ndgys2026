@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import AdminShell, { Panel } from "@/components/admin/Shell";
 
@@ -11,9 +11,9 @@ export default function ScannerPage() {
   const [scanMessage, setScanMessage] = useState("");
   const [cameraActive, setCameraActive] = useState(false);
   const [cameraSupported, setCameraSupported] = useState(false);
-  const videoRef = /*#__PURE__*/ (null as unknown) as { current: HTMLVideoElement | null };
-  const detectorRef = /*#__PURE__*/ (null as unknown) as { current: any };
-  let scanCooldown = false;
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const detectorRef = useRef<any>(null);
+  const scanCooldownRef = useRef(false);
 
   useEffect(() => {
     let mounted = true;
@@ -80,10 +80,12 @@ export default function ScannerPage() {
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-      const video = document.getElementById("scanner-video") as HTMLVideoElement | null;
+      let video = videoRef.current;
+      if (!video) video = document.getElementById("scanner-video") as HTMLVideoElement | null;
       if (!video) return;
       video.srcObject = stream;
       await video.play();
+      videoRef.current = video;
       setCameraActive(true);
 
       // use BarcodeDetector if available
@@ -91,16 +93,16 @@ export default function ScannerPage() {
       if (BarcodeDetector) {
         detectorRef.current = new BarcodeDetector({ formats: ["qr_code"] });
         const loop = async () => {
-          if (!cameraActive || scanCooldown) return;
+          if (!cameraActive || scanCooldownRef.current) return;
           try {
-            const barcodes = await detectorRef.current.detect(video);
+            const barcodes = await detectorRef.current.detect(videoRef.current as HTMLVideoElement);
             if (barcodes && barcodes.length) {
               const raw = barcodes[0].rawValue || barcodes[0].rawText || "";
               if (raw) {
-                scanCooldown = true;
+                scanCooldownRef.current = true;
                 setQ(raw);
                 await onScan();
-                setTimeout(() => { scanCooldown = false; }, 1500);
+                setTimeout(() => { scanCooldownRef.current = false; }, 1500);
               }
             }
           } catch (err) {
@@ -118,7 +120,7 @@ export default function ScannerPage() {
   }
 
   function stopCamera() {
-    const video = document.getElementById("scanner-video") as HTMLVideoElement | null;
+    const video = videoRef.current || document.getElementById("scanner-video") as HTMLVideoElement | null;
     if (video && video.srcObject) {
       const s = video.srcObject as MediaStream;
       s.getTracks().forEach((t) => t.stop());
@@ -130,7 +132,25 @@ export default function ScannerPage() {
   return (
     <AdminShell title="Scanner">
       <Panel title="Scan badge">
-        <form onSubmit={onScan} className="flex gap-2">
+        <div className="mb-4 flex gap-4">
+          <div className="w-1/2">
+            {cameraSupported ? (
+              <div>
+                <video id="scanner-video" ref={(el) => { videoRef.current = el; }} className="w-full rounded-md bg-black" playsInline muted />
+                <div className="mt-2 flex gap-2">
+                  <button type="button" onClick={startCamera} className="rounded-md bg-emerald-600 px-4 py-2 text-sm text-white">Start camera</button>
+                  <button type="button" onClick={stopCamera} className="rounded-md bg-red-600 px-4 py-2 text-sm text-white">Stop camera</button>
+                  {!cameraActive && <span className="ml-2 text-xs text-slatey">Camera inactive</span>}
+                  {cameraActive && <span className="ml-2 text-xs text-emerald-700">Camera active</span>}
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-md border border-ink/10 p-3 text-sm text-slatey">Camera scanning not supported — paste QR or use the input below.</div>
+            )}
+          </div>
+
+          <div className="flex-1">
+            <form onSubmit={onScan} className="flex gap-2">
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -139,7 +159,9 @@ export default function ScannerPage() {
             className="flex-1 rounded-lg border border-ink/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-gold"
           />
           <button className="rounded-full bg-midnight px-6 py-2.5 text-sm font-600 text-cream hover:bg-royal">Scan</button>
-        </form>
+          </form>
+          </div>
+        </div>
 
         <div className="mt-3 flex items-center gap-4 text-xs text-slatey">
           <label className="inline-flex items-center gap-2">
