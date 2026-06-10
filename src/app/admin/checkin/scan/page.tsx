@@ -9,6 +9,11 @@ export default function ScannerPage() {
   const [scanDay, setScanDay] = useState<1 | 2>(1);
   const [autoScan, setAutoScan] = useState(true);
   const [scanMessage, setScanMessage] = useState("");
+  const [cameraActive, setCameraActive] = useState(false);
+  const [cameraSupported, setCameraSupported] = useState(false);
+  const videoRef = /*#__PURE__*/ (null as unknown) as { current: HTMLVideoElement | null };
+  const detectorRef = /*#__PURE__*/ (null as unknown) as { current: any };
+  let scanCooldown = false;
 
   useEffect(() => {
     let mounted = true;
@@ -18,6 +23,8 @@ export default function ScannerPage() {
       // ignore data; scanner page shows minimal UI
       const _ = await r.json().catch(() => ({}));
       if (!mounted) return;
+      // feature-detect BarcodeDetector
+      setCameraSupported(typeof (window as any).BarcodeDetector === "function");
     }
     checkAuth();
     return () => { mounted = false; };
@@ -64,6 +71,60 @@ export default function ScannerPage() {
     }
 
     setQ("");
+  }
+
+  async function startCamera() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setScanMessage("Camera not available in this browser.");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      const video = document.getElementById("scanner-video") as HTMLVideoElement | null;
+      if (!video) return;
+      video.srcObject = stream;
+      await video.play();
+      setCameraActive(true);
+
+      // use BarcodeDetector if available
+      const BarcodeDetector = (window as any).BarcodeDetector;
+      if (BarcodeDetector) {
+        detectorRef.current = new BarcodeDetector({ formats: ["qr_code"] });
+        const loop = async () => {
+          if (!cameraActive || scanCooldown) return;
+          try {
+            const barcodes = await detectorRef.current.detect(video);
+            if (barcodes && barcodes.length) {
+              const raw = barcodes[0].rawValue || barcodes[0].rawText || "";
+              if (raw) {
+                scanCooldown = true;
+                setQ(raw);
+                await onScan();
+                setTimeout(() => { scanCooldown = false; }, 1500);
+              }
+            }
+          } catch (err) {
+            // ignore detection errors
+          }
+          requestAnimationFrame(loop);
+        };
+        requestAnimationFrame(loop);
+      } else {
+        setScanMessage("Camera QR scanning not supported in this browser.");
+      }
+    } catch (err) {
+      setScanMessage("Could not start camera: " + String(err));
+    }
+  }
+
+  function stopCamera() {
+    const video = document.getElementById("scanner-video") as HTMLVideoElement | null;
+    if (video && video.srcObject) {
+      const s = video.srcObject as MediaStream;
+      s.getTracks().forEach((t) => t.stop());
+      video.srcObject = null;
+    }
+    setCameraActive(false);
   }
 
   return (
