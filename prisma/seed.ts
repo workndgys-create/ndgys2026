@@ -90,7 +90,6 @@ async function main() {
     "allocations.live": "false",
     "registration.open": "true",
     "portfolio.holdMinutes": "10",
-    "ipl.auction.activeHouse": "1",
     "event.start": "2026-08-22T09:00:00+05:30",
     "event.end": "2026-08-23T17:30:00+05:30",
     "event.venue": "IIT Delhi, New Delhi"

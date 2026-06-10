@@ -7,16 +7,8 @@ import { env } from "@/lib/env";
 import { getFlag } from "@/lib/settings";
 import { holdPortfolio, getHoldMinutes } from "@/lib/portfolios";
 import { checkPromo } from "@/lib/promoDb";
-import { getSetting } from "@/lib/settings";
 
 export const runtime = "nodejs";
-
-function parseIplHouse(name: string): number | null {
-  const m = /^house\s+(\d+)\s*-/i.exec(name.trim());
-  if (!m) return null;
-  const v = Number(m[1]);
-  return Number.isFinite(v) && v > 0 ? Math.floor(v) : null;
-}
 
 export async function POST(req: NextRequest) {
   const ip = clientIp(req.headers);
@@ -76,16 +68,6 @@ export async function POST(req: NextRequest) {
   // Validate the portfolio belongs to this committee
   const portfolio = await prisma.portfolio.findUnique({ where: { id: portfolioId } });
   if (!portfolio || portfolio.trackSlug !== track.slug) return NextResponse.json({ error: "Invalid portfolio for this committee." }, { status: 422 });
-  if (track.slug === "ipl") {
-    const activeHouse = Number(await getSetting("ipl.auction.activeHouse", "1"));
-    const requestedHouse = parseIplHouse(portfolio.name);
-    if (requestedHouse != null && requestedHouse !== activeHouse) {
-      return NextResponse.json(
-        { error: `This slot is in House ${requestedHouse}. Registrations are currently open for House ${activeHouse}.` },
-        { status: 409 }
-      );
-    }
-  }
 
   // Apply an optional promo code to the committee fee
   let amount = track.fee;
