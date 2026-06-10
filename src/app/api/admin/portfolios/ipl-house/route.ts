@@ -77,6 +77,47 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json(await getSummary());
   }
 
+  if (action === "deleteHouse") {
+    const targetRaw = Number(b.house);
+    const target = Number.isFinite(targetRaw) && targetRaw > 0 ? Math.floor(targetRaw) : NaN;
+    if (!Number.isFinite(target)) {
+      return NextResponse.json({ error: "house must be a positive integer." }, { status: 422 });
+    }
+
+    const rows = await prisma.portfolio.findMany({
+      where: { trackSlug: "ipl" },
+      select: { id: true, name: true, status: true }
+    });
+
+    const houseRows = rows.filter((r) => parseHouse(r.name) === target);
+    if (houseRows.length === 0) {
+      return NextResponse.json({ error: `No slots found for House ${target}.` }, { status: 404 });
+    }
+
+    const hasLockedSlots = houseRows.some((r) => r.status === "ASSIGNED" || r.status === "HELD");
+    if (hasLockedSlots) {
+      return NextResponse.json(
+        { error: `House ${target} has held or assigned slots. Clear them before deleting this house.` },
+        { status: 409 }
+      );
+    }
+
+    const activeHouseRaw = Number(await getSetting("ipl.auction.activeHouse", "1"));
+    const activeHouse = Number.isFinite(activeHouseRaw) && activeHouseRaw > 0 ? Math.floor(activeHouseRaw) : 1;
+    if (target === activeHouse) {
+      return NextResponse.json(
+        { error: `House ${target} is currently active. Set another active house before deleting it.` },
+        { status: 409 }
+      );
+    }
+
+    const ids = houseRows.map((r) => r.id);
+    const deleted = await prisma.portfolio.deleteMany({ where: { id: { in: ids } } });
+
+    await audit(s.email, "ipl.house.delete", "Portfolio", undefined, JSON.stringify({ house: target, deleted: deleted.count }));
+    return NextResponse.json({ ...(await getSummary()), deleted: deleted.count });
+  }
+
   if (typeof b.activeHouse === "number") {
     const target = Math.floor(b.activeHouse);
     if (!Number.isFinite(target) || target < 1) {

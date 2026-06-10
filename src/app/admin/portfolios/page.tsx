@@ -53,6 +53,7 @@ function IplAuctionHouses() {
   const [houseCount, setHouseCount] = useState(1);
   const [slotsPerHouse, setSlotsPerHouse] = useState(8);
   const [manualHouse, setManualHouse] = useState(1);
+  const [deleteHouse, setDeleteHouse] = useState(1);
 
   async function load() {
     setLoading(true);
@@ -62,6 +63,7 @@ function IplAuctionHouses() {
     if (!res.ok) { setMsg(d.error || "Could not load IPL house settings."); return; }
     setActiveHouse(Number(d.activeHouse || 1));
     setManualHouse(Number(d.activeHouse || 1));
+    setDeleteHouse(Number(d.activeHouse || 1));
     setHouses(Array.isArray(d.houses) ? d.houses : []);
   }
 
@@ -107,6 +109,24 @@ function IplAuctionHouses() {
     setMsg(`House ${d.activeHouse} is now active.`);
     setActiveHouse(d.activeHouse);
     setManualHouse(d.activeHouse);
+    setDeleteHouse(d.activeHouse);
+    setHouses(Array.isArray(d.houses) ? d.houses : []);
+  }
+
+  async function removeHouse() {
+    setMsg("");
+    if (!confirm(`Delete House ${deleteHouse}? This will remove all AVAILABLE slots in that house.`)) return;
+    const res = await fetch("/api/admin/portfolios/ipl-house", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "deleteHouse", house: deleteHouse })
+    });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { setMsg(d.error || "Could not delete house."); return; }
+    setMsg(`Deleted ${d.deleted || 0} slots from House ${deleteHouse}.`);
+    setActiveHouse(d.activeHouse);
+    setManualHouse(d.activeHouse);
+    setDeleteHouse(d.activeHouse);
     setHouses(Array.isArray(d.houses) ? d.houses : []);
   }
 
@@ -143,6 +163,14 @@ function IplAuctionHouses() {
               <input type="number" min={1} value={slotsPerHouse} onChange={(e) => setSlotsPerHouse(Number(e.target.value) || 1)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm" />
             </label>
             <button onClick={addHouses} className="rounded-full bg-midnight px-4 py-2 text-sm font-600 text-cream hover:bg-royal">Add House Slots</button>
+          </div>
+
+          <div className="flex flex-wrap items-end gap-2 rounded-lg border border-red-200 bg-red-50/50 p-3">
+            <label className="text-xs text-slatey">Delete house
+              <input type="number" min={1} value={deleteHouse} onChange={(e) => setDeleteHouse(Number(e.target.value) || 1)} className="mt-1 w-28 rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm" />
+            </label>
+            <button onClick={removeHouse} className="rounded-full bg-red-600 px-4 py-2 text-sm font-600 text-cream hover:bg-red-700">Delete House</button>
+            <p className="text-xs text-red-700">Deletion is blocked for active, held, or assigned house slots.</p>
           </div>
 
           {houses.length > 0 && (
