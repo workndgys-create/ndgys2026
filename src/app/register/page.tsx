@@ -62,6 +62,12 @@ function RegisterInner() {
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const internationalPressMock = [
+    ...Array.from({ length: 50 }, (_, idx) => `Journalist ${String(idx + 1).padStart(2, "0")}`),
+    ...Array.from({ length: 50 }, (_, idx) => `Caricaturist ${String(idx + 1).padStart(2, "0")}`),
+    ...Array.from({ length: 30 }, (_, idx) => `Photographer ${String(idx + 1).padStart(2, "0")}`),
+  ];
+
   useEffect(() => {
     void (async () => {
       try {
@@ -84,6 +90,7 @@ function RegisterInner() {
           { value: "unicef", label: "United Nations International Children's Emergency Fund", fee: 2000 },
           { value: "unep", label: "United Nations Environment Programme", fee: 2000 },
           { value: "wto", label: "World Trade Organization", fee: 2500 },
+          { value: "international-press", label: "International Press", fee: 2000 },
           { value: "aippm", label: "All India Political Parties Meet", fee: 1500 },
           { value: "lok-sabha", label: "Lok Sabha", fee: 1500 },
           { value: "war-cabinet", label: "Indian War Cabinet", fee: 1500 },
@@ -121,6 +128,7 @@ function RegisterInner() {
       csw: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
       unicef: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
       unep: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      "international-press": internationalPressMock,
       wto: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
       aippm: ["Bharatiya Janata Party", "Indian National Congress", "All India Majlis-e-Ittehaad-ul-Muslimeen", "Biju Janata Dal", "Trinamool Congress", "Dravida Munnetra Kazhagam", "Samajwadi Party", "Shivsena", "Telugu Desam Party", "Jharkhand Mukti Morcha", "Nationalist Congress Party", "Communist Party of India", "Aam Aadmi Party", "Yadav Samaj", "Regional Alliance"],
       "lok-sabha": ["Mumbai (South)", "Delhi Central", "Bangalore South", "Chennai South", "Hyderabad", "Kolkata South", "Chandigarh", "Lucknow", "Pune", "Ahmedabad", "Jaipur", "Indore"],

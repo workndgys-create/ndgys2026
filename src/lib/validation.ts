@@ -10,6 +10,7 @@ export const TRACKS = [
   { slug: "unicef", name: "United Nations International Children's Emergency Fund", fee: 2000, capacity: 40, difficulty: "Intermediate", agenda: "Child welfare and emergency response." },
   { slug: "unep", name: "United Nations Environment Programme", fee: 2000, capacity: 50, difficulty: "Intermediate", agenda: "Environmental policy and sustainability." },
   { slug: "wto", name: "World Trade Organization", fee: 2500, capacity: 50, difficulty: "Intermediate", agenda: "Global trade rules and disputes." },
+  { slug: "international-press", name: "International Press", fee: 2000, capacity: 130, difficulty: "Intermediate", agenda: "Real-time summit journalism through reporting, caricature and photography." },
   { slug: "aippm", name: "All India Political Parties Meet", fee: 1500, capacity: 60, difficulty: "Beginner", agenda: "National multiparty dialogue and consensus building." },
   { slug: "lok-sabha", name: "Lok Sabha", fee: 1500, capacity: 60, difficulty: "Beginner", agenda: "Parliamentary debate and lawmaking." },
   { slug: "war-cabinet", name: "Indian War Cabinet", fee: 1500, capacity: 30, difficulty: "Advanced", agenda: "Crisis governance and strategic decision-making." },

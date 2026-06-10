@@ -2,6 +2,18 @@ import { prisma } from "./prisma";
 import { getSetting } from "./settings";
 import { canAcquire, deriveState, PortfolioRow, PortfolioState } from "./portfolioLogic";
 
+function parseIplHouse(name: string): number | null {
+  const m = /^house\s+(\d+)\s*-/i.exec(name.trim());
+  if (!m) return null;
+  const v = Number(m[1]);
+  return Number.isFinite(v) && v > 0 ? v : null;
+}
+
+async function getActiveIplHouse(): Promise<number> {
+  const raw = Number(await getSetting("ipl.auction.activeHouse", "1"));
+  return Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 1;
+}
+
 export async function getHoldMinutes(): Promise<number> {
   const v = Number(await getSetting("portfolio.holdMinutes", "10"));
   return Number.isFinite(v) && v > 0 ? v : 10;
@@ -28,8 +40,16 @@ export interface PublicPortfolio {
 export async function listPortfolios(trackSlug: string, viewerRegistrationId: string | null): Promise<PublicPortfolio[]> {
   await releaseExpiredHolds();
   const rows = await prisma.portfolio.findMany({ where: { trackSlug }, orderBy: [{ order: "asc" }, { name: "asc" }] });
+  const activeIplHouse = trackSlug === "ipl" ? await getActiveIplHouse() : null;
   const now = new Date();
-  return (rows as unknown as (PortfolioRow & { id: string; name: string; order: number })[]).map((p) => {
+  return (rows as unknown as (PortfolioRow & { id: string; name: string; order: number })[])
+    .filter((p) => {
+      if (activeIplHouse == null) return true;
+      const house = parseIplHouse(p.name);
+      // Legacy IPL rows without house prefix remain visible.
+      return house == null || house === activeIplHouse;
+    })
+    .map((p) => {
     const state = deriveState(p, viewerRegistrationId, now);
     return { id: p.id, name: p.name, order: p.order, state, heldUntil: state === "mine" && p.heldUntil ? new Date(p.heldUntil).toISOString() : null };
   });
@@ -45,6 +65,14 @@ export async function holdPortfolio(portfolioId: string, registrationId: string)
   await releaseExpiredHolds();
   const portfolio = await prisma.portfolio.findUnique({ where: { id: portfolioId } });
   if (!portfolio) return { ok: false, reason: "not_found" };
+
+  if (portfolio.trackSlug === "ipl") {
+    const activeIplHouse = await getActiveIplHouse();
+    const requestedHouse = parseIplHouse(portfolio.name);
+    if (requestedHouse != null && requestedHouse !== activeIplHouse) {
+      return { ok: false, reason: "unavailable" };
+    }
+  }
 
   const minutes = await getHoldMinutes();
   const heldUntil = new Date(Date.now() + minutes * 60_000);

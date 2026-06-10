@@ -51,7 +51,18 @@ const IPL_TEAMS = [
   "Rajasthan Royals", "Delhi Capitals", "Punjab Kings", "Sunrisers Hyderabad"
 ];
 
+function numbered(prefix: string, count: number) {
+  return Array.from({ length: count }, (_, idx) => `${prefix} ${String(idx + 1).padStart(2, "0")}`);
+}
+
+const INTERNATIONAL_PRESS_PORTFOLIOS = [
+  ...numbered("Journalist", 50),
+  ...numbered("Caricaturist", 50),
+  ...numbered("Photographer", 30)
+];
+
 function portfoliosFor(slug: string): string[] {
+  if (slug === "international-press") return INTERNATIONAL_PRESS_PORTFOLIOS;
   if (slug === "press") return PRESS_ROLES;
   if (slug === "crisis") return CRISIS_ROLES;
   if (slug === "leadership") return LEADERSHIP_ROLES;
@@ -79,6 +90,7 @@ async function main() {
     "allocations.live": "false",
     "registration.open": "true",
     "portfolio.holdMinutes": "10",
+    "ipl.auction.activeHouse": "1",
     "event.start": "2026-08-22T09:00:00+05:30",
     "event.end": "2026-08-23T17:30:00+05:30",
     "event.venue": "IIT Delhi, New Delhi"
@@ -98,7 +110,14 @@ async function main() {
   console.log(`OK Seeded ${TRACKS.length} tracks`);
 
   if (process.env.UPSERT_ONLY) {
-    console.log("UPSERT_ONLY set — tracks upserted, skipping portfolio deletion and track removals.");
+    for (const t of TRACKS) {
+      const portfolios = portfoliosFor(t.slug);
+      await prisma.portfolio.createMany({
+        data: portfolios.map((name, i) => ({ name, trackSlug: t.slug, order: i, status: "AVAILABLE" as const })),
+        skipDuplicates: true
+      });
+    }
+    console.log("UPSERT_ONLY set — tracks upserted and missing default portfolios created (non-destructive).");
     return;
   }
 
