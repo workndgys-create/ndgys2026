@@ -29,7 +29,7 @@ const HEARD = [
   "Friend / Word of mouth",
   "Other",
 ];
-const BEGINNER_TRACKS = new Set(["aippm", "lok-sabha", "ipl"]);
+const BEGINNER_TRACKS = new Set(["unep", "aippm"]);
 
 function RegisterInner() {
   const params = useSearchParams();
@@ -37,9 +37,6 @@ function RegisterInner() {
 
   const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number; difficulty?: string }[]>([]);
   const [track, setTrack] = useState(preTrack);
-  // `selectTrackValue` holds the combined dropdown value: `${slug}::${level}`
-  const [selectTrackValue, setSelectTrackValue] = useState<string>("");
-  const [experience, setExperience] = useState<string>("beginner");
   const [status, setStatus] = useState<"idle" | "processing" | "paid" | "error" | "full">("idle");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
@@ -59,8 +56,7 @@ function RegisterInner() {
   const [age, setAge] = useState<string>("");
   const [consent, setConsent] = useState(false);
   const [guardianConsent, setGuardianConsent] = useState(false);
-  const isBeginnerTrack =
-    (tracks.find((t) => t.value === track)?.difficulty || "").toLowerCase() === "beginner" || BEGINNER_TRACKS.has(track);
+  const isBeginnerTrack = BEGINNER_TRACKS.has(track);
   const isMinor = age !== "" && Number(age) > 0 && Number(age) < 18;
   const [questions, setQuestions] = useState<CustomQ[]>([]);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
@@ -74,12 +70,8 @@ function RegisterInner() {
           const t = await r.json(); setTracks(t);
           if (preTrack && t.some((x: any) => x.value === preTrack)) {
             setTrack(preTrack);
-            setSelectTrackValue(`${preTrack}::beginner`);
-            setExperience("beginner");
           } else if (!preTrack && t.length) {
             setTrack(t[0].value);
-            setSelectTrackValue(`${t[0].value}::beginner`);
-            setExperience("beginner");
           }
         } else throw new Error("Failed to fetch");
       } catch (_) {
@@ -100,12 +92,8 @@ function RegisterInner() {
         setTracks(mockTracks);
         if (preTrack && mockTracks.some((x: any) => x.value === preTrack)) {
           setTrack(preTrack);
-          setSelectTrackValue(`${preTrack}::beginner`);
-          setExperience("beginner");
         } else if (!preTrack && mockTracks.length) {
           setTrack(mockTracks[0].value);
-          setSelectTrackValue(`${mockTracks[0].value}::beginner`);
-          setExperience("beginner");
         }
       }
     })();
@@ -366,28 +354,19 @@ function RegisterInner() {
           <div>
             <label className="text-sm font-500 text-ink/80">Committee</label>
               <select
-                name="trackChoice"
-                value={selectTrackValue}
-                onChange={(e) => {
-                  const val = e.target.value || "";
-                  setSelectTrackValue(val);
-                  const parts = val.split("::");
-                  const slug = parts[0] || "";
-                  const level = parts[1] || "beginner";
-                  setTrack(slug);
-                  setExperience(level);
-                }}
+                name="track"
+                value={track}
+                onChange={(e) => setTrack(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
               >
-                {tracks.flatMap((t) => [
-                  <option key={`${t.value}::beginner`} value={`${t.value}::beginner`}>{`${t.label} – Beginner`}</option>,
-                  <option key={`${t.value}::intermediate`} value={`${t.value}::intermediate`}>{`${t.label} – Intermediate`}</option>,
-                  <option key={`${t.value}::advanced`} value={`${t.value}::advanced`}>{`${t.label} – Advanced`}</option>
-                ])}
+                {tracks.map((t) => (
+                  <option key={t.value} value={t.value}>
+                    {BEGINNER_TRACKS.has(t.value)
+                      ? `${t.label} (Beginner, age 12-16)`
+                      : t.label}
+                  </option>
+                ))}
               </select>
-              {/* Hidden fields so server receives expected `track` and `experience` values on submit */}
-              <input type="hidden" name="track" value={track} />
-              <input type="hidden" name="experience" value={experience} />
           </div>
 
           <div>
@@ -422,26 +401,6 @@ function RegisterInner() {
                 );
               })}
             </div>
-          </div>
-
-          <div>
-            <label className="text-sm font-500 text-ink/80">Experience</label>
-            <select
-              name="experience_fallback"
-              value={experience}
-              onChange={(e) => {
-                const v = e.target.value;
-                setExperience(v);
-                // keep main dropdown in sync
-                if (track) setSelectTrackValue(`${track}::${v}`);
-              }}
-              className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
-            >
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-            </select>
-            {/* `experience` hidden input above will carry the final experience for server */}
           </div>
 
           <div>

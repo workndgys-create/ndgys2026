@@ -17,10 +17,8 @@ export const TRACKS = [
 ] as const;
 
 export const seedTrackBySlug = (slug: string) => TRACKS.find((t) => t.slug === slug);
-export const BEGINNER_TRACK_SLUGS = new Set(
-  TRACKS.filter((t) => t.difficulty.toLowerCase() === "beginner").map((t) => t.slug)
-);
-export const isBeginnerTrackSlug = (slug: string) => BEGINNER_TRACK_SLUGS.has(slug as (typeof TRACKS)[number]["slug"]);
+export const BEGINNER_TRACK_SLUGS = new Set<string>(["unep", "aippm"]);
+export const isBeginnerTrackSlug = (slug: string) => BEGINNER_TRACK_SLUGS.has(slug);
 
 export const GENDERS = ["male", "female", "other"] as const;
 export const HEARD_OPTIONS = ["Instagram", "WhatsApp", "School / College", "Friend / Word of mouth", "Other"] as const;
@@ -35,7 +33,6 @@ export const registrationSchema = z.object({
   emergencyContact: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid contact number").optional().or(z.literal("")),
     institution: z.string().trim().min(2, "Enter your school / college").max(160).optional().or(z.literal("")),
   track: z.string().min(1, "Choose a track"),
-  experience: z.enum(["beginner", "experienced"]).optional(),
   howHeard: z.string().trim().max(80).optional().or(z.literal("")),
   howHeardDetail: z.string().trim().max(200).optional().or(z.literal("")),
   notes: z.string().trim().max(1000).optional().or(z.literal("")),

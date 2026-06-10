@@ -8,13 +8,15 @@ describe("registrationSchema", () => {
   it("rejects a bad email", () => expect(registrationSchema.safeParse({ ...base, email: "nope" }).success).toBe(false));
   it("rejects an invalid phone", () => expect(registrationSchema.safeParse({ ...base, phone: "abc" }).success).toBe(false));
   it("rejects when honeypot is filled", () => expect(registrationSchema.safeParse({ ...base, company: "bot" }).success).toBe(false));
-  it("requires age 12-16 for beginner committees", () => {
+  it("requires age 12-16 only for UNEP and AIPPM", () => {
     expect(registrationSchema.safeParse({ ...base, track: "aippm" }).success).toBe(false);
+    expect(registrationSchema.safeParse({ ...base, track: "unep" }).success).toBe(false);
     expect(registrationSchema.safeParse({ ...base, track: "aippm", age: 11 }).success).toBe(false);
     expect(registrationSchema.safeParse({ ...base, track: "aippm", age: 17 }).success).toBe(false);
     const minorConsent = { guardianName: "Parent", guardianPhone: "9811111111", guardianConsent: true };
     expect(registrationSchema.safeParse({ ...base, track: "aippm", age: 12, ...minorConsent }).success).toBe(true);
     expect(registrationSchema.safeParse({ ...base, track: "aippm", age: 16, ...minorConsent }).success).toBe(true);
+    expect(registrationSchema.safeParse({ ...base, track: "lok-sabha" }).success).toBe(true);
   });
 });
 

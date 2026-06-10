@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { registrationSchema } from "@/lib/validation";
+import { isBeginnerTrackSlug, registrationSchema } from "@/lib/validation";
 import { createCashfreeOrder, cashfreeMode } from "@/lib/cashfree";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 import { env } from "@/lib/env";
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
   const track = await prisma.track.findUnique({ where: { slug: data.track } });
   if (!track) return NextResponse.json({ error: "Unknown track" }, { status: 422 });
-  if ((track.difficulty || "").toLowerCase() === "beginner") {
+  if (isBeginnerTrackSlug(track.slug)) {
     if (typeof data.age !== "number" || data.age < 12 || data.age > 16) {
       return NextResponse.json(
         {
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
   const createPayload: any = {
     fullName: data.fullName, email: data.email, phone: data.phone,
     institution: data.institution || null, trackSlug: track.slug, trackName: track.name,
-    experience: data.experience ?? null, amount, status: "PENDING", portfolioId, promoCode: appliedCode,
+    amount, status: "PENDING", portfolioId, promoCode: appliedCode,
     age: data.age ?? null, city: data.city || null, gender: data.gender ?? null,
     emergencyContact: data.emergencyContact || null, howHeard: howHeard || null, notes: data.notes || null,
     consentAccepted: true, guardianName: data.guardianName || null, guardianPhone: data.guardianPhone || null, guardianConsent: !!data.guardianConsent,
