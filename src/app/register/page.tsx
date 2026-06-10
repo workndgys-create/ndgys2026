@@ -62,6 +62,39 @@ function RegisterInner() {
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const [photoData, setPhotoData] = useState<string>("");
+  const [photoMime, setPhotoMime] = useState<string>("");
+  const [photoError, setPhotoError] = useState<string>("");
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhotoError("");
+    const file = e.target.files?.[0];
+    if (!file) {
+      setPhotoData("");
+      setPhotoMime("");
+      return;
+    }
+    if (file.type !== "image/jpeg" && file.type !== "image/png" && file.type !== "image/jpg") {
+      setPhotoError("Only JPEG and PNG formats are supported.");
+      setPhotoData("");
+      setPhotoMime("");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setPhotoError("Photo must be smaller than 2MB.");
+      setPhotoData("");
+      setPhotoMime("");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = (reader.result as string).split(",")[1];
+      setPhotoData(base64);
+      setPhotoMime(file.type);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const internationalPressMock = [
     ...Array.from({ length: 50 }, (_, idx) => `Journalist ${String(idx + 1).padStart(2, "0")}`),
     ...Array.from({ length: 50 }, (_, idx) => `Caricaturist ${String(idx + 1).padStart(2, "0")}`),
@@ -215,6 +248,11 @@ function RegisterInner() {
       const empty = v === undefined || (Array.isArray(v) ? v.length === 0 : !String(v).trim());
       if (empty) { setMessage(`Please answer: ${q.label}`); setStatus("error"); return; }
     }
+    if (!photoData) {
+      setMessage("Please upload a passport size photo.");
+      setStatus("error");
+      return;
+    }
     setStatus("processing");
     const fd = new FormData(e.currentTarget);
     const payload: Record<string, unknown> = Object.fromEntries(fd.entries());
@@ -225,6 +263,8 @@ function RegisterInner() {
     payload.guardianConsent = guardianConsent ? "true" : "";
     payload.customAnswers = questions.map((q) => ({ questionId: q.id, label: q.label, value: answers[q.id] ?? (q.type === "multiselect" ? [] : "") })).filter((x) => (Array.isArray(x.value) ? x.value.length : String(x.value).trim()));
     if (promo.trim()) payload.promoCode = promo.trim();
+    payload.photoData = photoData;
+    payload.photoMime = photoMime;
     setForm(payload as Record<string, string>);
 
     const res = await fetch("/api/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -314,6 +354,17 @@ function RegisterInner() {
           <Field name="email" type="email" label="Email" errors={errors} />
           <Field name="phone" label="Phone Number" errors={errors} />
           <Field name="institution" label="School / College" errors={errors} required />
+          <div>
+            <label className="text-sm font-500 text-ink/80">Passport Size Photo (JPEG/PNG, Max 2MB) <span className="text-red-500">*</span></label>
+            <input
+              type="file"
+              accept="image/jpeg, image/png"
+              required
+              onChange={handlePhotoChange}
+              className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gold file:text-midnight hover:file:bg-goldlite"
+            />
+            {photoError && <p className="mt-1 text-xs text-red-600">{photoError}</p>}
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-500 text-ink/80">Age</label>

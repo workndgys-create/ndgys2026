@@ -47,6 +47,11 @@ export { Prisma }
  */
 export type Registration = Prisma.RegistrationModel
 /**
+ * Model RegistrationPhoto
+ * 
+ */
+export type RegistrationPhoto = Prisma.RegistrationPhotoModel
+/**
  * Model Invoice
  * 
  */

@@ -145,10 +145,22 @@ export default function CheckinPage() {
         {searched && results.length === 0 && <p className="rounded-2xl border border-ink/10 bg-paper p-6 text-center text-slatey">No paid delegate found.</p>}
         {results.map((r) => (
           <div key={r.id} className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-ink/10 bg-paper p-5">
-            <div>
-              <p className="font-display text-lg font-700 text-ink">{r.fullName}</p>
-              <p className="font-mono text-xs text-slatey">{r.delegateId}</p>
-              <p className="text-sm text-slatey">{r.trackName}</p>
+            <div className="flex items-center gap-4">
+              <div className="h-16 w-14 overflow-hidden rounded-lg border border-ink/15 bg-cream flex items-center justify-center shrink-0 shadow-sm">
+                <img
+                  src={`/api/registrations/${r.id}/photo`}
+                  alt=""
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="%239CA3AF"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>';
+                  }}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div>
+                <p className="font-display text-lg font-700 text-ink">{r.fullName}</p>
+                <p className="font-mono text-xs text-slatey">{r.delegateId}</p>
+                <p className="text-sm text-slatey">{r.trackName}</p>
+              </div>
             </div>
             <div className="flex gap-2">
               <DayToggle label="Day 1" on={r.checkedInDay1} onClick={() => mark(r.id, 1, !r.checkedInDay1)} />

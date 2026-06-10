@@ -99,6 +99,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "That portfolio was just taken — please choose another.", portfolioUnavailable: true }, { status: 409 });
   }
 
+  // Store photo if provided
+  if (body?.photoData && body?.photoMime) {
+    if (body.photoMime.startsWith("image/")) {
+      try {
+        const buf = Buffer.from(body.photoData, "base64");
+        if (buf.length <= 2 * 1024 * 1024) {
+          await prisma.registrationPhoto.create({
+            data: {
+              registrationId: reg.id,
+              mime: body.photoMime,
+              data: buf
+            }
+          });
+        }
+      } catch (err) {
+        console.error("[register] Failed to save photo:", err);
+      }
+    }
+  }
+
   try {
     const order = await createCashfreeOrder({
       orderId: reg.id, amountRupees: amount,

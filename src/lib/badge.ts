@@ -31,6 +31,8 @@ export interface BadgeData {
   institution?: string | null;
   city?: string | null;
   categoryLabel?: string;
+  photoData?: Buffer | null;
+  photoMime?: string | null;
 }
 
 // Lanyard badge size ~100 x 150 mm (1mm = 2.83465pt)
@@ -75,12 +77,38 @@ async function drawBadge(doc: PDFKit.PDFDocument, x: number, y: number, d: Badge
     doc.fillColor(SLATE).font("Helvetica").fontSize(8).text(affiliation, x + 16, y + 175, { width: w - 32, align: "center" });
   }
 
-  // QR
+  // QR & Photo
   const qr = await qrPngBuffer(d.delegateId).catch(() => null);
-  const qrSize = 120;
   const qrY = affiliation ? y + 190 : y + 182;
-  if (qr) {
-    doc.image(qr, x + (w - qrSize) / 2, qrY, { width: qrSize });
+
+  if (qr && d.photoData) {
+    const imgWidth = 84;
+    const imgHeight = 98; // portrait ratio
+    const qrSize = 84;
+    const gap = 16;
+    const totalW = imgWidth + qrSize + gap;
+    const startX = x + (w - totalW) / 2;
+
+    // Draw Photo on the left
+    try {
+      doc.image(d.photoData, startX, qrY, { width: imgWidth, height: imgHeight, fit: [imgWidth, imgHeight] });
+      // Draw sub-border around photo
+      doc.rect(startX, qrY, imgWidth, imgHeight).lineWidth(0.5).strokeColor("#D97706").stroke();
+    } catch (err) {
+      console.error("Failed to render photo on PDF badge:", err);
+      // Fallback: draw QR centered if photo rendering fails
+      doc.image(qr, x + (w - 120) / 2, qrY, { width: 120 });
+    }
+
+    // Draw QR on the right (aligned vertically with photo center)
+    const qrYOffset = qrY + (imgHeight - qrSize) / 2;
+    doc.image(qr, startX + imgWidth + gap, qrYOffset, { width: qrSize });
+  } else {
+    // Standard Centered QR
+    const qrSize = 120;
+    if (qr) {
+      doc.image(qr, x + (w - qrSize) / 2, qrY, { width: qrSize });
+    }
   }
 
   // Delegate id
