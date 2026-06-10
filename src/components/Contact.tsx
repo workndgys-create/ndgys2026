@@ -51,11 +51,11 @@ export default function Contact() {
           </p>
 
           <div className="mt-10 space-y-4 max-w-sm">
-            <a href="mailto:hi@nesummit.in" className="flex items-center gap-4 rounded-2xl border border-[#D97706]/15 bg-[#D97706]/5 p-4 text-cream/80 transition-all duration-300 hover:border-gold/50 hover:bg-gold/10 hover:text-gold hover:translate-x-1 shadow-sm">
+            <a href="mailto:info@globalyouthsummit.com" className="flex items-center gap-4 rounded-2xl border border-[#D97706]/15 bg-[#D97706]/5 p-4 text-cream/80 transition-all duration-300 hover:border-gold/50 hover:bg-gold/10 hover:text-gold hover:translate-x-1 shadow-sm">
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold text-lg">✉</span>
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">Email Us</p>
-                <p className="text-sm font-500">hi@nesummit.in</p>
+                <p className="text-sm font-500">info@globalyouthsummit.com</p>
               </div>
             </a>
             <a href="tel:+917042719992" className="flex items-center gap-4 rounded-2xl border border-[#D97706]/15 bg-[#D97706]/5 p-4 text-cream/80 transition-all duration-300 hover:border-gold/50 hover:bg-gold/10 hover:text-gold hover:translate-x-1 shadow-sm">
