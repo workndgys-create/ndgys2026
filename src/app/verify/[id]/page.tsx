@@ -1,19 +1,31 @@
 import { prisma } from "@/lib/prisma";
+import { verifySignature } from "@/lib/qr";
 
 export const dynamic = "force-dynamic";
 
 export default async function VerifyPage({ params }: { params: { id: string } }) {
+  // params.id expected to be either "delegateId.sig" (preferred) or legacy delegateId
+  const raw = params.id || "";
+  let delegateId = raw;
+  let sig: string | null = null;
+  const lastDot = raw.lastIndexOf(".");
+  if (lastDot > 0) {
+    delegateId = raw.slice(0, lastDot);
+    sig = raw.slice(lastDot + 1);
+  }
+
   let reg: { fullName: string; trackName: string; status: string; delegateId: string | null } | null = null;
   try {
     reg = await prisma.registration.findUnique({
-      where: { delegateId: params.id },
+      where: { delegateId },
       select: { fullName: true, trackName: true, status: true, delegateId: true }
     });
   } catch {
     reg = null;
   }
 
-  const valid = reg && reg.status === "PAID";
+  const sigValid = sig ? verifySignature(delegateId, sig) : false;
+  const valid = sigValid && reg && reg.status === "PAID";
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-midnight px-5">

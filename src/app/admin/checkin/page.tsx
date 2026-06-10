@@ -63,11 +63,15 @@ export default function CheckinPage() {
           body: JSON.stringify({ q: q.trim(), day: scanDay, value: true })
         });
         if (markRes.ok) {
-          const payload = await markRes.json();
-          setCounts({ day1: payload.day1Count, day2: payload.day2Count, total: payload.totalUnique });
-          setRecent(payload.recent || []);
-          setResults((cur) => cur.map((x) => (x.id === reg.id ? { ...x, checkedInDay1: payload.registration.checkedInDay1, checkedInDay2: payload.registration.checkedInDay2 } : x)));
-          setScanMessage(`Auto check-in done for ${reg.fullName} (Day ${scanDay}).`);
+              const payload = await markRes.json();
+              if (payload.alreadyCheckedIn) {
+                setScanMessage(`${reg.fullName} was already checked in at ${payload.when || "an earlier time"}.`);
+              } else {
+                setCounts({ day1: payload.day1Count, day2: payload.day2Count, total: payload.totalUnique });
+                setRecent(payload.recent || []);
+                setResults((cur) => cur.map((x) => (x.id === reg.id ? { ...x, checkedInDay1: payload.registration.checkedInDay1, checkedInDay2: payload.registration.checkedInDay2 } : x)));
+                setScanMessage(`Auto check-in done for ${reg.fullName} (Day ${scanDay}).`);
+              }
         }
       } else {
         setScanMessage(`${reg.fullName} is already checked in for Day ${scanDay}.`);
@@ -84,10 +88,15 @@ export default function CheckinPage() {
       body: JSON.stringify({ id, day, value })
     });
     if (r.ok) {
-      const { registration, day1Count, day2Count, totalUnique, recent: recentLogs } = await r.json();
-      setResults((cur) => cur.map((x) => (x.id === id ? { ...x, checkedInDay1: registration.checkedInDay1, checkedInDay2: registration.checkedInDay2 } : x)));
-      setCounts({ day1: day1Count, day2: day2Count, total: totalUnique });
-      setRecent(recentLogs || []);
+      const payload = await r.json();
+      if (payload.alreadyCheckedIn) {
+        setScanMessage(`Already checked in at ${payload.when || "an earlier time"}.`);
+      } else {
+        const { registration, day1Count, day2Count, totalUnique, recent: recentLogs } = payload;
+        setResults((cur) => cur.map((x) => (x.id === id ? { ...x, checkedInDay1: registration.checkedInDay1, checkedInDay2: registration.checkedInDay2 } : x)));
+        setCounts({ day1: day1Count, day2: day2Count, total: totalUnique });
+        setRecent(recentLogs || []);
+      }
     }
   }
 

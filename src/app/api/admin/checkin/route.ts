@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { currentAdmin, audit } from "@/lib/adminSession";
+import { verifySignature } from "@/lib/qr";
 export const runtime = "nodejs";
 
 function normaliseScanQuery(raw: string): string {
@@ -87,14 +88,39 @@ export async function POST(req: NextRequest) {
 
   if (!id && !scanQ) return NextResponse.json({ error: "Bad request" }, { status: 422 });
 
-  let target = id
-    ? await prisma.registration.findUnique({ where: { id } })
-    : await prisma.registration.findFirst({ where: { status: "PAID", OR: [{ delegateId: scanQ }, { email: { contains: scanQ, mode: "insensitive" } }] } });
+  // If scanQ looks like delegateId.sig (ie from QR), verify signature before proceeding
+  let target: any = null;
+  if (!id && scanQ) {
+    const sigDot = scanQ.lastIndexOf(".");
+    if (sigDot > 0) {
+      const dId = scanQ.slice(0, sigDot);
+      const sig = scanQ.slice(sigDot + 1);
+      if (!verifySignature(dId, sig)) return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
+      target = await prisma.registration.findFirst({ where: { status: "PAID", delegateId: dId } });
+    } else {
+      target = await prisma.registration.findFirst({ where: { status: "PAID", OR: [{ delegateId: scanQ }, { email: { contains: scanQ, mode: "insensitive" } }] } });
+    }
+  } else if (id) {
+    target = await prisma.registration.findUnique({ where: { id } });
+  }
 
   if (!target || target.status !== "PAID") return NextResponse.json({ error: "No paid participant found for this scan." }, { status: 404 });
 
   id = target.id;
   const value = b?.value === undefined ? true : !!b.value;
+
+  // Idempotent behaviour: if already checked in for this day and trying to set true, return existing info
+  const already = day === 1 ? !!target.checkedInDay1 : !!target.checkedInDay2;
+  if (value === true && already) {
+    // find existing audit log for this registration and day
+    const existing = await prisma.adminAction.findFirst({
+      where: { entity: "Registration", entityId: id, action: { startsWith: "checkin" }, meta: { contains: `day${day}=true` } },
+      orderBy: { createdAt: "desc" }
+    });
+    const when = existing ? existing.createdAt.toISOString() : null;
+    return NextResponse.json({ ok: true, alreadyCheckedIn: true, when });
+  }
+
   const data = day === 1 ? { checkedInDay1: value } : { checkedInDay2: value };
   const reg = await prisma.registration.update({ where: { id }, data });
   await audit(admin.email, b?.q ? "checkin.scan" : "checkin.manual", "Registration", id, `day${day}=${value};q=${scanQ || ""}`);
