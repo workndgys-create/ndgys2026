@@ -3,11 +3,11 @@ import LogoutButton from "@/components/dashboard/LogoutButton";
 
 const nav = [
   { href: "/dashboard", label: "Overview" },
-  { href: "/dashboard/registration", label: "My Registration" },
-  { href: "/dashboard/ticket", label: "Ticket & QR" },
+  { href: "/dashboard/registration", label: "My Participation" },
+  { href: "/dashboard/ticket", label: "Pass & QR" },
   { href: "/dashboard/schedule", label: "My Schedule" },
-  { href: "/dashboard/committee", label: "Committee" },
-  { href: "/dashboard/guides", label: "Study Guides" },
+  { href: "/dashboard/committee", label: "Event Group" },
+  { href: "/dashboard/guides", label: "Resources" },
   { href: "/dashboard/profile", label: "Profile" }
 ];
 
@@ -21,7 +21,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             alt="NDGYS 4.0 Logo"
             className="h-10 w-auto object-contain md:h-12"
           />
-          <span className="text-sm font-400 text-cream/60">Delegate</span>
+          <span className="text-sm font-400 text-cream/60">Participant</span>
         </Link>
         <LogoutButton endpoint="/api/delegate/auth/logout" redirect="/dashboard/login" />
       </header>

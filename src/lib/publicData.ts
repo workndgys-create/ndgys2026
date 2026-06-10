@@ -16,16 +16,24 @@ function logPublicDataError(scope: string, error: unknown) {
 /** Reads tracks from the DB with live seats-remaining; falls back to the seed list if the DB is empty/unavailable. */
 export async function getPublicTracks(): Promise<PublicTrack[]> {
   try {
-    const [tracks, paid] = await Promise.all([
+    const [tracks, paid, portfolioCounts] = await Promise.all([
       prisma.track.findMany({ orderBy: { createdAt: "asc" } }),
-      prisma.registration.groupBy({ by: ["trackSlug"], where: { status: "PAID" }, _count: true })
+      // Count only registrations that have been allocated a portfolio (and paid).
+      prisma.registration.groupBy({ by: ["trackSlug"], where: { status: "PAID", NOT: { portfolio: null } }, _count: true }),
+      // Count portfolios per track to derive total seats dynamically
+      prisma.portfolio.groupBy({ by: ["trackSlug"], _count: true })
     ]);
     if (tracks.length === 0) throw new Error("empty");
+    // `paid` here represents count of allocations (PAID + portfolio set)
     const paidMap = new Map((paid as unknown as { trackSlug: string; _count: number }[]).map((p) => [p.trackSlug, p._count]));
-    return tracks.map((t: { slug: string; name: string; fee: number; capacity: number; agenda: string; difficulty: string; isOpen: boolean }) => {
-      const used = paidMap.get(t.slug) ?? 0;
-      const seatsRemaining = Math.max(0, t.capacity - used);
-      return { slug: t.slug, name: t.name, fee: t.fee, capacity: t.capacity, agenda: t.agenda, difficulty: t.difficulty, isOpen: t.isOpen, seatsRemaining, full: seatsRemaining === 0 || !t.isOpen };
+    const portfolioMap = new Map((portfolioCounts as unknown as { trackSlug: string; _count: number }[]).map((p) => [p.trackSlug, p._count]));
+    return tracks.map((t: { slug: string; name: string; fee: number; capacity?: number; agenda: string; difficulty: string; isOpen: boolean }) => {
+      const allocated = paidMap.get(t.slug) ?? 0;
+      // Special-case: International Press has a fixed committee-level capacity of 130
+      const isInternationalPress = String(t.name).trim().toLowerCase() === "international press";
+      const capacity = isInternationalPress ? 130 : (portfolioMap.get(t.slug) ?? Math.max(0, (t as any).capacity ?? 0));
+      const seatsRemaining = Math.max(0, capacity - allocated);
+      return { slug: t.slug, name: t.name, fee: t.fee, capacity, agenda: t.agenda, difficulty: t.difficulty, isOpen: t.isOpen, seatsRemaining, full: seatsRemaining === 0 || !t.isOpen };
     });
   } catch (error) {
     logPublicDataError("getPublicTracks", error);

@@ -39,7 +39,7 @@ export default async function HomePage() {
         <section id="allocations" className="bg-cream grain py-24">
           <div className="mx-auto max-w-6xl px-5">
             <SectionKicker label="DISPATCH — Allocations" />
-            <h2 className="mb-8 mt-5 font-display text-4xl font-700 text-ink sm:text-6xl">THE FLOOR IS <span className="text-gold">FILLING UP.</span></h2>
+            <h2 className="mb-8 mt-5 text-center font-display text-4xl font-700 text-ink sm:text-left sm:text-6xl">THE FLOOR IS <span className="text-gold">FILLING UP.</span></h2>
             <PortfolioAllocationsBoard />
           </div>
         </section>

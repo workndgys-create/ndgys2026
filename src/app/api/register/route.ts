@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { registrationSchema } from "@/lib/validation";
+import { isBeginnerTrackSlug, registrationSchema } from "@/lib/validation";
 import { createCashfreeOrder, cashfreeMode } from "@/lib/cashfree";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 import { env } from "@/lib/env";
@@ -47,10 +47,23 @@ export async function POST(req: NextRequest) {
 
   const track = await prisma.track.findUnique({ where: { slug: data.track } });
   if (!track) return NextResponse.json({ error: "Unknown track" }, { status: 422 });
+  if (isBeginnerTrackSlug(track.slug)) {
+    if (typeof data.age !== "number" || data.age < 12 || data.age > 16) {
+      return NextResponse.json(
+        {
+          error: "Beginner committees are only open to delegates aged 12-16.",
+          issues: { age: ["Beginner committees are only open to delegates aged 12-16."] }
+        },
+        { status: 422 }
+      );
+    }
+  }
   if (!track.isOpen) return NextResponse.json({ error: "Registration for this track is closed" }, { status: 409 });
 
   const paidCount = await prisma.registration.count({ where: { trackSlug: track.slug, status: "PAID" } });
-  if (paidCount >= track.capacity) return NextResponse.json({ error: "Track is full", full: true }, { status: 409 });
+  // derive capacity from actual portfolios for this track
+  const portfolioCount = await prisma.portfolio.count({ where: { trackSlug: track.slug } });
+  if (paidCount >= portfolioCount) return NextResponse.json({ error: "Track is full", full: true }, { status: 409 });
 
   // Validate the portfolio belongs to this committee
   const portfolio = await prisma.portfolio.findUnique({ where: { id: portfolioId } });
@@ -70,7 +83,7 @@ export async function POST(req: NextRequest) {
   const createPayload: any = {
     fullName: data.fullName, email: data.email, phone: data.phone,
     institution: data.institution || null, trackSlug: track.slug, trackName: track.name,
-    experience: data.experience ?? null, amount, status: "PENDING", portfolioId, promoCode: appliedCode,
+    amount, status: "PENDING", portfolioId, promoCode: appliedCode,
     age: data.age ?? null, city: data.city || null, gender: data.gender ?? null,
     emergencyContact: data.emergencyContact || null, howHeard: howHeard || null, notes: data.notes || null,
     consentAccepted: true, guardianName: data.guardianName || null, guardianPhone: data.guardianPhone || null, guardianConsent: !!data.guardianConsent,
@@ -84,6 +97,26 @@ export async function POST(req: NextRequest) {
   if (!hold.ok) {
     await prisma.registration.delete({ where: { id: reg.id } }).catch(() => {});
     return NextResponse.json({ error: "That portfolio was just taken — please choose another.", portfolioUnavailable: true }, { status: 409 });
+  }
+
+  // Store photo if provided
+  if (body?.photoData && body?.photoMime) {
+    if (body.photoMime.startsWith("image/")) {
+      try {
+        const buf = Buffer.from(body.photoData, "base64");
+        if (buf.length <= 2 * 1024 * 1024) {
+          await prisma.registrationPhoto.create({
+            data: {
+              registrationId: reg.id,
+              mime: body.photoMime,
+              data: buf
+            }
+          });
+        }
+      } catch (err) {
+        console.error("[register] Failed to save photo:", err);
+      }
+    }
   }
 
   try {

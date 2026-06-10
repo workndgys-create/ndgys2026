@@ -3,6 +3,19 @@ import Link from "next/link";
 import SectionKicker from "./SectionKicker";
 import Reveal from "./Reveal";
 
+const COMPETITION_IMAGES: Record<string, string> = {
+  "stock-sense": "/STOCKSENSE.jpeg",
+  "spark-tank": "/SPARKTANK.jpeg",
+  "greenovation-showdown": "/GREENOVATIONSHOWDOWN.jpeg",
+  "film-making": "/FILMMAKING.jpeg",
+  "ipl-auction": "/IPLAUCTION.jpeg",
+  "marketing-mayhem": "/MARKETINGMAYHEM.jpeg",
+  "sur-aur-taal": "/SURAURTAAL.jpeg",
+  "nazarana": "/NAZARANA.jpeg",
+  "beat-breakout": "/BEATBREAKOUT.jpeg",
+  "battle-of-bands": "/BATTLEOFBANDS.jpeg",
+};
+
 export default async function Competitions() {
   const items = await getPublicCompetitions();
   if (items.length === 0) return null;
@@ -11,15 +24,17 @@ export default async function Competitions() {
       <div className="mx-auto max-w-6xl px-5">
         <Reveal>
           <SectionKicker label="COMMUNIQUÉ — Competitions" />
-          <h2 className="mt-5 font-display text-4xl font-700 text-ink sm:text-6xl">COMPETE & <span className="text-gold">WIN.</span></h2>
+          <h2 className="mt-5 text-center font-display text-4xl font-700 text-ink sm:text-left sm:text-6xl">COMPETE & <span className="text-gold">WIN.</span></h2>
         </Reveal>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((c: any, i: number) => (
+          {items.map((c: any, i: number) => {
+            const imageSrc = c.imageUrl || COMPETITION_IMAGES[c.slug];
+            return (
             <Reveal key={c.id} delay={(i % 3) * 90}>
               <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-ink/10 bg-cream shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-                {c.imageUrl ? (
+                {imageSrc ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={c.imageUrl} alt={c.title} className="h-40 w-full object-cover" />
+                  <img src={imageSrc} alt={c.title} className="h-40 w-full object-cover" />
                 ) : (
                   <div className="flex h-40 items-center justify-center bg-midnight font-display text-5xl font-900 text-white/10">{String(i + 1).padStart(2, "0")}</div>
                 )}
@@ -38,7 +53,8 @@ export default async function Competitions() {
                 </div>
               </article>
             </Reveal>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

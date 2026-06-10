@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   Registration: 'Registration',
+  RegistrationPhoto: 'RegistrationPhoto',
   Invoice: 'Invoice',
   ContactMessage: 'ContactMessage',
   AdminUser: 'AdminUser',
@@ -136,6 +137,17 @@ export const RegistrationScalarFieldEnum = {
 } as const
 
 export type RegistrationScalarFieldEnum = (typeof RegistrationScalarFieldEnum)[keyof typeof RegistrationScalarFieldEnum]
+
+
+export const RegistrationPhotoScalarFieldEnum = {
+  id: 'id',
+  registrationId: 'registrationId',
+  mime: 'mime',
+  data: 'data',
+  createdAt: 'createdAt'
+} as const
+
+export type RegistrationPhotoScalarFieldEnum = (typeof RegistrationPhotoScalarFieldEnum)[keyof typeof RegistrationPhotoScalarFieldEnum]
 
 
 export const InvoiceScalarFieldEnum = {

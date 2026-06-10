@@ -7,7 +7,7 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    const [regs, unreadMessages, tracks, recent] = await Promise.all([
+    const [regs, unreadMessages, tracks, recent, portfolioCounts] = await Promise.all([
       prisma.registration.findMany({
         select: {
           status: true,
@@ -27,7 +27,6 @@ export async function GET() {
         select: {
           slug: true,
           name: true,
-          capacity: true,
         },
       }),
 
@@ -37,6 +36,7 @@ export async function GET() {
         },
         take: 10,
       }),
+      prisma.portfolio.groupBy({ by: ["trackSlug"], _count: true }),
     ]);
 
     const paid = regs.filter((r: any) => r.status === "PAID").length;
@@ -54,6 +54,7 @@ export async function GET() {
       (r: any) => new Date(r.createdAt) >= today
     ).length;
 
+    const capMap = new Map((portfolioCounts as unknown as { trackSlug: string; _count: number }[]).map((c) => [c.trackSlug, c._count]));
     const perTrack = tracks.map((track: any) => {
       const paidCount = regs.filter(
         (r: any) =>
@@ -64,7 +65,7 @@ export async function GET() {
       return {
         name: track.name,
         paid: paidCount,
-        capacity: track.capacity,
+        capacity: capMap.get(track.slug) ?? 0,
       };
     });
 

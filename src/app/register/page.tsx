@@ -29,12 +29,13 @@ const HEARD = [
   "Friend / Word of mouth",
   "Other",
 ];
+const BEGINNER_TRACKS = new Set(["unep", "aippm"]);
 
 function RegisterInner() {
   const params = useSearchParams();
   const preTrack = params.get("track") || "";
 
-  const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number }[]>([]);
+  const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number; difficulty?: string }[]>([]);
   const [track, setTrack] = useState(preTrack);
   const [status, setStatus] = useState<"idle" | "processing" | "paid" | "error" | "full">("idle");
   const [message, setMessage] = useState("");
@@ -55,10 +56,50 @@ function RegisterInner() {
   const [age, setAge] = useState<string>("");
   const [consent, setConsent] = useState(false);
   const [guardianConsent, setGuardianConsent] = useState(false);
+  const isBeginnerTrack = BEGINNER_TRACKS.has(track);
   const isMinor = age !== "" && Number(age) > 0 && Number(age) < 18;
   const [questions, setQuestions] = useState<CustomQ[]>([]);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const [photoData, setPhotoData] = useState<string>("");
+  const [photoMime, setPhotoMime] = useState<string>("");
+  const [photoError, setPhotoError] = useState<string>("");
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhotoError("");
+    const file = e.target.files?.[0];
+    if (!file) {
+      setPhotoData("");
+      setPhotoMime("");
+      return;
+    }
+    if (file.type !== "image/jpeg" && file.type !== "image/png" && file.type !== "image/jpg") {
+      setPhotoError("Only JPEG and PNG formats are supported.");
+      setPhotoData("");
+      setPhotoMime("");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setPhotoError("Photo must be smaller than 2MB.");
+      setPhotoData("");
+      setPhotoMime("");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = (reader.result as string).split(",")[1];
+      setPhotoData(base64);
+      setPhotoMime(file.type);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const internationalPressMock = [
+    ...Array.from({ length: 50 }, (_, idx) => `Journalist ${String(idx + 1).padStart(2, "0")}`),
+    ...Array.from({ length: 50 }, (_, idx) => `Caricaturist ${String(idx + 1).padStart(2, "0")}`),
+    ...Array.from({ length: 30 }, (_, idx) => `Photographer ${String(idx + 1).padStart(2, "0")}`),
+  ];
 
   useEffect(() => {
     void (async () => {
@@ -66,8 +107,11 @@ function RegisterInner() {
         const r = await fetch("/api/public/tracks");
         if (r.ok) {
           const t = await r.json(); setTracks(t);
-          if (preTrack && t.some((x: any) => x.value === preTrack)) setTrack(preTrack);
-          else if (!preTrack && t.length) setTrack(t[0].value);
+          if (preTrack && t.some((x: any) => x.value === preTrack)) {
+            setTrack(preTrack);
+          } else if (!preTrack && t.length) {
+            setTrack(t[0].value);
+          }
         } else throw new Error("Failed to fetch");
       } catch (_) {
         // Fallback mock tracks
@@ -79,14 +123,18 @@ function RegisterInner() {
           { value: "unicef", label: "United Nations International Children's Emergency Fund", fee: 2000 },
           { value: "unep", label: "United Nations Environment Programme", fee: 2000 },
           { value: "wto", label: "World Trade Organization", fee: 2500 },
+          { value: "international-press", label: "International Press", fee: 2000 },
           { value: "aippm", label: "All India Political Parties Meet", fee: 1500 },
           { value: "lok-sabha", label: "Lok Sabha", fee: 1500 },
           { value: "war-cabinet", label: "Indian War Cabinet", fee: 1500 },
           { value: "ipl", label: "Indian Premier League", fee: 1500 }
         ];
         setTracks(mockTracks);
-        if (preTrack && mockTracks.some((x: any) => x.value === preTrack)) setTrack(preTrack);
-        else if (!preTrack && mockTracks.length) setTrack(mockTracks[0].value);
+        if (preTrack && mockTracks.some((x: any) => x.value === preTrack)) {
+          setTrack(preTrack);
+        } else if (!preTrack && mockTracks.length) {
+          setTrack(mockTracks[0].value);
+        }
       }
     })();
   }, [preTrack]);
@@ -113,6 +161,7 @@ function RegisterInner() {
       csw: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
       unicef: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
       unep: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      "international-press": internationalPressMock,
       wto: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
       aippm: ["Bharatiya Janata Party", "Indian National Congress", "All India Majlis-e-Ittehaad-ul-Muslimeen", "Biju Janata Dal", "Trinamool Congress", "Dravida Munnetra Kazhagam", "Samajwadi Party", "Shivsena", "Telugu Desam Party", "Jharkhand Mukti Morcha", "Nationalist Congress Party", "Communist Party of India", "Aam Aadmi Party", "Yadav Samaj", "Regional Alliance"],
       "lok-sabha": ["Mumbai (South)", "Delhi Central", "Bangalore South", "Chennai South", "Hyderabad", "Kolkata South", "Chandigarh", "Lucknow", "Pune", "Ahmedabad", "Jaipur", "Indore"],
@@ -183,6 +232,14 @@ function RegisterInner() {
     e.preventDefault();
     setErrors({}); setMessage("");
     if (!selected) { setMessage("Please select an available portfolio first."); setStatus("error"); return; }
+    if (isBeginnerTrack) {
+      const n = Number(age);
+      if (!Number.isFinite(n) || n < 12 || n > 16) {
+        setMessage("Beginner committees are only open to delegates aged 12-16.");
+        setStatus("error");
+        return;
+      }
+    }
     if (!consent) { setMessage("Please accept the Terms and Code of Conduct to continue."); setStatus("error"); return; }
     if (isMinor && !guardianConsent) { setMessage("Parent/guardian consent is required for delegates under 18."); setStatus("error"); return; }
     for (const q of questions) {
@@ -190,6 +247,11 @@ function RegisterInner() {
       const v = answers[q.id];
       const empty = v === undefined || (Array.isArray(v) ? v.length === 0 : !String(v).trim());
       if (empty) { setMessage(`Please answer: ${q.label}`); setStatus("error"); return; }
+    }
+    if (!photoData) {
+      setMessage("Please upload a passport size photo.");
+      setStatus("error");
+      return;
     }
     setStatus("processing");
     const fd = new FormData(e.currentTarget);
@@ -201,6 +263,8 @@ function RegisterInner() {
     payload.guardianConsent = guardianConsent ? "true" : "";
     payload.customAnswers = questions.map((q) => ({ questionId: q.id, label: q.label, value: answers[q.id] ?? (q.type === "multiselect" ? [] : "") })).filter((x) => (Array.isArray(x.value) ? x.value.length : String(x.value).trim()));
     if (promo.trim()) payload.promoCode = promo.trim();
+    payload.photoData = photoData;
+    payload.photoMime = photoMime;
     setForm(payload as Record<string, string>);
 
     const res = await fetch("/api/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -290,10 +354,22 @@ function RegisterInner() {
           <Field name="email" type="email" label="Email" errors={errors} />
           <Field name="phone" label="Phone Number" errors={errors} />
           <Field name="institution" label="School / College" errors={errors} required />
+          <div>
+            <label className="text-sm font-500 text-ink/80">Passport Size Photo (JPEG/PNG, Max 2MB) <span className="text-red-500">*</span></label>
+            <input
+              type="file"
+              accept="image/jpeg, image/png"
+              required
+              onChange={handlePhotoChange}
+              className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gold file:text-midnight hover:file:bg-goldlite"
+            />
+            {photoError && <p className="mt-1 text-xs text-red-600">{photoError}</p>}
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-500 text-ink/80">Age</label>
-              <input name="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+              <input name="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} min={isBeginnerTrack ? 12 : undefined} max={isBeginnerTrack ? 16 : undefined} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+              {isBeginnerTrack && <p className="mt-1 text-xs text-amber-700">For beginner committees, only ages 12-16 are eligible.</p>}
               {errors.age && <p className="mt-1 text-xs text-red-600">{errors.age[0]}</p>}
             </div>
             <div>
@@ -336,8 +412,19 @@ function RegisterInner() {
 
           <div>
             <label className="text-sm font-500 text-ink/80">Committee</label>
-              <select name="track" value={track} onChange={(e) => setTrack(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
-                {tracks.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+              <select
+                name="track"
+                value={track}
+                onChange={(e) => setTrack(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+              >
+                {tracks.map((t) => (
+                  <option key={t.value} value={t.value}>
+                    {BEGINNER_TRACKS.has(t.value)
+                      ? `${t.label} (Beginner, age 12-16)`
+                      : t.label}
+                  </option>
+                ))}
               </select>
           </div>
 
@@ -373,14 +460,6 @@ function RegisterInner() {
                 );
               })}
             </div>
-          </div>
-
-          <div>
-            <label className="text-sm font-500 text-ink/80">Experience</label>
-            <select name="experience" className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
-              <option value="beginner">First-timer</option>
-              <option value="experienced">Experienced delegate</option>
-            </select>
           </div>
 
           <div>

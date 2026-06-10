@@ -36,7 +36,7 @@ export default function CountdownTimer() {
 
   if (!mounted) {
     return (
-      <div className="mt-12 flex items-center justify-center gap-3 sm:gap-5 opacity-0 transition-opacity duration-300">
+      <div className="mt-12 flex w-full flex-wrap items-center justify-center gap-2 sm:gap-5 opacity-0 transition-opacity duration-300">
         {units.map((u, i) => (
           <div key={u.label} className="flex items-center gap-3 sm:gap-5">
             <div className="flex flex-col items-center">
@@ -57,7 +57,7 @@ export default function CountdownTimer() {
   }
 
   return (
-    <div className="mt-12 flex items-center justify-center gap-3 sm:gap-5 animate-fadeUp">
+    <div className="mt-12 flex w-full flex-wrap items-center justify-center gap-2 sm:gap-5 animate-fadeUp">
       {units.map((u, i) => (
         <div key={u.label} className="flex items-center gap-3 sm:gap-5">
           <div className="flex flex-col items-center">

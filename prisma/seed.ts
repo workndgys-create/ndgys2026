@@ -51,7 +51,18 @@ const IPL_TEAMS = [
   "Rajasthan Royals", "Delhi Capitals", "Punjab Kings", "Sunrisers Hyderabad"
 ];
 
+function numbered(prefix: string, count: number) {
+  return Array.from({ length: count }, (_, idx) => `${prefix} ${String(idx + 1).padStart(2, "0")}`);
+}
+
+const INTERNATIONAL_PRESS_PORTFOLIOS = [
+  ...numbered("Journalist", 50),
+  ...numbered("Caricaturist", 50),
+  ...numbered("Photographer", 30)
+];
+
 function portfoliosFor(slug: string): string[] {
+  if (slug === "international-press") return INTERNATIONAL_PRESS_PORTFOLIOS;
   if (slug === "press") return PRESS_ROLES;
   if (slug === "crisis") return CRISIS_ROLES;
   if (slug === "leadership") return LEADERSHIP_ROLES;
@@ -98,7 +109,14 @@ async function main() {
   console.log(`OK Seeded ${TRACKS.length} tracks`);
 
   if (process.env.UPSERT_ONLY) {
-    console.log("UPSERT_ONLY set — tracks upserted, skipping portfolio deletion and track removals.");
+    for (const t of TRACKS) {
+      const portfolios = portfoliosFor(t.slug);
+      await prisma.portfolio.createMany({
+        data: portfolios.map((name, i) => ({ name, trackSlug: t.slug, order: i, status: "AVAILABLE" as const })),
+        skipDuplicates: true
+      });
+    }
+    console.log("UPSERT_ONLY set — tracks upserted and missing default portfolios created (non-destructive).");
     return;
   }
 
@@ -160,7 +178,7 @@ async function main() {
     { slug: "spark-tank", title: "Spark Tank", category: "Business", summary: "Pitch your startup to a panel of investors, Shark-Tank style.", prize: "Rs 30,000", published: true, order: 8, format: "BOTH", feeSolo: 179900, feeGroup: 399900, minTeam: 2, maxTeam: 5, registrationOpen: true, questionsText: "What is your pitch idea?" },
     { slug: "marketing-mayhem", title: "Marketing Mayhem", category: "Business", summary: "Pitch a campaign — enter solo or as a team.", prize: "Rs 20,000", published: true, order: 9, format: "BOTH", feeSolo: 179900, feeGroup: 399900, minTeam: 2, maxTeam: 5, registrationOpen: true },
     { slug: "ipl-auction", title: "IPL Auction", category: "Strategy", summary: "Build your dream XI in a fast-paced team auction.", prize: "Rs 20,000", published: true, order: 10, format: "GROUP", feeGroup: 439900, minTeam: 2, maxTeam: 5, registrationOpen: true },
-    { slug: "film-making", title: "Film Making", category: "Creative", summary: "A short-film challenge. Details and registration coming soon.", prize: "Rs 30,000", published: true, order: 11, format: "GROUP", minTeam: 2, maxTeam: 5, registrationOpen: false },
+    { slug: "film-making", title: "Film Making", category: "Creative", summary: "A short-film challenge. Details and registration coming soon.", prize: "Rs 30,000", published: true, order: 11, format: "GROUP", minTeam: 2, maxTeam: 5, feeGroup: 399900, registrationOpen: true },
   ];
   for (const c of competitions) {
     await prisma.competition.upsert({ where: { slug: c.slug }, update: c, create: c });

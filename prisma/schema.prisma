@@ -75,12 +75,22 @@ model Registration {
   gatewayOrderId   String?            @unique
   gatewayPaymentId String?
   invoice           Invoice?
+  photo             RegistrationPhoto?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 
   @@index([email])
   @@index([status])
   @@index([trackSlug])
+}
+
+model RegistrationPhoto {
+  id             String       @id @default(cuid())
+  registration   Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  registrationId String       @unique
+  mime           String
+  data           Bytes
+  createdAt      DateTime     @default(now())
 }
 
 model Invoice {

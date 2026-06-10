@@ -28,8 +28,13 @@ export interface PublicPortfolio {
 export async function listPortfolios(trackSlug: string, viewerRegistrationId: string | null): Promise<PublicPortfolio[]> {
   await releaseExpiredHolds();
   const rows = await prisma.portfolio.findMany({ where: { trackSlug }, orderBy: [{ order: "asc" }, { name: "asc" }] });
+  // If this is the International Press committee, only expose these three portfolio names
+  const track = await prisma.track.findUnique({ where: { slug: trackSlug } });
+  const isInternationalPress = track && String(track.name).trim().toLowerCase() === "international press";
+  const allowed = new Set(["journalist", "caricature", "photographer"]);
+  const filteredRows = isInternationalPress ? rows.filter((r) => allowed.has(String(r.name).toLowerCase())) : rows;
   const now = new Date();
-  return (rows as unknown as (PortfolioRow & { id: string; name: string; order: number })[]).map((p) => {
+  return (filteredRows as unknown as (PortfolioRow & { id: string; name: string; order: number })[]).map((p) => {
     const state = deriveState(p, viewerRegistrationId, now);
     return { id: p.id, name: p.name, order: p.order, state, heldUntil: state === "mine" && p.heldUntil ? new Date(p.heldUntil).toISOString() : null };
   });

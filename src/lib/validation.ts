@@ -10,6 +10,7 @@ export const TRACKS = [
   { slug: "unicef", name: "United Nations International Children's Emergency Fund", fee: 2000, capacity: 40, difficulty: "Intermediate", agenda: "Child welfare and emergency response." },
   { slug: "unep", name: "United Nations Environment Programme", fee: 2000, capacity: 50, difficulty: "Intermediate", agenda: "Environmental policy and sustainability." },
   { slug: "wto", name: "World Trade Organization", fee: 2500, capacity: 50, difficulty: "Intermediate", agenda: "Global trade rules and disputes." },
+  { slug: "international-press", name: "International Press", fee: 2000, capacity: 130, difficulty: "Intermediate", agenda: "Real-time summit journalism through reporting, caricature and photography." },
   { slug: "aippm", name: "All India Political Parties Meet", fee: 1500, capacity: 60, difficulty: "Beginner", agenda: "National multiparty dialogue and consensus building." },
   { slug: "lok-sabha", name: "Lok Sabha", fee: 1500, capacity: 60, difficulty: "Beginner", agenda: "Parliamentary debate and lawmaking." },
   { slug: "war-cabinet", name: "Indian War Cabinet", fee: 1500, capacity: 30, difficulty: "Advanced", agenda: "Crisis governance and strategic decision-making." },
@@ -17,6 +18,8 @@ export const TRACKS = [
 ] as const;
 
 export const seedTrackBySlug = (slug: string) => TRACKS.find((t) => t.slug === slug);
+export const BEGINNER_TRACK_SLUGS = new Set<string>(["unep", "aippm"]);
+export const isBeginnerTrackSlug = (slug: string) => BEGINNER_TRACK_SLUGS.has(slug);
 
 export const GENDERS = ["male", "female", "other"] as const;
 export const HEARD_OPTIONS = ["Instagram", "WhatsApp", "School / College", "Friend / Word of mouth", "Other"] as const;
@@ -31,7 +34,6 @@ export const registrationSchema = z.object({
   emergencyContact: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid contact number").optional().or(z.literal("")),
     institution: z.string().trim().min(2, "Enter your school / college").max(160).optional().or(z.literal("")),
   track: z.string().min(1, "Choose a track"),
-  experience: z.enum(["beginner", "experienced"]).optional(),
   howHeard: z.string().trim().max(80).optional().or(z.literal("")),
   howHeardDetail: z.string().trim().max(200).optional().or(z.literal("")),
   notes: z.string().trim().max(1000).optional().or(z.literal("")),
@@ -40,9 +42,19 @@ export const registrationSchema = z.object({
   guardianPhone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
   guardianConsent: z.coerce.boolean().optional(),
   customAnswers: z.array(z.object({ questionId: z.string(), label: z.string().max(300), value: z.union([z.string().max(2000), z.array(z.string().max(500))]) })).optional(),
+  photoData: z.string().optional(),
+  photoMime: z.string().optional(),
   // honeypot — must be empty
   company: z.string().max(0).optional()
 }).superRefine((v, ctx) => {
+  if (isBeginnerTrackSlug(v.track)) {
+    if (typeof v.age !== "number") {
+      ctx.addIssue({ code: "custom", path: ["age"], message: "Age is required for beginner committees (12-16 only)." });
+    } else if (v.age < 12 || v.age > 16) {
+      ctx.addIssue({ code: "custom", path: ["age"], message: "Beginner committees are only open to delegates aged 12-16." });
+    }
+  }
+
   if (typeof v.age === "number" && v.age < 18) {
     if (!v.guardianName || !v.guardianName.trim()) ctx.addIssue({ code: "custom", path: ["guardianName"], message: "Parent/guardian name is required for delegates under 18" });
     if (!v.guardianPhone || !v.guardianPhone.trim()) ctx.addIssue({ code: "custom", path: ["guardianPhone"], message: "Parent/guardian contact is required for delegates under 18" });

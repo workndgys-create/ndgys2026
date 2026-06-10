@@ -21,11 +21,11 @@ export default async function Overview() {
           <p className={`mt-2 font-display text-2xl font-700 ${paid ? "text-green-700" : "text-amber-600"}`}>{reg.status}</p>
         </div>
         <div className="rounded-2xl border border-ink/10 bg-paper p-5">
-          <p className="text-xs uppercase tracking-wider text-slatey">Track</p>
+          <p className="text-xs uppercase tracking-wider text-slatey">Event</p>
           <p className="mt-2 font-display text-lg font-700 text-ink">{reg.trackName}</p>
         </div>
         <div className="rounded-2xl border border-ink/10 bg-paper p-5">
-          <p className="text-xs uppercase tracking-wider text-slatey">Delegate ID</p>
+          <p className="text-xs uppercase tracking-wider text-slatey">Participant ID</p>
           <p className="mt-2 font-mono text-lg font-700 text-ink">{reg.delegateId ?? "—"}</p>
         </div>
       </div>
@@ -46,7 +46,7 @@ export default async function Overview() {
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <Link href="/dashboard/ticket" className="rounded-2xl border border-ink/10 bg-paper p-5 hover:border-gold">
-          <p className="font-display text-lg font-700 text-ink">Ticket & QR →</p>
+          <p className="font-display text-lg font-700 text-ink">Pass & QR →</p>
           <p className="mt-1 text-sm text-ink/65">Show this at check-in.</p>
         </Link>
         <Link href="/dashboard/registration" className="rounded-2xl border border-ink/10 bg-paper p-5 hover:border-gold">

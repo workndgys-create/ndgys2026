@@ -437,10 +437,6 @@ export type CommitteeGuideSumOrderByAggregateInput = {
   sizeBytes?: Prisma.SortOrder
 }
 
-export type BytesFieldUpdateOperationsInput = {
-  set?: runtime.Bytes
-}
-
 
 
 export type CommitteeGuideSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
