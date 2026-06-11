@@ -81,12 +81,15 @@ export async function GET(req: NextRequest) {
       photoMime: r.photo?.mime
     })));
   }
-
   // 2. Competition Registrations
   const compWhere: any = { status: "PAID" };
   let fetchComps = true;
+
   if (track) {
-    const comp = await prisma.competition.findUnique({ where: { slug: track } });
+    const comp = await prisma.competition.findUnique({
+      where: { slug: track }
+    });
+
     if (comp) {
       compWhere.competitionId = comp.id;
     } else {
@@ -97,52 +100,82 @@ export async function GET(req: NextRequest) {
   if (fetchComps) {
     const compRegs = await prisma.competitionRegistration.findMany({
       where: compWhere,
-      orderBy: [{ competitionTitle: "asc" }, { leaderName: "asc" }]
+      orderBy: [
+        { competitionTitle: "asc" },
+        { leaderName: "asc" }
+      ]
     });
 
-    const compIds = Array.from(new Set(compRegs.map(c => c.competitionId)));
-    const comps = await prisma.competition.findMany({ where: { id: { in: compIds } } });
-    const slugMap = new Map(comps.map(c => [c.id, c.slug]));
+    const compIds = Array.from(
+      new Set(compRegs.map((c) => c.competitionId))
+    );
+
+    const comps = await prisma.competition.findMany({
+      where: {
+        id: {
+          in: compIds
+        }
+      }
+    });
+
+    const slugMap = new Map(
+      comps.map((c) => [c.id, c.slug])
+    );
 
     for (const c of compRegs) {
-  const members =
-    typeof c.members === "string"
-      ? JSON.parse(c.members)
-      : c.members || [];
+      const members =
+        typeof c.members === "string"
+          ? JSON.parse(c.members)
+          : c.members || [];
 
-  if (members.length > 0) {
-    members.forEach((member: any) => {
-      list.push({
-        delegateId: c.refId, // Keep SAME QR
-        fullName: member.name,
-        trackName: c.competitionTitle,
-        trackSlug:
-          slugMap.get(c.competitionId) || c.competitionId,
-        portfolio: null,
-        institution: c.institution,
-        city: c.city,
-        categoryLabel: "Competition",
-        photoData: undefined,
-        photoMime: undefined
-      });
-    });
-  } else {
-    list.push({
-      delegateId: c.refId,
-      fullName: c.leaderName,
-      trackName: c.competitionTitle,
-      trackSlug:
-        slugMap.get(c.competitionId) || c.competitionId,
-      portfolio: null,
-      institution: c.institution,
-      city: c.city,
-      categoryLabel: "Competition",
-      photoData: undefined,
-      photoMime: undefined
-    });
+      if (members.length > 0) {
+        members.forEach((member: any) => {
+          list.push({
+            delegateId: c.refId,
+            fullName: member.name,
+            trackName: c.competitionTitle,
+            trackSlug:
+              slugMap.get(c.competitionId) ||
+              c.competitionId,
+            portfolio: null,
+            institution: c.institution,
+            city: c.city,
+            categoryLabel: "Competition",
+            photoData: undefined,
+            photoMime: undefined
+          });
+        });
+      } else {
+        list.push({
+          delegateId: c.refId,
+          fullName: c.leaderName,
+          trackName: c.competitionTitle,
+          trackSlug:
+            slugMap.get(c.competitionId) ||
+            c.competitionId,
+          portfolio: null,
+          institution: c.institution,
+          city: c.city,
+          categoryLabel: "Competition",
+          photoData: undefined,
+          photoMime: undefined
+        });
+      }
+    }
   }
-    
 
   const pdf = await generateBadgeSheet(list);
-  return new NextResponse(new Uint8Array(pdf), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="badges${track ? "-" + track : ""}.pdf"` } });
+
+  return new NextResponse(
+    new Uint8Array(pdf),
+    {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition":
+          `attachment; filename="badges${
+            track ? "-" + track : ""
+          }.pdf`
+      }
+    }
+  );
 }
