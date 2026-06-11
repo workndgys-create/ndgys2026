@@ -141,7 +141,7 @@ export async function GET(req: NextRequest) {
       photoMime: undefined
     });
   }
-    }
+    
 
   const pdf = await generateBadgeSheet(list);
   return new NextResponse(new Uint8Array(pdf), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="badges${track ? "-" + track : ""}.pdf"` } });
