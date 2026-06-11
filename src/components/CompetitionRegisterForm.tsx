@@ -22,7 +22,10 @@ type Member = { name: string; age: string; photoData?: string; photoMime?: strin
 
 const HEARD = ["Instagram", "WhatsApp", "School / College", "Friend / Word of mouth", "Other"];
 
-export default function CompetitionRegisterForm({ competition: c }: { competition: Comp }) {
+type CompetitionRegisterFormProps = { competition: Comp; slug?: string };
+
+export default function CompetitionRegisterForm(props: CompetitionRegisterFormProps) {
+  const { competition: c, slug } = props;
   const initialPart: "SOLO" | "GROUP" = c.format === "GROUP" ? "GROUP" : "SOLO";
   const [participation, setParticipation] = useState<"SOLO" | "GROUP">(initialPart);
   const min = c.minTeam ?? 2;
@@ -45,6 +48,23 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
   const [photoError, setPhotoError] = useState("");
 
   const fee = useMemo(() => feeForParticipation(c, participation) ?? 0, [c, participation]);
+
+  const IPL_TEAMS = [
+    "Chennai Super Kings",
+    "Deccan Chargers",
+    "Delhi Capitals",
+    "Royal Challengers Bangalore",
+    "Gujarat Titans",
+    "Kolkata Knight Riders",
+    "Lucknow Super Giants",
+    "Mumbai Indians",
+    "Punjab Kings",
+    "Rajasthan Royals",
+    "Rising Pune Supergiant",
+    "Royal Challengers Bengaluru",
+    "Sunrisers Hyderabad"
+  ];
+  const isIplAuction = slug === "ipl-auction";
 
   function addMember() { if (members.length < max) setMembers((m) => [...m, { name: "", age: "", photoData: "", photoMime: "" }]); }
   function removeMember(i: number) { if (members.length > 1) setMembers((m) => m.filter((_, idx) => idx !== i)); }

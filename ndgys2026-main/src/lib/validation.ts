@@ -17,7 +17,7 @@ export const TRACKS = [
 ] as const;
 
 export const seedTrackBySlug = (slug: string) => TRACKS.find((t) => t.slug === slug);
-export const BEGINNER_TRACK_SLUGS = new Set<string>(["unsc", "aippm"]);
+export const BEGINNER_TRACK_SLUGS = new Set<string>(["unep", "aippm"]);
 export const isBeginnerTrackSlug = (slug: string) => BEGINNER_TRACK_SLUGS.has(slug);
 
 export const GENDERS = ["male", "female", "other"] as const;
@@ -26,11 +26,11 @@ export const HEARD_OPTIONS = ["Instagram", "WhatsApp", "School / College", "Frie
 export const registrationSchema = z.object({
   fullName: z.string().trim().min(2, "Please enter your full name").max(120),
   email: z.string().trim().email("Enter a valid email"),
-  phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid phone number"),
+  phone: z.string().trim().regex(/^[+]?[0-9\\s-]{8,15}$/, "Enter a valid phone number"),
   age: z.coerce.number().int().min(8).max(99).optional(),
   city: z.string().trim().max(120).optional().or(z.literal("")),
   gender: z.enum(GENDERS).optional(),
-  emergencyContact: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid contact number").optional().or(z.literal("")),
+  emergencyContact: z.string().trim().regex(/^[+]?[0-9\\s-]{8,15}$/, "Enter a valid contact number").optional().or(z.literal("")),
     institution: z.string().trim().min(2, "Enter your school / college").max(160).optional().or(z.literal("")),
   track: z.string().min(1, "Choose a track"),
   howHeard: z.string().trim().max(80).optional().or(z.literal("")),
@@ -38,7 +38,7 @@ export const registrationSchema = z.object({
   notes: z.string().trim().max(1000).optional().or(z.literal("")),
   consentAccepted: z.coerce.boolean().optional(),
   guardianName: z.string().trim().max(120).optional().or(z.literal("")),
-  guardianPhone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
+  guardianPhone: z.string().trim().regex(/^[+]?[0-9\\s-]{8,15}$/).optional().or(z.literal("")),
   guardianConsent: z.coerce.boolean().optional(),
   customAnswers: z.array(z.object({ questionId: z.string(), label: z.string().max(300), value: z.union([z.string().max(2000), z.array(z.string().max(500))]) })).optional(),
   photoData: z.string().optional(),
@@ -68,7 +68,7 @@ export type RegistrationInput = z.infer<typeof registrationSchema>;
 export const contactSchema = z.object({
   fullName: z.string().trim().min(2, "Please enter your name").max(120),
   email: z.string().trim().email("Enter a valid email"),
-  phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid phone number").optional().or(z.literal("")),
+  phone: z.string().trim().regex(/^[+]?[0-9\\s-]{8,15}$/, "Enter a valid phone number").optional().or(z.literal("")),
   subject: z.enum(["General Enquiry", "Track Question", "Registration Help", "Press / Media", "Other"]),
   message: z.string().trim().min(10, "Message is too short").max(2000),
   company: z.string().max(0).optional() // honeypot
@@ -88,7 +88,7 @@ export const adminLoginSchema = z.object({
 
 export const profileSchema = z.object({
   fullName: z.string().trim().min(2).max(120),
-  phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/),
+  phone: z.string().trim().regex(/^[+]?[0-9\\s-]{8,15}$/),
   institution: z.string().trim().max(160).optional().or(z.literal("")),
   dietary: z.string().trim().max(200).optional().or(z.literal("")),
   accessibility: z.string().trim().max(200).optional().or(z.literal(""))
@@ -99,31 +99,19 @@ export const competitionMemberSchema = z.object({
   age: z.coerce.number().int().min(5).max(99).optional()
 });
 
-  age: z.coerce.number().int().min(5).max(99).optional(),
-  portfolioId: z.string().optional().or(z.literal(""))
+export const competitionRegistrationSchema = z.object({
   competitionId: z.string().min(1, "Choose a competition"),
   participation: z.enum(["SOLO", "GROUP"]),
   teamName: z.string().trim().max(120).optional().or(z.literal("")),
   leaderName: z.string().trim().min(2, "Enter your full name").max(120),
   email: z.string().trim().email("Enter a valid email"),
-  phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid phone number"),
+  phone: z.string().trim().regex(/^[+]?[0-9\\s-]{8,15}$/, "Enter a valid phone number"),
   age: z.coerce.number().int().min(8).max(99).optional(),
   city: z.string().trim().max(120).optional().or(z.literal("")),
   gender: z.enum(GENDERS).optional(),
-  emergencyContact: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid contact number").optional().or(z.literal("")),
+  emergencyContact: z.string().trim().regex(/^[+]?[0-9\\s-]{8,15}$/, "Enter a valid contact number").optional().or(z.literal("")),
     institution: z.string().trim().min(2, "Enter your school / college").max(160).optional().or(z.literal("")),
   pastExperience: z.string().trim().max(1000).optional().or(z.literal("")),
-  // Enforce beginner-committee age restrictions per member (12-16 for beginner committees)
-  for (let i = 0; i < (v.members || []).length; i++) {
-    const m = v.members[i];
-    if (BEGINNER_TRACK_SLUGS.has(m.track)) {
-      if (typeof m.age !== "number" || Number.isNaN(m.age)) {
-        ctx.addIssue({ code: "custom", path: ["members", i, "age"], message: "Age is required for this committee (12-16)." });
-      } else if (m.age < 12 || m.age > 16) {
-        ctx.addIssue({ code: "custom", path: ["members", i, "age"], message: "Delegates for beginner committees must be aged 12-16." });
-      }
-    }
-  }
   howHeard: z.string().trim().max(80).optional().or(z.literal("")),
   howHeardDetail: z.string().trim().max(200).optional().or(z.literal("")),
   notes: z.string().trim().max(1000).optional().or(z.literal("")),
@@ -131,7 +119,7 @@ export const competitionMemberSchema = z.object({
   answers: z.array(z.object({ q: z.string().max(300), a: z.string().trim().max(1000) })).optional(),
   consentAccepted: z.coerce.boolean().optional(),
   guardianName: z.string().trim().max(120).optional().or(z.literal("")),
-  guardianPhone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
+  guardianPhone: z.string().trim().regex(/^[+]?[0-9\\s-]{8,15}$/).optional().or(z.literal("")),
   guardianConsent: z.coerce.boolean().optional(),
   company: z.string().max(0).optional() // honeypot
 }).superRefine((v, ctx) => {
@@ -153,7 +141,7 @@ export type CompetitionRegistrationInput = z.infer<typeof competitionRegistratio
 export const delegationMemberSchema = z.object({
   fullName: z.string().trim().min(2, "Enter the delegate's name").max(120),
   email: z.string().trim().email("Enter a valid email").optional().or(z.literal("")),
-  phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
+  phone: z.string().trim().regex(/^[+]?[0-9\\s-]{8,15}$/).optional().or(z.literal("")),
   track: z.string().min(1, "Choose a committee"),
   portfolioId: z.string().optional().or(z.literal(""))
 });
@@ -161,7 +149,7 @@ export const delegationSchema = z.object({
   schoolName: z.string().trim().min(2, "Enter the school / institution").max(160),
   headName: z.string().trim().min(2, "Enter the lead contact name").max(120),
   email: z.string().trim().email("Enter a valid email"),
-  phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid phone number"),
+  phone: z.string().trim().regex(/^[+]?[0-9\\s-]{8,15}$/, "Enter a valid phone number"),
   institution: z.string().trim().max(160).optional().or(z.literal("")),
   promoCode: z.string().trim().max(40).optional().or(z.literal("")),
   members: z.array(delegationMemberSchema).min(1, "Add at least one delegate").max(40),

@@ -22,7 +22,10 @@ type Member = { name: string; age: string };
 
 const HEARD = ["Instagram", "WhatsApp", "School / College", "Friend / Word of mouth", "Other"];
 
-export default function CompetitionRegisterForm({ competition: c, slug }: { competition: Comp; slug?: string }) {
+type CompetitionRegisterFormProps = { competition: Comp; slug?: string };
+
+export default function CompetitionRegisterForm(props: CompetitionRegisterFormProps) {
+  const { competition: c, slug } = props;
   const initialPart: "SOLO" | "GROUP" = c.format === "GROUP" ? "GROUP" : "SOLO";
   const [participation, setParticipation] = useState<"SOLO" | "GROUP">(initialPart);
   const min = c.minTeam ?? 2;
