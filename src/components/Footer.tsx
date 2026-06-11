@@ -10,7 +10,7 @@ const resources = [
   { href: "/#resources", label: "Delegate Guides" },
   { href: "/#faq", label: "FAQs" },
   { href: "/schedule", label: "Schedule" },
-  { href: "/dashboard", label: "Delegate Login" }
+  { href: "/dashboard", label: "Participant Login" }
 ];
 // ── Social links — replace # with your actual URLs ──────────────────────
 const socials = [
