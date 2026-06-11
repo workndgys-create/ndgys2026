@@ -22,8 +22,8 @@ function LoginInner() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-midnight px-5">
       <div className="w-full max-w-sm rounded-2xl bg-paper p-8 shadow-2xl">
-        <h1 className="font-display text-2xl font-700 text-ink">Delegate Sign-in</h1>
-        <p className="mt-1 text-sm text-slatey">Login is allowed only for the email used in a successfully paid registration.</p>
+        <h1 className="font-display text-2xl font-700 text-ink">Participant Sign-in</h1>
+        <p className="mt-1 text-sm text-slatey">Login is allowed only for the email used in a successfully paid registration or competition entry.</p>
 
         <form onSubmit={requestLink} className="mt-6">
           <label className="text-sm font-500 text-ink/80">Email</label>
