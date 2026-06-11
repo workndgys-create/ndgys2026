@@ -20,13 +20,48 @@ export async function GET() {
       { status: 409 }
     );
 
-  const photo =
-    (reg as any).isCompetition
-      ? null
-      : await prisma.registrationPhoto.findUnique({
-          where: { registrationId: reg.id },
-          select: { id: true },
-        });
+  if ((reg as any).isCompetition) {
+    const compReg = await prisma.competitionRegistration.findUnique({ where: { id: reg.id } });
+    if (!compReg) {
+      return NextResponse.json({ error: "Registration not found" }, { status: 404 });
+    }
+
+    const photos = await prisma.competitionPhoto.findMany({
+      where: { competitionRegistrationId: reg.id },
+      select: { memberIndex: true }
+    });
+    const photoIndices = new Set(photos.map((p) => p.memberIndex));
+
+    const membersList = typeof compReg.members === "string" ? JSON.parse(compReg.members) : compReg.members || [];
+    const membersWithQrs = await Promise.all(
+      membersList.map(async (m: any, idx: number) => {
+        const mId = m.participantId || `${compReg.refId}-${String(idx + 1).padStart(2, "0")}`;
+        return {
+          name: m.name,
+          age: m.age,
+          delegateId: mId,
+          qr: await qrDataUrl(mId),
+          hasPhoto: photoIndices.has(idx + 1)
+        };
+      })
+    );
+
+    return NextResponse.json({
+      id: reg.id,
+      delegateId: reg.delegateId,
+      fullName: reg.fullName,
+      trackName: reg.trackName,
+      qr: await qrDataUrl(reg.delegateId),
+      hasPhoto: photoIndices.has(0),
+      isCompetition: true,
+      members: membersWithQrs
+    });
+  }
+
+  const photo = await prisma.registrationPhoto.findUnique({
+    where: { registrationId: reg.id },
+    select: { id: true },
+  });
 
   return NextResponse.json({
     id: reg.id,
@@ -35,6 +70,6 @@ export async function GET() {
     trackName: reg.trackName,
     qr: await qrDataUrl(reg.delegateId),
     hasPhoto: !!photo,
-    isCompetition: !!(reg as any).isCompetition,
+    isCompetition: false,
   });
 }
