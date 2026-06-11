@@ -1,0 +1,577 @@
+"use client";
+import { useEffect, useMemo, useRef, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+
+declare global {
+  interface Window { Cashfree?: any; }
+}
+
+type PortfolioState = "available" | "held" | "mine" | "taken";
+type Portfolio = { id: string; name: string; order: number; state: PortfolioState; heldUntil: string | null };
+type CustomQ = { id: string; label: string; type: "short" | "paragraph" | "select" | "multiselect"; required: boolean; helpText: string | null; options: string[] };
+
+function loadCashfree(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (window.Cashfree) return resolve(true);
+    const s = document.createElement("script");
+    s.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.body.appendChild(s);
+  });
+}
+
+const HEARD = [
+  "Instagram",
+  "WhatsApp",
+  "School / College",
+  "Friend / Word of mouth",
+  "Other",
+];
+const BEGINNER_TRACKS = new Set(["unep", "aippm"]);
+
+function RegisterInner() {
+  const params = useSearchParams();
+  const preTrack = params.get("track") || "";
+
+  const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number; difficulty?: string }[]>([]);
+  const [track, setTrack] = useState(preTrack);
+  const [status, setStatus] = useState<"idle" | "processing" | "paid" | "error" | "full">("idle");
+  const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [form, setForm] = useState<Record<string, string>>({});
+
+  const [portfolios, setPortfolios] = useState<Portfolio[] | null>(null);
+  const [selected, setSelected] = useState<string>("");
+  const [regId, setRegId] = useState<string>("");
+  const [deadline, setDeadline] = useState<number | null>(null);
+  const [remaining, setRemaining] = useState<number>(0);
+  const [promo, setPromo] = useState("");
+  const [promoMsg, setPromoMsg] = useState("");
+  const [discounted, setDiscounted] = useState<number | null>(null);
+  const [portfolioQuery, setPortfolioQuery] = useState("");
+  const [heardFrom, setHeardFrom] = useState(HEARD[0]);
+  const [heardDetail, setHeardDetail] = useState("");
+  const [age, setAge] = useState<string>("");
+  const [consent, setConsent] = useState(false);
+  const [guardianConsent, setGuardianConsent] = useState(false);
+  const isBeginnerTrack = BEGINNER_TRACKS.has(track);
+  const isMinor = age !== "" && Number(age) > 0 && Number(age) < 18;
+  const [questions, setQuestions] = useState<CustomQ[]>([]);
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const [photoData, setPhotoData] = useState<string>("");
+  const [photoMime, setPhotoMime] = useState<string>("");
+  const [photoError, setPhotoError] = useState<string>("");
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhotoError("");
+    const file = e.target.files?.[0];
+    if (!file) {
+      setPhotoData("");
+      setPhotoMime("");
+      return;
+    }
+    if (file.type !== "image/jpeg" && file.type !== "image/png" && file.type !== "image/jpg") {
+      setPhotoError("Only JPEG and PNG formats are supported.");
+      setPhotoData("");
+      setPhotoMime("");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setPhotoError("Photo must be smaller than 2MB.");
+      setPhotoData("");
+      setPhotoMime("");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = (reader.result as string).split(",")[1];
+      setPhotoData(base64);
+      setPhotoMime(file.type);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const internationalPressMock = [
+    ...Array.from({ length: 50 }, (_, idx) => `Journalist ${String(idx + 1).padStart(2, "0")}`),
+    ...Array.from({ length: 50 }, (_, idx) => `Caricaturist ${String(idx + 1).padStart(2, "0")}`),
+    ...Array.from({ length: 30 }, (_, idx) => `Photographer ${String(idx + 1).padStart(2, "0")}`),
+  ];
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const r = await fetch("/api/public/tracks");
+        if (r.ok) {
+          const t = await r.json(); setTracks(t);
+          if (preTrack && t.some((x: any) => x.value === preTrack)) {
+            setTrack(preTrack);
+          } else if (!preTrack && t.length) {
+            setTrack(t[0].value);
+          }
+        } else throw new Error("Failed to fetch");
+      } catch (_) {
+        // Fallback mock tracks
+        const mockTracks = [
+          { value: "unsc", label: "United Nations Security Council", fee: 2500 },
+          { value: "unga", label: "United Nations General Assembly", fee: 2000 },
+          { value: "unhrc", label: "United Nations Human Rights Council", fee: 2000 },
+          { value: "csw", label: "United Nations Commission on the Status of Women", fee: 2000 },
+          { value: "unicef", label: "United Nations International Children's Emergency Fund", fee: 2000 },
+          { value: "unep", label: "United Nations Environment Programme", fee: 2000 },
+          { value: "wto", label: "World Trade Organization", fee: 2500 },
+          { value: "international-press", label: "International Press", fee: 2000 },
+          { value: "aippm", label: "All India Political Parties Meet", fee: 1500 },
+          { value: "lok-sabha", label: "Lok Sabha", fee: 1500 },
+          { value: "war-cabinet", label: "Indian War Cabinet", fee: 1500 },
+          { value: "ipl", label: "Indian Premier League", fee: 1500 }
+        ];
+        setTracks(mockTracks);
+        if (preTrack && mockTracks.some((x: any) => x.value === preTrack)) {
+          setTrack(preTrack);
+        } else if (!preTrack && mockTracks.length) {
+          setTrack(mockTracks[0].value);
+        }
+      }
+    })();
+  }, [preTrack]);
+
+  const fee = useMemo(() => tracks.find((t) => t.value === track)?.fee ?? 0, [track, tracks]);
+
+  useEffect(() => {
+    fetch("/api/registration-questions", { cache: "no-store" })
+      .then((r) => r.json()).then((d) => setQuestions(d.questions || [])).catch(() => { });
+  }, []);
+  function setAnswer(id: string, value: string | string[]) { setAnswers((a) => ({ ...a, [id]: value })); }
+  function toggleMulti(id: string, opt: string) {
+    setAnswers((a) => {
+      const cur = Array.isArray(a[id]) ? (a[id] as string[]) : [];
+      return { ...a, [id]: cur.includes(opt) ? cur.filter((x) => x !== opt) : [...cur, opt] };
+    });
+  }
+
+  async function loadPortfolios() {
+    const mockData: Record<string, string[]> = {
+      unsc: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      unga: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      unhrc: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      csw: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      unicef: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      unep: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      "international-press": internationalPressMock,
+      wto: ["United States", "United Kingdom", "France", "Russia", "China", "India", "Brazil", "South Africa", "Germany", "Japan", "Canada", "Australia", "Mexico", "Indonesia", "Nigeria", "Kenya", "Saudi Arabia", "Turkey", "Egypt", "Argentina", "Italy", "Spain", "South Korea", "Pakistan", "Bangladesh", "Vietnam", "Iran", "Israel", "Ukraine", "Poland"],
+      aippm: ["Bharatiya Janata Party", "Indian National Congress", "All India Majlis-e-Ittehaad-ul-Muslimeen", "Biju Janata Dal", "Trinamool Congress", "Dravida Munnetra Kazhagam", "Samajwadi Party", "Shivsena", "Telugu Desam Party", "Jharkhand Mukti Morcha", "Nationalist Congress Party", "Communist Party of India", "Aam Aadmi Party", "Yadav Samaj", "Regional Alliance"],
+      "lok-sabha": ["Mumbai (South)", "Delhi Central", "Bangalore South", "Chennai South", "Hyderabad", "Kolkata South", "Chandigarh", "Lucknow", "Pune", "Ahmedabad", "Jaipur", "Indore"],
+      "war-cabinet": ["Prime Minister", "Defence Minister", "Foreign Minister", "Finance Minister", "Home Minister", "Chief of Defence Staff", "Army Chief", "Navy Chief", "Air Chief", "National Security Advisor"],
+    ipl: ["Mumbai Indians", "Chennai Super Kings", "Royal Challengers Bangalore", "Kolkata Knight Riders", "Rajasthan Royals", "Delhi Capitals", "Punjab Kings", "Sunrisers Hyderabad"],
+    };
+    
+    try {
+      const res = await fetch(`/api/portfolios?track=${track}${regId ? `&reg=${regId}` : ""}`, { cache: "no-store" });
+      const d = await res.json();
+      const data = d.portfolios || [];
+      // If API returns empty, use mock data
+      if (data.length === 0) {
+        const portfolios = mockData[track] || [];
+        setPortfolios(portfolios.map((name, idx) => ({ id: `mock-${idx}`, name, state: "available" as const, order: idx, heldUntil: null })));
+      } else {
+        setPortfolios(data);
+      }
+    } catch {
+      // Fallback to mock data on error
+      const portfolios = mockData[track] || [];
+      setPortfolios(portfolios.map((name, idx) => ({ id: `mock-${idx}`, name, state: "available" as const, order: idx, heldUntil: null })));
+    }
+  }
+  useEffect(() => {
+    setSelected(""); setPortfolios(null); setDiscounted(null); setPromoMsg(""); setPortfolioQuery("");
+    loadPortfolios();
+    if (pollRef.current) clearInterval(pollRef.current);
+    pollRef.current = setInterval(() => { if (!document.hidden) loadPortfolios(); }, 12000);
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [track, regId]);
+
+  useEffect(() => {
+    if (!deadline) return;
+    const tick = () => {
+      const left = Math.max(0, Math.round((deadline - Date.now()) / 1000));
+      setRemaining(left);
+      if (left <= 0) expireHold();
+    };
+    tick();
+    const t = setInterval(tick, 1000);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deadline]);
+
+  async function releaseHold() {
+    if (!regId) return;
+    await fetch("/api/portfolios/release", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ registrationId: regId }) }).catch(() => { });
+  }
+
+  function expireHold() {
+    setDeadline(null); setRegId(""); setStatus("idle");
+    setMessage("Your hold expired - that portfolio is open again. Please re-select and pay within the time limit.");
+    loadPortfolios();
+  }
+
+  async function applyPromo() {
+    setPromoMsg("");
+    if (!promo.trim()) { setDiscounted(null); return; }
+    const res = await fetch("/api/promo/validate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: promo, amount: fee, trackSlug: track }) });
+    const d = await res.json().catch(() => ({}));
+    if (d.ok) { setDiscounted(d.final); setPromoMsg(`Code applied - you save Rs ${d.discount.toLocaleString("en-IN")}.`); }
+    else { setDiscounted(null); setPromoMsg("That code can't be applied."); }
+  }
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setErrors({}); setMessage("");
+    if (!selected) { setMessage("Please select an available portfolio first."); setStatus("error"); return; }
+    if (isBeginnerTrack) {
+      const n = Number(age);
+      if (!Number.isFinite(n) || n < 12 || n > 16) {
+        setMessage("Beginner committees are only open to delegates aged 12-16.");
+        setStatus("error");
+        return;
+      }
+    }
+    if (!consent) { setMessage("Please accept the Terms and Code of Conduct to continue."); setStatus("error"); return; }
+    if (isMinor && !guardianConsent) { setMessage("Parent/guardian consent is required for delegates under 18."); setStatus("error"); return; }
+    for (const q of questions) {
+      if (!q.required) continue;
+      const v = answers[q.id];
+      const empty = v === undefined || (Array.isArray(v) ? v.length === 0 : !String(v).trim());
+      if (empty) { setMessage(`Please answer: ${q.label}`); setStatus("error"); return; }
+    }
+    if (!photoData) {
+      setMessage("Please upload a passport size photo.");
+      setStatus("error");
+      return;
+    }
+    setStatus("processing");
+    const fd = new FormData(e.currentTarget);
+    const payload: Record<string, unknown> = Object.fromEntries(fd.entries());
+    payload.howHeard = heardFrom;
+    payload.howHeardDetail = heardDetail;
+    payload.portfolioId = selected;
+    payload.consentAccepted = consent ? "true" : "";
+    payload.guardianConsent = guardianConsent ? "true" : "";
+    payload.customAnswers = questions.map((q) => ({ questionId: q.id, label: q.label, value: answers[q.id] ?? (q.type === "multiselect" ? [] : "") })).filter((x) => (Array.isArray(x.value) ? x.value.length : String(x.value).trim()));
+    if (promo.trim()) payload.promoCode = promo.trim();
+    payload.photoData = photoData;
+    payload.photoMime = photoMime;
+    setForm(payload as Record<string, string>);
+
+    const res = await fetch("/api/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+
+    if (res.status === 409) {
+      const d = await res.json().catch(() => ({}));
+      if (d.full) { setStatus("full"); return; }
+      if (d.portfolioUnavailable) { setSelected(""); setMessage(d.error || "That portfolio was just taken - please pick another."); setStatus("error"); loadPortfolios(); return; }
+      setMessage(d.error || "This track is unavailable."); setStatus("error"); return;
+    }
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      setErrors(d.issues || {}); setMessage(d.error || "Please check the form."); setStatus("error"); return;
+    }
+
+    const order = await res.json();
+    setRegId(order.registrationId);
+    if (order.heldUntil) setDeadline(new Date(order.heldUntil).getTime());
+
+    if (!(await loadCashfree())) { setMessage("Could not load the payment gateway."); setStatus("error"); await releaseHold(); setDeadline(null); return; }
+
+    const cashfree = window.Cashfree({ mode: order.mode || "sandbox" });
+    const result = await cashfree.checkout({ paymentSessionId: order.paymentSessionId, redirectTarget: "_modal" });
+
+    if (result?.error) {
+      // user closed the modal or payment failed → free the hold and let them retry
+      await releaseHold(); setDeadline(null); setRegId(""); setStatus("idle"); loadPortfolios();
+      return;
+    }
+
+    // confirm server-side by order status, then fulfil
+    const v = await fetch("/api/payment/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ orderId: order.orderId }) });
+    if (v.ok) { setDeadline(null); setStatus("paid"); }
+    else if (v.status === 202) { setMessage("Payment is processing. If it succeeded, your confirmation email will arrive shortly — you can also refresh your dashboard."); setStatus("error"); }
+    else { setMessage("Payment could not be verified. If charged, contact us."); setStatus("error"); }
+  }
+
+  async function joinWaitlist() {
+    await fetch("/api/waitlist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fullName: form.fullName, email: form.email, track }) });
+    setMessage("You're on the waitlist - we'll email you if a seat opens.");
+  }
+
+  if (status === "paid") {
+    return (
+      <Centered>
+        <div className="text-center">
+          <p className="font-display text-5xl">&#127881;</p>
+          <h1 className="mt-4 font-display text-4xl font-700 text-ink">You're confirmed!</h1>
+          <p className="mt-3 text-ink/70">Your portfolio is locked in. A confirmation email with your QR ticket and invoice is on its way.</p>
+          <div className="mt-8 flex justify-center gap-3">
+            <Link href="/dashboard" className="rounded-full bg-midnight px-6 py-3 font-600 text-cream hover:bg-royal">Go to Dashboard</Link>
+            <Link href="/" className="rounded-full border border-ink/20 px-6 py-3 font-600 text-ink hover:border-gold">Home</Link>
+          </div>
+        </div>
+      </Centered>
+    );
+  }
+
+  if (status === "full") {
+    return (
+      <Centered>
+        <div className="w-full max-w-md text-center">
+          <h1 className="font-display text-3xl font-700 text-ink">This track is full</h1>
+          <p className="mt-3 text-ink/70">{tracks.find((t) => t.value === track)?.label} has reached capacity. Join the waitlist and we'll notify you if a seat frees up.</p>
+          <button onClick={joinWaitlist} className="mt-6 rounded-full bg-gold px-6 py-3 font-600 text-midnight hover:bg-goldlite">Join Waitlist</button>
+          {message && <p className="mt-4 text-sm text-[#D97706]">{message}</p>}
+          <div className="mt-4"><Link href="/#tracks" className="text-sm text-gold hover:underline">&larr; Choose another track</Link></div>
+        </div>
+      </Centered>
+    );
+  }
+
+  const available = portfolios?.filter((p) => p.state === "available" || p.state === "mine").length ?? 0;
+  const filteredPortfolios = (portfolios ?? []).filter((p) => p.name.toLowerCase().includes(portfolioQuery.trim().toLowerCase()));
+  const mm = String(Math.floor(remaining / 60));
+  const ss = String(remaining % 60).padStart(2, "0");
+
+  return (
+    <Centered>
+      <div className="w-full max-w-lg">
+        <Link href="/" className="text-sm text-gold hover:underline">&larr; Back</Link>
+        <h1 className="mt-3 font-display text-4xl font-700 text-ink">Register</h1>
+        <p className="mt-2 text-ink/70">Pick your committee, choose an available portfolio, and pay to lock it in.</p>
+
+        <form onSubmit={onSubmit} className="mt-8 space-y-4 rounded-2xl border border-ink/10 bg-paper p-7 shadow-sm">
+          <Field name="fullName" label="Full Name" errors={errors} />
+          <Field name="email" type="email" label="Email" errors={errors} />
+          <Field name="phone" label="Phone Number" errors={errors} />
+          <Field name="institution" label="School / College" errors={errors} required />
+          <div>
+            <label className="text-sm font-500 text-ink/80">Passport Size Photo (JPEG/PNG, Max 2MB) <span className="text-red-500">*</span></label>
+            <input
+              type="file"
+              accept="image/jpeg, image/png"
+              required
+              onChange={handlePhotoChange}
+              className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gold file:text-midnight hover:file:bg-goldlite"
+            />
+            {photoError && <p className="mt-1 text-xs text-red-600">{photoError}</p>}
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-sm font-500 text-ink/80">Age</label>
+              <input name="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} min={isBeginnerTrack ? 12 : undefined} max={isBeginnerTrack ? 16 : undefined} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+              {isBeginnerTrack && <p className="mt-1 text-xs text-amber-700">For beginner committees, only ages 12-16 are eligible.</p>}
+              {errors.age && <p className="mt-1 text-xs text-red-600">{errors.age[0]}</p>}
+            </div>
+            <div>
+              <label className="text-sm font-500 text-ink/80">Gender</label>
+              <select name="gender" className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
+                <option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <Field name="city" label="Place / City" errors={errors} />
+          <Field name="emergencyContact" label="Emergency contact number" errors={errors} />
+          <div>
+            <label className="text-sm font-500 text-ink/80">How did you hear about us?</label>
+            <select
+              name="howHeard"
+              value={heardFrom}
+              onChange={(e) => {
+                const next = e.target.value;
+                setHeardFrom(next);
+                if (next !== "Friend / Word of mouth" && next !== "Other") setHeardDetail("");
+              }}
+              className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+            >
+              {HEARD.map((h) => <option key={h} value={h}>{h}</option>)}
+            </select>
+            {(heardFrom === "Friend / Word of mouth" || heardFrom === "Other") && (
+              <textarea
+                name="howHeardDetail"
+                value={heardDetail}
+                onChange={(e) => setHeardDetail(e.target.value)}
+                rows={2}
+                required
+                placeholder="Please tell us a little more"
+                className="mt-2 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+              />
+            )}
+            {errors.howHeardDetail && <p className="mt-1 text-xs text-red-600">{errors.howHeardDetail[0]}</p>}
+          </div>
+          <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
+
+          <div>
+            <label className="text-sm font-500 text-ink/80">Committee</label>
+              <select
+                name="track"
+                value={track}
+                onChange={(e) => setTrack(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+              >
+                {tracks.map((t) => (
+                  <option key={t.value} value={t.value}>
+                    {BEGINNER_TRACKS.has(t.value)
+                      ? `${t.label} (Beginner, age 12-16)`
+                      : t.label}
+                  </option>
+                ))}
+              </select>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-500 text-ink/80">Portfolio</label>
+              <span className="text-xs text-slatey">{portfolios ? `${available} available` : "loading..."}</span>
+            </div>
+            <input
+              value={portfolioQuery}
+              onChange={(e) => setPortfolioQuery(e.target.value)}
+              placeholder="Search portfolio..."
+              className="mt-2 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold"
+            />
+            <div className="mt-2 grid max-h-56 grid-cols-2 gap-2 overflow-y-auto rounded-lg border border-ink/10 bg-cream p-2 sm:grid-cols-3">
+              {!portfolios ? (
+                <p className="col-span-full py-6 text-center text-sm text-slatey">Loading portfolios...</p>
+              ) : filteredPortfolios.length === 0 ? (
+                <p className="col-span-full py-6 text-center text-sm text-slatey">No portfolios configured for this committee yet.</p>
+              ) : filteredPortfolios.map((p) => {
+                const disabled = p.state === "held" || p.state === "taken";
+                const isSel = selected === p.id;
+                return (
+                  <button
+                    type="button" key={p.id} disabled={disabled}
+                    onClick={() => setSelected(p.id)}
+                    className={`rounded-lg px-2.5 py-2 text-left text-xs font-500 transition ${isSel ? "bg-midnight text-cream ring-2 ring-gold" : disabled ? "cursor-not-allowed bg-ink/5 text-slatey line-through" : "bg-paper text-ink hover:ring-1 hover:ring-gold"}`}
+                  >
+                    {p.name}
+                    {p.state === "held" && <span className="ml-1 text-[10px] text-amber-600">held</span>}
+                    {p.state === "taken" && <span className="ml-1 text-[10px]">taken</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <label className="text-sm font-500 text-ink/80">Anything you'd like us to know? (optional)</label>
+            <textarea name="notes" rows={2} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+          </div>
+
+          {isMinor && (
+            <div className="space-y-3 rounded-xl border border-[#D97706]/40 bg-[#D97706]/10 p-4">
+              <p className="text-sm font-600 text-amber-900">You're under 18 — a parent/guardian must consent.</p>
+              <div className="grid grid-cols-2 gap-3">
+                <Field name="guardianName" label="Parent / guardian name" errors={errors} />
+                <Field name="guardianPhone" label="Guardian contact number" errors={errors} />
+              </div>
+              <label className="flex items-start gap-2 text-sm text-amber-900">
+                <input type="checkbox" checked={guardianConsent} onChange={(e) => setGuardianConsent(e.target.checked)} className="mt-0.5 accent-gold" />
+                <span>I am the parent/guardian and I consent to this delegate's participation.</span>
+              </label>
+              {errors.guardianConsent && <p className="text-xs text-red-600">{errors.guardianConsent[0]}</p>}
+            </div>
+          )}
+
+          {questions.length > 0 && (
+            <div className="space-y-4 rounded-xl border border-ink/10 bg-cream/60 p-4">
+              {questions.map((q) => (
+                <div key={q.id}>
+                  <label className="text-sm font-600 text-ink">{q.label}{q.required && <span className="text-red-500"> *</span>}</label>
+                  {q.helpText && <p className="text-xs text-slatey">{q.helpText}</p>}
+                  {q.type === "short" && (
+                    <input value={(answers[q.id] as string) || ""} onChange={(e) => setAnswer(q.id, e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-paper px-3 py-2.5 outline-none focus:border-gold" />
+                  )}
+                  {q.type === "paragraph" && (
+                    <textarea value={(answers[q.id] as string) || ""} onChange={(e) => setAnswer(q.id, e.target.value)} rows={3} className="mt-1 w-full rounded-lg border border-ink/15 bg-paper px-3 py-2.5 outline-none focus:border-gold" />
+                  )}
+                  {q.type === "select" && (
+                    <div className="mt-1 space-y-1.5">
+                      {q.options.map((opt) => (
+                        <label key={opt} className="flex items-center gap-2 text-sm text-ink/80">
+                          <input type="radio" name={`q-${q.id}`} checked={answers[q.id] === opt} onChange={() => setAnswer(q.id, opt)} className="accent-gold" /> {opt}
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                  {q.type === "multiselect" && (
+                    <div className="mt-1 space-y-1.5">
+                      {q.options.map((opt) => (
+                        <label key={opt} className="flex items-center gap-2 text-sm text-ink/80">
+                          <input type="checkbox" checked={Array.isArray(answers[q.id]) && (answers[q.id] as string[]).includes(opt)} onChange={() => toggleMulti(q.id, opt)} className="accent-gold" /> {opt}
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <label className="flex items-start gap-2 text-sm text-ink/80">
+            <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 accent-gold" />
+            <span>I have read and agree to the <a href="/terms" target="_blank" className="font-600 text-gold hover:underline">Terms</a> and the <a href="/code-of-conduct" target="_blank" className="font-600 text-gold hover:underline">Code of Conduct</a>.</span>
+          </label>
+
+          {deadline && status === "processing" && (
+            <div className="flex items-center justify-between rounded-lg border border-gold/40 bg-goldlite/20 px-4 py-3 text-sm">
+              <span className="text-ink/80">Portfolio held - complete payment</span>
+              <span className="font-mono text-lg font-700 text-ink">{mm}:{ss}</span>
+            </div>
+          )}
+
+          <div>
+            <label className="text-sm font-500 text-ink/80">Promo code (optional)</label>
+            <div className="mt-1 flex gap-2">
+              <input value={promo} onChange={(e) => setPromo(e.target.value.toUpperCase())} placeholder="EARLYBIRD" className="flex-1 rounded-lg border border-ink/15 bg-cream px-3 py-2.5 uppercase outline-none focus:border-gold" />
+              <button type="button" onClick={applyPromo} className="rounded-lg border border-ink/15 px-4 text-sm font-600 text-ink hover:border-gold">Apply</button>
+            </div>
+            {promoMsg && <p className={`mt-1 text-xs ${discounted != null ? "text-[#D97706]" : "text-red-600"}`}>{promoMsg}</p>}
+          </div>
+
+          <div className="flex items-center justify-between rounded-lg bg-cream px-4 py-3">
+            <span className="text-sm text-ink/70">Amount payable</span>
+            <span className="font-display text-2xl font-700 text-ink">
+              {discounted != null && discounted !== fee
+                ? <><span className="mr-2 text-base font-400 text-slatey line-through">Rs {fee.toLocaleString("en-IN")}</span>Rs {discounted.toLocaleString("en-IN")}</>
+                : <>Rs {fee.toLocaleString("en-IN")}</>}
+            </span>
+          </div>
+
+          <button disabled={status === "processing" || !selected || !consent || (isMinor && !guardianConsent)} className="w-full rounded-full bg-gold py-3 font-600 text-midnight transition hover:bg-goldlite disabled:opacity-60">
+            {status === "processing" ? "Processing..." : selected ? "Pay & lock portfolio" : "Select a portfolio"}
+          </button>
+          {message && <p className={`text-sm ${status === "error" ? "text-red-600" : "text-ink/70"}`}>{message}</p>}
+          <p className="text-center text-xs text-slatey">Your portfolio is held for a few minutes while you pay. Secured by Cashfree.</p>
+          <p className="text-center text-xs text-slatey">Registering a school group? <Link href="/delegation/register" className="font-600 text-gold hover:underline">Delegation registration &rarr;</Link></p>
+        </form>
+      </div>
+    </Centered>
+  );
+}
+
+function Field({ name, label, type = "text", errors, required = false }: { name: string; label: string; type?: string; errors: Record<string, string[]>; required?: boolean }) {
+  return (
+    <div>
+      <label className="text-sm font-500 text-ink/80">{label}</label>
+      <input name={name} type={type} required={required} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+      {errors[name] && <p className="mt-1 text-xs text-red-600">{errors[name][0]}</p>}
+    </div>
+  );
+}
+function Centered({ children }: { children: React.ReactNode }) {
+  return <main className="flex min-h-screen items-center justify-center bg-cream grain px-5 py-16">{children}</main>;
+}
+
+export default function RegisterPage() {
+  return <Suspense fallback={<Centered><p className="text-ink/60">Loading...</p></Centered>}><RegisterInner /></Suspense>;
+}
