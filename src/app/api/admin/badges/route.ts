@@ -104,19 +104,44 @@ export async function GET(req: NextRequest) {
     const comps = await prisma.competition.findMany({ where: { id: { in: compIds } } });
     const slugMap = new Map(comps.map(c => [c.id, c.slug]));
 
-    list = list.concat(compRegs.map((c) => ({
+    for (const c of compRegs) {
+  const members =
+    typeof c.members === "string"
+      ? JSON.parse(c.members)
+      : c.members || [];
+
+  if (members.length > 0) {
+    members.forEach((member: any) => {
+      list.push({
+        delegateId: c.refId, // Keep SAME QR
+        fullName: member.name,
+        trackName: c.competitionTitle,
+        trackSlug:
+          slugMap.get(c.competitionId) || c.competitionId,
+        portfolio: null,
+        institution: c.institution,
+        city: c.city,
+        categoryLabel: "Competition",
+        photoData: undefined,
+        photoMime: undefined
+      });
+    });
+  } else {
+    list.push({
       delegateId: c.refId,
       fullName: c.leaderName,
       trackName: c.competitionTitle,
-      trackSlug: slugMap.get(c.competitionId) || c.competitionId,
+      trackSlug:
+        slugMap.get(c.competitionId) || c.competitionId,
       portfolio: null,
       institution: c.institution,
       city: c.city,
       categoryLabel: "Competition",
       photoData: undefined,
       photoMime: undefined
-    })));
+    });
   }
+    }
 
   const pdf = await generateBadgeSheet(list);
   return new NextResponse(new Uint8Array(pdf), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="badges${track ? "-" + track : ""}.pdf"` } });
