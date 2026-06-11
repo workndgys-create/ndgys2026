@@ -11,7 +11,7 @@ const FALLBACK_TRACKS = [
   { value: "aippm", label: "All India Political Parties Meet", fee: 1500, difficulty: "Beginner" },
   { value: "lok-sabha", label: "Lok Sabha", fee: 1500, difficulty: "Beginner" },
   { value: "war-cabinet", label: "Indian War Cabinet", fee: 1500, difficulty: "Advanced" },
-  { value: "ipl", label: "Indian Premier League", fee: 1500, difficulty: "Beginner" }
+  
 ];
 
 export async function GET(req: NextRequest) {

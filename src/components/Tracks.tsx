@@ -16,7 +16,6 @@ const TRACK_IMAGES: Record<string, string> = {
   aippm: "/AIPPM.jpeg",
   "lok-sabha": "/LOKSABHA.jpeg",
   "war-cabinet": "/IWC.jpeg",
-  ipl: "/IPL.jpeg",
 };
 
 export default async function Tracks() {
