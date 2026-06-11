@@ -7,7 +7,7 @@ const nav = [
   { href: "/dashboard/ticket", label: "Pass & QR" },
   { href: "/dashboard/schedule", label: "My Schedule" },
   { href: "/dashboard/committee", label: "Event Group" },
-  { href: "/dashboard/guides", label: "Resources" },
+  { href: "/dashboard/guides", label: "Rules & Regulations" },
   { href: "/dashboard/profile", label: "Profile" }
 ];
 

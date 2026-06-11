@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-type Ticket = { id: string; delegateId: string; fullName: string; trackName: string; qr: string; hasPhoto: boolean };
+type Ticket = { id: string; delegateId: string; fullName: string; trackName: string; qr: string; hasPhoto: boolean; isCompetition?: boolean };
 
 export default function TicketPage() {
   const [t, setT] = useState<Ticket | null>(null);
@@ -85,24 +85,28 @@ export default function TicketPage() {
                 />
                 <img src={t.qr} alt="Check-in QR" className="h-32 w-32 border border-ink/5 p-1 rounded-xl bg-white" />
               </div>
-              <label className="text-xs font-600 text-gold hover:text-goldlite cursor-pointer hover:underline mb-2">
-                {uploading ? "Uploading..." : "Change photo"}
-                <input type="file" accept="image/jpeg, image/png" onChange={handlePhotoUpload} disabled={uploading} className="hidden" />
-              </label>
+              {!t.isCompetition && (
+                <label className="text-xs font-600 text-gold hover:text-goldlite cursor-pointer hover:underline mb-2">
+                  {uploading ? "Uploading..." : "Change photo"}
+                  <input type="file" accept="image/jpeg, image/png" onChange={handlePhotoUpload} disabled={uploading} className="hidden" />
+                </label>
+              )}
               {uploadError && <p className="text-xs text-red-600 mb-2">{uploadError}</p>}
             </div>
           ) : (
             <div className="space-y-4">
               <img src={t.qr} alt="Check-in QR" className="mx-auto h-56 w-56 border border-ink/5 p-2 rounded-2xl bg-white" />
               
-              <div className="rounded-2xl border border-dashed border-gold/40 bg-goldlite/10 p-4">
-                <p className="text-xs font-500 text-ink/80 mb-2.5">Upload a passport-size photo to complete your badge:</p>
-                <label className="inline-block rounded-full bg-gold px-4 py-2 text-xs font-600 text-midnight hover:bg-goldlite cursor-pointer transition">
-                  {uploading ? "Uploading..." : "Upload Photo"}
-                  <input type="file" accept="image/jpeg, image/png" onChange={handlePhotoUpload} disabled={uploading} className="hidden" />
-                </label>
-                {uploadError && <p className="mt-2 text-xs text-red-600">{uploadError}</p>}
-              </div>
+              {!t.isCompetition && (
+                <div className="rounded-2xl border border-dashed border-gold/40 bg-goldlite/10 p-4">
+                  <p className="text-xs font-500 text-ink/80 mb-2.5">Upload a passport-size photo to complete your badge:</p>
+                  <label className="inline-block rounded-full bg-gold px-4 py-2 text-xs font-600 text-midnight hover:bg-goldlite cursor-pointer transition">
+                    {uploading ? "Uploading..." : "Upload Photo"}
+                    <input type="file" accept="image/jpeg, image/png" onChange={handlePhotoUpload} disabled={uploading} className="hidden" />
+                  </label>
+                  {uploadError && <p className="mt-2 text-xs text-red-600">{uploadError}</p>}
+                </div>
+              )}
             </div>
           )}
 

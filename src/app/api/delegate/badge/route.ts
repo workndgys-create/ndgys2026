@@ -22,7 +22,7 @@ export async function GET() {
     portfolio: reg.portfolio,
     institution: reg.institution,
     city: reg.city,
-    categoryLabel: "Portfolio",
+    categoryLabel: (reg as any).isCompetition ? "Competition" : "Portfolio",
     photoData: photo?.data ? Buffer.from(photo.data) : undefined,
     photoMime: photo?.mime
   });

@@ -9,6 +9,9 @@ export async function POST(req: NextRequest) {
   if (!delegate) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  if ((delegate as any).isCompetition) {
+    return NextResponse.json({ error: "Photo upload not required for competition participants" }, { status: 400 });
+  }
 
   try {
     const body = await req.json().catch(() => null);
