@@ -32,20 +32,32 @@ export async function POST(req: NextRequest) {
         status: "PAID"
       }
     });
+if (paid || compPaid) {
+  const token = await createDelegateSession({ email });
 
-    return NextResponse.json({
-      email,
-      munFound: !!paid,
-      compFound: !!compPaid,
-      compData: compPaid,
-    });
+  const res = NextResponse.json({
+    ok: true,
+    authenticated: true,
+  });
+
+  res.cookies.set(
+    delegateCookieName,
+    token,
+    delegateCookieOptions
+  );
+
+  return res;
+}
+    
   } catch (e: any) {
     return NextResponse.json(
-      {
-        error: e.message,
-        stack: String(e.stack),
-      },
-      { status: 500 }
-    );
+  {
+    ok: false,
+    error:
+      "This email is not eligible for login. Use the email from a successfully paid registration or competition entry.",
+  },
+  { status: 403 }
+);
+  
   }
 }
