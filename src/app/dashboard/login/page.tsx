@@ -13,10 +13,26 @@ function LoginInner() {
     const res = await fetch("/api/delegate/auth/request", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email })
     });
-    const d = await res.json().catch(() => ({}));
-    if (res.ok && d.authenticated) { router.push("/dashboard"); router.refresh(); return; }
-    setErr(d.error || "Login failed.");
-    setBusy(false);
+    const text = await res.text();
+
+console.log("STATUS:", res.status);
+console.log("BODY:", text);
+
+try {
+  const d = JSON.parse(text);
+
+  if (res.ok && d.authenticated) {
+    router.push("/dashboard");
+    router.refresh();
+    return;
+  }
+
+  setErr(d.error || JSON.stringify(d));
+} catch {
+  setErr(`HTTP ${res.status}: ${text}`);
+}
+
+setBusy(false);
   }
 
   return (
