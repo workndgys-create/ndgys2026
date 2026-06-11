@@ -34,3 +34,4 @@ return NextResponse.json({
   paid: !!paid,
   compPaid: !!compPaid
 });
+}
