@@ -54,25 +54,25 @@ async function drawBadge(doc: PDFKit.PDFDocument, x: number, y: number, d: Badge
   const logoPath = path.join(process.cwd(), "public", "NDGYS26.png");
   const logoExists = fs.existsSync(logoPath);
 
-  // Header background block
-  doc.rect(x, y, w, 80).fill(DARK_BROWN);
+  // Header background block (90 pt height)
+  doc.rect(x, y, w, 90).fill(DARK_BROWN);
 
-  // Logo in header
+  // Logo in header (using full width 'w' bounding box + align: center for bulletproof horizontal centering)
   if (logoExists) {
     try {
-      doc.image(logoPath, x + (w - 120) / 2, y + 14, { width: 120, height: 35, fit: [120, 35] });
+      doc.image(logoPath, x, y + 10, { fit: [w, 52], align: "center", valign: "center" });
     } catch (e) {
-      doc.fillColor(SAFFRON).font("Helvetica-Bold").fontSize(13).text("NDGYS 4.0", x, y + 20, { width: w, align: "center" });
+      doc.fillColor(SAFFRON).font("Helvetica-Bold").fontSize(13).text("NDGYS 4.0", x, y + 26, { width: w, align: "center" });
     }
   } else {
-    doc.fillColor(SAFFRON).font("Helvetica-Bold").fontSize(13).text("NDGYS 4.0", x, y + 20, { width: w, align: "center" });
+    doc.fillColor(SAFFRON).font("Helvetica-Bold").fontSize(13).text("NDGYS 4.0", x, y + 26, { width: w, align: "center" });
   }
 
-  // Subtitle/venue in header
-  doc.fillColor("rgba(250,246,240,0.8)").font("Helvetica").fontSize(7).text("22–23 August 2026 · IIT Delhi", x, y + 54, { width: w, align: "center" });
+  // Subtitle/venue in header (visible off-white CREAM color, no invalid rgba opacity functions)
+  doc.fillColor(CREAM).font("Helvetica").fontSize(7.5).text("22–23 August 2026 · IIT Delhi", x, y + 68, { width: w, align: "center" });
 
   // Gold accent band below header
-  doc.rect(x, y + 80, w, 4).fill(accent);
+  doc.rect(x, y + 90, w, 4).fill(accent);
 
   // Name (auto-scale font size if name is long to prevent text layout issues)
   let nameSize = 17;
@@ -83,31 +83,34 @@ async function drawBadge(doc: PDFKit.PDFDocument, x: number, y: number, d: Badge
 
   // Details: Portfolio (MUN) vs Competition
   const isComp = d.categoryLabel === "Competition";
-  
-  if (d.portfolio) {
+  const isMun = d.categoryLabel === "Portfolio" || (!isComp && d.trackSlug && TRACK_COLOURS[d.trackSlug]);
+
+  if (isMun) {
     // Portfolio label
-    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(7).text("PORTFOLIO", x + 16, y + 130, { width: w - 32, align: "center" });
+    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(6.5).text("PORTFOLIO / ALLOCATION", x + 16, y + 128, { width: w - 32, align: "center" });
     // Portfolio value
-    doc.fillColor(accent).font("Helvetica-Bold").fontSize(12).text(d.portfolio, x + 16, y + 140, { width: w - 32, align: "center" });
+    doc.fillColor(accent).font("Helvetica-Bold").fontSize(12.5).text(d.portfolio || "PENDING ALLOCATION", x + 16, y + 138, { width: w - 32, align: "center" });
     
     // Committee label
-    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(7).text("COMMITTEE", x + 16, y + 164, { width: w - 32, align: "center" });
+    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(6.5).text("MUN COMMITTEE", x + 16, y + 162, { width: w - 32, align: "center" });
     // Committee value
-    doc.fillColor(INK).font("Helvetica-Bold").fontSize(9.5).text(d.trackName, x + 16, y + 174, { width: w - 32, align: "center" });
+    let commSize = 10;
+    if (d.trackName.length > 30) commSize = 8.5;
+    doc.fillColor(INK).font("Helvetica-Bold").fontSize(commSize).text(d.trackName, x + 16, y + 171, { width: w - 32, align: "center" });
   } else if (isComp) {
     // Competition label
-    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(7).text("COMPETITION", x + 16, y + 130, { width: w - 32, align: "center" });
+    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(6.5).text("COMPETITION", x + 16, y + 128, { width: w - 32, align: "center" });
     // Competition value
-    doc.fillColor(accent).font("Helvetica-Bold").fontSize(12).text(d.trackName, x + 16, y + 140, { width: w - 32, align: "center" });
+    doc.fillColor(accent).font("Helvetica-Bold").fontSize(12.5).text(d.trackName, x + 16, y + 138, { width: w - 32, align: "center" });
     
     // Role label
-    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(7).text("ROLE", x + 16, y + 164, { width: w - 32, align: "center" });
+    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(6.5).text("PARTICIPATION ROLE", x + 16, y + 162, { width: w - 32, align: "center" });
     // Role value
-    doc.fillColor(INK).font("Helvetica-Bold").fontSize(10).text("Participant", x + 16, y + 174, { width: w - 32, align: "center" });
+    doc.fillColor(INK).font("Helvetica-Bold").fontSize(10).text("Participant", x + 16, y + 171, { width: w - 32, align: "center" });
   } else {
     // Fallback: Event detail
-    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(7).text("EVENT GROUP", x + 16, y + 130, { width: w - 32, align: "center" });
-    doc.fillColor(accent).font("Helvetica-Bold").fontSize(11).text(d.trackName, x + 16, y + 140, { width: w - 32, align: "center" });
+    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(6.5).text("EVENT GROUP", x + 16, y + 128, { width: w - 32, align: "center" });
+    doc.fillColor(accent).font("Helvetica-Bold").fontSize(11).text(d.trackName, x + 16, y + 138, { width: w - 32, align: "center" });
   }
 
   // Affiliation / Institution / City
@@ -168,11 +171,23 @@ async function drawBadge(doc: PDFKit.PDFDocument, x: number, y: number, d: Badge
   doc.fillColor(INK).font("Courier-Bold").fontSize(10.5).text(d.delegateId, x + 16, y + 364, { width: w - 32, align: "center", characterSpacing: 1 });
   doc.fillColor(SLATE).font("Helvetica").fontSize(6.5).text("Scan at check-in desk", x + 16, y + 379, { width: w - 32, align: "center" });
 
-  // Bottom Footer band
+  // Bottom Footer band (dark brown sandwich style with thin gold accent line above)
   const footerH = 22;
   const footerY = y + BADGE_H - footerH;
-  doc.rect(x, footerY, w, footerH).fill(accent);
-  const footerText = isComp ? "COMPETITION PARTICIPANT" : "OFFICIAL MUN DELEGATE";
+  
+  // Gold accent line above footer
+  doc.rect(x, footerY - 3, w, 3).fill(accent);
+  
+  // Footer main bar
+  doc.rect(x, footerY, w, footerH).fill(DARK_BROWN);
+  
+  // Correct label based on role
+  let footerText = "PARTICIPANT";
+  if (isComp) {
+    footerText = "COMPETITION PARTICIPANT";
+  } else if (isMun) {
+    footerText = "OFFICIAL MUN DELEGATE";
+  }
   doc.fillColor("#FFFFFF").font("Helvetica-Bold").fontSize(7.5).text(footerText, x, footerY + 7, { width: w, align: "center", characterSpacing: 0.5 });
 
   // Outer border
