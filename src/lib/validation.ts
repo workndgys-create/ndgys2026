@@ -101,7 +101,7 @@ export const competitionMemberSchema = z.object({
   photoMime: z.string().optional()
 });
 
-export const competitionRegistrationSchema = z.object({
+const competitionRegistrationBase = z.object({
   competitionId: z.string().min(1, "Choose a competition"),
   participation: z.enum(["SOLO", "GROUP"]),
   teamName: z.string().trim().max(120).optional().or(z.literal("")),
@@ -126,7 +126,9 @@ export const competitionRegistrationSchema = z.object({
   photoData: z.string().optional(),
   photoMime: z.string().optional(),
   company: z.string().max(0).optional() // honeypot
-}).superRefine((v, ctx) => {
+});
+
+function refineCompetitionRegistration(v: z.infer<typeof competitionRegistrationBase>, ctx: z.RefinementCtx) {
   if (v.participation === "GROUP") {
     if (!v.teamName || !v.teamName.trim()) ctx.addIssue({ code: "custom", path: ["teamName"], message: "Team name is required for group entries" });
     if (v.members.length === 0) ctx.addIssue({ code: "custom", path: ["members"], message: "Add at least one team member" });
@@ -139,13 +141,13 @@ export const competitionRegistrationSchema = z.object({
   if ((v.howHeard === "Friend / Word of mouth" || v.howHeard === "Other") && !v.howHeardDetail?.trim()) {
     ctx.addIssue({ code: "custom", path: ["howHeardDetail"], message: "Please add a short description" });
   }
-});
+}
+
+export const competitionRegistrationSchema = competitionRegistrationBase.superRefine(refineCompetitionRegistration);
 export type CompetitionRegistrationInput = z.infer<typeof competitionRegistrationSchema>;
 
 // allow optional teamChoice for competitions (e.g., IPL Auction)
-export const competitionRegistrationSchemaWithTeam = competitionRegistrationSchema.extend({
-  teamChoice: z.string().optional().or(z.literal("") )
-});
+export const competitionRegistrationSchemaWithTeam = competitionRegistrationBase.extend({ teamChoice: z.string().optional().or(z.literal("") ) }).superRefine(refineCompetitionRegistration);
 
 export const delegationMemberSchema = z.object({
   fullName: z.string().trim().min(2, "Enter the delegate's name").max(120),
