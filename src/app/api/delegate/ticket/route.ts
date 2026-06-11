@@ -21,6 +21,7 @@ export async function GET() {
     fullName: reg.fullName,
     trackName: reg.trackName,
     qr: await qrDataUrl(reg.delegateId),
-    hasPhoto: !!photo
+    hasPhoto: !!photo,
+    isCompetition: !!(reg as any).isCompetition
   });
 }

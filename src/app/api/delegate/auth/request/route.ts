@@ -19,12 +19,13 @@ export async function POST(req: NextRequest) {
 
   // Panel access is granted only after payment.
   const paid = await prisma.registration.findFirst({ where: { email, status: "PAID" } });
-  if (paid) {
+  const compPaid = !paid ? await prisma.competitionRegistration.findFirst({ where: { email, status: "PAID" } }) : null;
+  if (paid || compPaid) {
     const token = await createDelegateSession({ email });
     const res = NextResponse.json({ ok: true, authenticated: true });
     res.cookies.set(delegateCookieName, token, delegateCookieOptions);
     return res;
   }
 
-  return NextResponse.json({ ok: false, error: "This email is not eligible for delegate login. Use the email from a successfully paid registration." }, { status: 403 });
+  return NextResponse.json({ ok: false, error: "This email is not eligible for login. Use the email from a successfully paid registration or competition entry." }, { status: 403 });
 }
