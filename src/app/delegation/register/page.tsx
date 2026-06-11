@@ -16,12 +16,12 @@ function loadCashfree(): Promise<boolean> {
   });
 }
 
-type Member = { fullName: string; email: string; phone: string; track: string; experience?: string; photoData?: string; photoMime?: string };
+type Member = { fullName: string; email: string; phone: string; track: string; age?: string; experience?: string; photoData?: string; photoMime?: string };
 
 export default function DelegationRegisterPage() {
   const [members, setMembers] = useState<Member[]>([ 
-    { fullName: "", email: "", phone: "", track: "", experience: "beginner", photoData: "", photoMime: "" },
-    { fullName: "", email: "", phone: "", track: "", experience: "beginner", photoData: "", photoMime: "" }
+    { fullName: "", email: "", phone: "", track: "", age: "", experience: "beginner", photoData: "", photoMime: "" },
+    { fullName: "", email: "", phone: "", track: "", age: "", experience: "beginner", photoData: "", photoMime: "" }
   ]);
   const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number }[]>([]);
   const [committeeSearch, setCommitteeSearch] = useState("");
@@ -40,7 +40,7 @@ export default function DelegationRegisterPage() {
   const subtotal = useMemo(() => members.reduce((s, m) => s + feeOf(m.track), 0), [members]);
   const total = Math.max(0, subtotal - discount);
 
-  function addMember() { if (members.length < 40) setMembers((m) => [...m, { fullName: "", email: "", phone: "", track: tracks[0]?.value || "", experience: "beginner", photoData: "", photoMime: "" }]); }
+  function addMember() { if (members.length < 40) setMembers((m) => [...m, { fullName: "", email: "", phone: "", track: tracks[0]?.value || "", age: "", experience: "beginner", photoData: "", photoMime: "" }]); }
   function removeMember(i: number) { if (members.length > 1) setMembers((m) => m.filter((_, idx) => idx !== i)); }
   function setM(i: number, k: keyof Member, v: string) { setMembers((m) => m.map((mm, idx) => (idx === i ? { ...mm, [k]: v } : mm))); }
 
@@ -103,6 +103,7 @@ export default function DelegationRegisterPage() {
         email: m.email.trim(),
         phone: m.phone.trim(),
         track: m.track,
+        age: m.age ? Number(m.age) : undefined,
         photoData: m.photoData,
         photoMime: m.photoMime
       }))
@@ -203,6 +204,10 @@ export default function DelegationRegisterPage() {
                     <div>
                       <label className="text-xs font-500 text-ink/80 block mb-1">Phone Number *</label>
                       <input value={m.phone} onChange={(e) => setM(i, "phone", e.target.value)} placeholder="Number" required className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-500 text-ink/80 block mb-1">Age (optional)</label>
+                      <input value={m.age || ""} onChange={(e) => setM(i, "age", e.target.value)} placeholder="Age" inputMode="numeric" className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
                     </div>
                     <div>
                       <label className="text-xs font-500 text-ink/80 block mb-1">MUN Committee *</label>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { competitionRegistrationSchema } from "@/lib/validation";
+import { competitionRegistrationSchemaWithTeam } from "@/lib/validation";
 import {
   feeForParticipation,
   validateTeam,
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const parsed = competitionRegistrationSchema.safeParse(
+  const parsed = competitionRegistrationSchemaWithTeam.safeParse(
     await req.json().catch(() => null)
   );
 
@@ -196,6 +196,8 @@ export async function POST(req: NextRequest) {
 
     guardianConsent:
       !!d.guardianConsent,
+
+    teamChoice: (d as any).teamChoice || null,
 
     amount,
 

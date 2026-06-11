@@ -17,7 +17,7 @@ export const TRACKS = [
 ] as const;
 
 export const seedTrackBySlug = (slug: string) => TRACKS.find((t) => t.slug === slug);
-export const BEGINNER_TRACK_SLUGS = new Set<string>(["unep", "aippm"]);
+export const BEGINNER_TRACK_SLUGS = new Set<string>(["unep", "aippm", "unsc"]);
 export const isBeginnerTrackSlug = (slug: string) => BEGINNER_TRACK_SLUGS.has(slug);
 
 export const GENDERS = ["male", "female", "other"] as const;
@@ -142,12 +142,18 @@ export const competitionRegistrationSchema = z.object({
 });
 export type CompetitionRegistrationInput = z.infer<typeof competitionRegistrationSchema>;
 
+// allow optional teamChoice for competitions (e.g., IPL Auction)
+export const competitionRegistrationSchemaWithTeam = competitionRegistrationSchema.extend({
+  teamChoice: z.string().optional().or(z.literal("") )
+});
+
 export const delegationMemberSchema = z.object({
   fullName: z.string().trim().min(2, "Enter the delegate's name").max(120),
   email: z.string().trim().email("Enter a valid email").optional().or(z.literal("")),
   phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
   track: z.string().min(1, "Choose a committee"),
   portfolioId: z.string().optional().or(z.literal("")),
+  age: z.coerce.number().int().min(8).max(99).optional(),
   photoData: z.string().optional(),
   photoMime: z.string().optional()
 });

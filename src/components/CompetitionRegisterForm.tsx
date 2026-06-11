@@ -65,6 +65,7 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
     "Sunrisers Hyderabad"
   ];
   const isIplAuction = slug === "ipl-auction";
+  const [teamChoice, setTeamChoice] = useState("");
 
   function addMember() { if (members.length < max) setMembers((m) => [...m, { name: "", age: "", photoData: "", photoMime: "" }]); }
   function removeMember(i: number) { if (members.length > 1) setMembers((m) => m.filter((_, idx) => idx !== i)); }
@@ -82,6 +83,8 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
     }
     if (!consent) { setMessage("Please accept the Terms and Code of Conduct to continue."); setStatus("error"); return; }
     if (isMinor && !guardianConsent) { setMessage("Parent/guardian consent is required for participants under 18."); setStatus("error"); return; }
+
+    if (isIplAuction && !teamChoice) { setMessage("Please choose an IPL team for the IPL Auction."); setStatus("error"); return; }
 
     if (!photoData || !photoMime) {
       setMessage("Please upload a passport size photo for the leader/participant.");
@@ -121,6 +124,7 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
       guardianConsent,
       photoData,
       photoMime,
+      teamChoice: isIplAuction ? teamChoice : undefined,
       company: fd.get("company") || ""
     };
 
@@ -191,6 +195,15 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
           </select>
         </div>
       </div>
+      {isIplAuction && (
+        <div>
+          <label className="text-sm font-500 text-ink/80">Choose your IPL team</label>
+          <select value={teamChoice} onChange={(e) => setTeamChoice(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
+            <option value="">-- Select team --</option>
+            {IPL_TEAMS.map((t) => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </div>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Field name="city" label="Place / City" errors={errors} />
         <Field name="emergencyContact" label="Emergency contact" errors={errors} />
