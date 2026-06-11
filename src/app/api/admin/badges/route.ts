@@ -32,19 +32,39 @@ export async function GET(req: NextRequest) {
       if (!c || c.status !== "PAID" || !c.refId) return NextResponse.json({ error: "Attendee not found or unpaid" }, { status: 404 });
       const comp = await prisma.competition.findUnique({ where: { id: c.competitionId } });
       const trackSlug = comp?.slug || c.competitionId;
-      const pdf = await generateBadgePdf({
-        delegateId: c.refId,
-        fullName: c.leaderName,
-        trackName: c.competitionTitle,
-        trackSlug,
-        portfolio: null,
-        institution: c.institution,
-        city: c.city,
-        categoryLabel: "Competition",
-        photoData: undefined,
-        photoMime: undefined
+
+      const compPhotos = await prisma.competitionPhoto.findMany({
+        where: { competitionRegistrationId: c.id }
       });
-      return new NextResponse(new Uint8Array(pdf), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="badge-${c.refId}.pdf"` } });
+      const photoByMemberIndex = new Map(compPhotos.map(p => [p.memberIndex, p]));
+
+      const members: { name: string; age?: number }[] =
+        typeof c.members === "string" ? JSON.parse(c.members) : c.members || [];
+
+      const allParticipants = [
+        { name: c.leaderName, index: 0 },
+        ...members.map((m, idx) => ({ name: m.name, index: idx + 1 }))
+      ];
+
+      const list = allParticipants.map((p) => {
+        const memberId = p.index === 0 ? c.refId : `${c.refId}-M${p.index + 1}`;
+        const photo = photoByMemberIndex.get(p.index);
+        return {
+          delegateId: memberId,
+          fullName: p.name,
+          trackName: c.competitionTitle,
+          trackSlug,
+          portfolio: null,
+          institution: c.institution,
+          city: c.city,
+          categoryLabel: "Competition",
+          photoData: photo?.data ? Buffer.from(photo.data) : undefined,
+          photoMime: photo?.mime
+        };
+      });
+
+      const pdf = await generateBadgeSheet(list);
+      return new NextResponse(new Uint8Array(pdf), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="badges-${c.refId}.pdf"` } });
     }
   }
 
@@ -122,6 +142,19 @@ export async function GET(req: NextRequest) {
       comps.map((c) => [c.id, c.slug])
     );
 
+    const compRegIds = compRegs.map((c) => c.id);
+    const compPhotos = await prisma.competitionPhoto.findMany({
+      where: { competitionRegistrationId: { in: compRegIds } }
+    });
+
+    const photoMap = new Map<string, Map<number, { mime: string; data: Buffer }>>();
+    for (const p of compPhotos) {
+      if (!photoMap.has(p.competitionRegistrationId)) {
+        photoMap.set(p.competitionRegistrationId, new Map());
+      }
+      photoMap.get(p.competitionRegistrationId)!.set(p.memberIndex, { mime: p.mime, data: Buffer.from(p.data) });
+    }
+
     for (const c of compRegs) {
       const members: { name: string; age?: number }[] =
         typeof c.members === "string"
@@ -129,6 +162,7 @@ export async function GET(req: NextRequest) {
           : c.members || [];
 
       const trackSlug = slugMap.get(c.competitionId) || c.competitionId;
+      const regPhotos = photoMap.get(c.id);
 
       // Build a flat list: leader always first, then additional members.
       // Each participant gets a unique derived ID so their QR codes differ:
@@ -144,6 +178,7 @@ export async function GET(req: NextRequest) {
         // index 0 = leader keeps the canonical refId for backward compatibility.
         // All subsequent members get a deterministic per-seat suffix.
         const memberId = index === 0 ? c.refId : `${c.refId}-M${index + 1}`;
+        const photo = regPhotos?.get(index);
 
         list.push({
           delegateId: memberId,
@@ -154,8 +189,8 @@ export async function GET(req: NextRequest) {
           institution: c.institution,
           city: c.city,
           categoryLabel: "Competition",
-          photoData: undefined,
-          photoMime: undefined
+          photoData: photo?.data,
+          photoMime: photo?.mime
         });
       });
     }

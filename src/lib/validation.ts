@@ -97,7 +97,9 @@ export const profileSchema = z.object({
 
 export const competitionMemberSchema = z.object({
   name: z.string().trim().min(2, "Member name is too short").max(120),
-  age: z.coerce.number().int().min(5).max(99).optional()
+  age: z.coerce.number().int().min(5).max(99).optional(),
+  photoData: z.string().optional(),
+  photoMime: z.string().optional()
 });
 
 export const competitionRegistrationSchema = z.object({
@@ -122,6 +124,8 @@ export const competitionRegistrationSchema = z.object({
   guardianName: z.string().trim().max(120).optional().or(z.literal("")),
   guardianPhone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
   guardianConsent: z.coerce.boolean().optional(),
+  photoData: z.string().optional(),
+  photoMime: z.string().optional(),
   company: z.string().max(0).optional() // honeypot
 }).superRefine((v, ctx) => {
   if (v.participation === "GROUP") {
@@ -144,7 +148,9 @@ export const delegationMemberSchema = z.object({
   email: z.string().trim().email("Enter a valid email").optional().or(z.literal("")),
   phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
   track: z.string().min(1, "Choose a committee"),
-  portfolioId: z.string().optional().or(z.literal(""))
+  portfolioId: z.string().optional().or(z.literal("")),
+  photoData: z.string().optional(),
+  photoMime: z.string().optional()
 });
 export const delegationSchema = z.object({
   schoolName: z.string().trim().min(2, "Enter the school / institution").max(160),
