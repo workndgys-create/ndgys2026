@@ -2,6 +2,7 @@ import { getPublicCompetitions } from "@/lib/publicData";
 import Link from "next/link";
 import SectionKicker from "./SectionKicker";
 import Reveal from "./Reveal";
+import { getFlag } from "@/lib/settings";
 
 const COMPETITION_IMAGES: Record<string, string> = {
   "stock-sense": "/STOCKSENSE.jpeg",
@@ -18,6 +19,7 @@ const COMPETITION_IMAGES: Record<string, string> = {
 
 export default async function Competitions() {
   const items = await getPublicCompetitions();
+  const showPricing = await getFlag("home.showCompetitionPricing");
   if (items.length === 0) return null;
   return (
     <section id="competitions" className="bg-paper py-24">
@@ -42,6 +44,17 @@ export default async function Competitions() {
                   <span className="text-[11px] uppercase tracking-wider text-slatey">{c.category}</span>
                   <h3 className="mt-1 font-display text-xl font-700 text-ink">{c.title}</h3>
                   <p className="mt-2 flex-1 text-sm text-ink/70">{(c.summary || "").replace(/🏆/g, "").replace(/\b(Rs\.?|₹)\s?\d[\d,]*/gi, "").replace(/trophy|certificate/gi, "").trim()}</p>
+                  {showPricing && (
+                    <p className="mt-2 text-sm font-700 text-[#92400E]">
+                      {c.feeSolo && c.feeGroup
+                        ? `Solo Rs ${Number(c.feeSolo).toLocaleString("en-IN")} / Group Rs ${Number(c.feeGroup).toLocaleString("en-IN")}`
+                        : c.feeSolo
+                          ? `Rs ${Number(c.feeSolo).toLocaleString("en-IN")}`
+                          : c.feeGroup
+                            ? `Group Rs ${Number(c.feeGroup).toLocaleString("en-IN")}`
+                            : ""}
+                    </p>
+                  )}
                   <div className="mt-4 flex items-center justify-between">
                     <span />
                     {c.registrationOpen && (c.feeSolo || c.feeGroup)

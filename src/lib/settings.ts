@@ -1,11 +1,13 @@
 import { prisma } from "./prisma";
 
 /** Runtime-editable flags, stored in the Setting table. */
-export const SETTING_KEYS = ["home.published", "allocations.live", "registration.open", "portfolio.holdMinutes", "event.start", "event.end", "event.venue", "venue.address", "venue.mapQuery", "venue.metro", "venue.airport", "venue.parking", "venue.notes", "safety.grievanceEmail", "safety.grievancePhone"] as const;
+export const SETTING_KEYS = ["home.published", "home.showTrackPricing", "home.showCompetitionPricing", "allocations.live", "registration.open", "portfolio.holdMinutes", "event.start", "event.end", "event.venue", "venue.address", "venue.mapQuery", "venue.metro", "venue.airport", "venue.parking", "venue.notes", "safety.grievanceEmail", "safety.grievancePhone"] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
 const ENV_FALLBACK: Record<SettingKey, string> = {
   "home.published": process.env.NEXT_PUBLIC_HOME_PUBLISHED ?? "true",
+  "home.showTrackPricing": process.env.NEXT_PUBLIC_SHOW_TRACK_PRICING ?? "true",
+  "home.showCompetitionPricing": process.env.NEXT_PUBLIC_SHOW_COMPETITION_PRICING ?? "true",
   "allocations.live": process.env.NEXT_PUBLIC_ALLOCATIONS_LIVE ?? "false",
   "registration.open": process.env.NEXT_PUBLIC_REGISTRATION_OPEN ?? "true",
   "portfolio.holdMinutes": process.env.PORTFOLIO_HOLD_MINUTES ?? "10",
