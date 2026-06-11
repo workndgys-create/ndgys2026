@@ -125,10 +125,10 @@ async function drawBadge(doc: PDFKit.PDFDocument, x: number, y: number, d: Badge
   const qrAreaH = 140;
 
   if (qr && d.photoData) {
-    const imgWidth = 72;
-    const imgHeight = 84;
-    const qrSize = 72;
-    const gap = 16;
+    const imgWidth = 82;
+    const imgHeight = 96;
+    const qrSize = 82;
+    const gap = 14;
     const totalW = imgWidth + qrSize + gap;
     const startX = x + (w - totalW) / 2;
 
@@ -147,7 +147,7 @@ async function drawBadge(doc: PDFKit.PDFDocument, x: number, y: number, d: Badge
     } catch (err) {
       console.error("Failed to render photo on PDF badge:", err);
       // Fallback: draw centered QR
-      const fallqr = 96;
+      const fallqr = 108;
       doc.roundedRect(x + (w - fallqr) / 2 - 4, qrAreaY + (qrAreaH - fallqr) / 2 - 4, fallqr + 8, fallqr + 8, 6).fill("#FFFFFF");
       doc.roundedRect(x + (w - fallqr) / 2 - 4, qrAreaY + (qrAreaH - fallqr) / 2 - 4, fallqr + 8, fallqr + 8, 6).lineWidth(1).strokeColor("#E5DCCF").stroke();
       doc.image(qr, x + (w - fallqr) / 2, qrAreaY + (qrAreaH - fallqr) / 2, { width: fallqr });
@@ -160,7 +160,7 @@ async function drawBadge(doc: PDFKit.PDFDocument, x: number, y: number, d: Badge
 
   } else if (qr) {
     // Centered QR
-    const qrSize = 96;
+    const qrSize = 108;
     const qrYOffset = qrAreaY + (qrAreaH - qrSize) / 2;
     doc.roundedRect(x + (w - qrSize) / 2 - 4, qrYOffset - 4, qrSize + 8, qrSize + 8, 6).fill("#FFFFFF");
     doc.roundedRect(x + (w - qrSize) / 2 - 4, qrYOffset - 4, qrSize + 8, qrSize + 8, 6).lineWidth(1).strokeColor("#E5DCCF").stroke();
