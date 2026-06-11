@@ -10,10 +10,14 @@ export async function GET() {
   if (!reg) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!reg.delegateId) return NextResponse.json({ error: "Ticket available after payment" }, { status: 409 });
 
-  const photo = await prisma.registrationPhoto.findUnique({
-    where: { registrationId: reg.id },
-    select: { id: true }
-  });
+  const photo =
+  (reg as any).isCompetition
+    ? null
+    : await 
+  prisma.registrationPhoto.findUnique({
+        where: { registrationId: reg.id },
+        select: { id: true }
+      });
 
   return NextResponse.json({
     id: reg.id,
