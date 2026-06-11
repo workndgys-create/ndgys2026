@@ -1,11 +1,13 @@
 import PDFDocument from "pdfkit";
 import { qrPngBuffer } from "./qr";
+import path from "path";
+import fs from "fs";
 
-const DARK_BROWN = "#3B1A0A";
-const SAFFRON    = "#D97706";
-const INK        = "#2C0F04";
-const SLATE      = "#8B6914";
-const CREAM      = "#FFE8C8";
+const DARK_BROWN = "#25140F"; // premium deep espresso
+const SAFFRON    = "#D97706"; // warm saffron
+const INK        = "#1F0A02"; // dark chocolate text
+const SLATE      = "#735F57"; // warm charcoal for labels
+const CREAM      = "#FAF6F0"; // premium soft paper off-white
 
 // Committee accent colours for the badge band — palette mapped to canonical committees.
 const TRACK_COLOURS: Record<string, string> = {
@@ -48,75 +50,134 @@ async function drawBadge(doc: PDFKit.PDFDocument, x: number, y: number, d: Badge
   doc.save();
   doc.roundedRect(x, y, BADGE_W, BADGE_H, 10).fill(CREAM);
 
-  // Header
-  doc.rect(x, y, w, 70).fill(DARK_BROWN);
-  doc.fillColor(SAFFRON).font("Helvetica-Bold").fontSize(12).text("NEW DELHI GLOBAL", x, y + 16, { width: w, align: "center" });
-  doc.fillColor(CREAM).fontSize(12).text("YOUTH SUMMIT 4.0", x, y + 32, { width: w, align: "center" });
-  doc.fillColor("rgba(255,232,200,0.7)").font("Helvetica").fontSize(8).text("22–23 August 2026 · IIT Delhi", x, y + 50, { width: w, align: "center" });
+  // Logo & Header image
+  const logoPath = path.join(process.cwd(), "public", "NDGYS26.png");
+  const logoExists = fs.existsSync(logoPath);
 
-  // Accent band
-  doc.rect(x, y + 70, w, 8).fill(accent);
+  // Header background block
+  doc.rect(x, y, w, 80).fill(DARK_BROWN);
 
-  // Name
-  doc.fillColor(INK).font("Helvetica-Bold").fontSize(19).text(d.fullName, x + 16, y + 92, { width: w - 32, align: "center" });
-
-  // Portfolio / role
-  const category = d.categoryLabel || "Assignment";
-  if (d.portfolio) {
-    doc.fillColor(SLATE).font("Helvetica").fontSize(8).text(category.toUpperCase(), x + 16, y + 122, { width: w - 32, align: "center" });
-    doc.fillColor(accent).font("Helvetica-Bold").fontSize(13).text(d.portfolio, x + 16, y + 132, { width: w - 32, align: "center" });
+  // Logo in header
+  if (logoExists) {
+    try {
+      doc.image(logoPath, x + (w - 120) / 2, y + 14, { width: 120, height: 35, fit: [120, 35] });
+    } catch (e) {
+      doc.fillColor(SAFFRON).font("Helvetica-Bold").fontSize(13).text("NDGYS 4.0", x, y + 20, { width: w, align: "center" });
+    }
+  } else {
+    doc.fillColor(SAFFRON).font("Helvetica-Bold").fontSize(13).text("NDGYS 4.0", x, y + 20, { width: w, align: "center" });
   }
 
-  // Event/track info
-  doc.fillColor(SLATE).font("Helvetica").fontSize(8).text("EVENT", x + 16, d.portfolio ? y + 150 : y + 126, { width: w - 32, align: "center" });
-  doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(10).text(d.trackName, x + 16, d.portfolio ? y + 160 : y + 136, { width: w - 32, align: "center" });
+  // Subtitle/venue in header
+  doc.fillColor("rgba(250,246,240,0.8)").font("Helvetica").fontSize(7).text("22–23 August 2026 · IIT Delhi", x, y + 54, { width: w, align: "center" });
 
-  // Affiliation block
+  // Gold accent band below header
+  doc.rect(x, y + 80, w, 4).fill(accent);
+
+  // Name (auto-scale font size if name is long to prevent text layout issues)
+  let nameSize = 17;
+  if (d.fullName.length > 25) nameSize = 12;
+  else if (d.fullName.length > 18) nameSize = 14;
+
+  doc.fillColor(INK).font("Helvetica-Bold").fontSize(nameSize).text(d.fullName, x + 16, y + 102, { width: w - 32, align: "center" });
+
+  // Details: Portfolio (MUN) vs Competition
+  const isComp = d.categoryLabel === "Competition";
+  
+  if (d.portfolio) {
+    // Portfolio label
+    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(7).text("PORTFOLIO", x + 16, y + 130, { width: w - 32, align: "center" });
+    // Portfolio value
+    doc.fillColor(accent).font("Helvetica-Bold").fontSize(12).text(d.portfolio, x + 16, y + 140, { width: w - 32, align: "center" });
+    
+    // Committee label
+    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(7).text("COMMITTEE", x + 16, y + 164, { width: w - 32, align: "center" });
+    // Committee value
+    doc.fillColor(INK).font("Helvetica-Bold").fontSize(9.5).text(d.trackName, x + 16, y + 174, { width: w - 32, align: "center" });
+  } else if (isComp) {
+    // Competition label
+    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(7).text("COMPETITION", x + 16, y + 130, { width: w - 32, align: "center" });
+    // Competition value
+    doc.fillColor(accent).font("Helvetica-Bold").fontSize(12).text(d.trackName, x + 16, y + 140, { width: w - 32, align: "center" });
+    
+    // Role label
+    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(7).text("ROLE", x + 16, y + 164, { width: w - 32, align: "center" });
+    // Role value
+    doc.fillColor(INK).font("Helvetica-Bold").fontSize(10).text("Participant", x + 16, y + 174, { width: w - 32, align: "center" });
+  } else {
+    // Fallback: Event detail
+    doc.fillColor(SLATE).font("Helvetica-Bold").fontSize(7).text("EVENT GROUP", x + 16, y + 130, { width: w - 32, align: "center" });
+    doc.fillColor(accent).font("Helvetica-Bold").fontSize(11).text(d.trackName, x + 16, y + 140, { width: w - 32, align: "center" });
+  }
+
+  // Affiliation / Institution / City
   const affiliation = [d.institution, d.city].filter(Boolean).join(" · ");
   if (affiliation) {
-    doc.fillColor(SLATE).font("Helvetica").fontSize(8).text(affiliation, x + 16, y + 175, { width: w - 32, align: "center" });
+    doc.fillColor(SLATE).font("Helvetica").fontSize(7.5).text(affiliation, x + 16, y + 196, { width: w - 32, align: "center" });
   }
 
-  // QR & Photo
+  // QR and Photo block area (between y + 215 and y + 355)
   const qr = await qrPngBuffer(d.delegateId).catch(() => null);
-  const qrY = affiliation ? y + 190 : y + 182;
+  const qrAreaY = y + 215;
+  const qrAreaH = 140;
 
   if (qr && d.photoData) {
-    const imgWidth = 84;
-    const imgHeight = 98; // portrait ratio
-    const qrSize = 84;
+    const imgWidth = 72;
+    const imgHeight = 84;
+    const qrSize = 72;
     const gap = 16;
     const totalW = imgWidth + qrSize + gap;
     const startX = x + (w - totalW) / 2;
 
-    // Draw Photo on the left
+    const photoY = qrAreaY + (qrAreaH - imgHeight) / 2;
+    const qrYOffset = qrAreaY + (qrAreaH - qrSize) / 2;
+
+    // Photo Box & Image
     try {
-      doc.image(d.photoData, startX, qrY, { width: imgWidth, height: imgHeight, fit: [imgWidth, imgHeight] });
-      // Draw sub-border around photo
-      doc.rect(startX, qrY, imgWidth, imgHeight).lineWidth(0.5).strokeColor("#D97706").stroke();
+      // Draw background frame
+      doc.rect(startX - 2, photoY - 2, imgWidth + 4, imgHeight + 4).fill("#EFE9DF");
+      doc.save();
+      doc.roundedRect(startX, photoY, imgWidth, imgHeight, 4).clip();
+      doc.image(d.photoData, startX, photoY, { width: imgWidth, height: imgHeight, fit: [imgWidth, imgHeight] });
+      doc.restore();
+      doc.roundedRect(startX, photoY, imgWidth, imgHeight, 4).lineWidth(1).strokeColor(accent).stroke();
     } catch (err) {
       console.error("Failed to render photo on PDF badge:", err);
-      // Fallback: draw QR centered if photo rendering fails
-      doc.image(qr, x + (w - 120) / 2, qrY, { width: 120 });
+      // Fallback: draw centered QR
+      const fallqr = 96;
+      doc.roundedRect(x + (w - fallqr) / 2 - 4, qrAreaY + (qrAreaH - fallqr) / 2 - 4, fallqr + 8, fallqr + 8, 6).fill("#FFFFFF");
+      doc.roundedRect(x + (w - fallqr) / 2 - 4, qrAreaY + (qrAreaH - fallqr) / 2 - 4, fallqr + 8, fallqr + 8, 6).lineWidth(1).strokeColor("#E5DCCF").stroke();
+      doc.image(qr, x + (w - fallqr) / 2, qrAreaY + (qrAreaH - fallqr) / 2, { width: fallqr });
     }
 
-    // Draw QR on the right (aligned vertically with photo center)
-    const qrYOffset = qrY + (imgHeight - qrSize) / 2;
+    // QR Box & Image
+    doc.roundedRect(startX + imgWidth + gap - 4, qrYOffset - 4, qrSize + 8, qrSize + 8, 6).fill("#FFFFFF");
+    doc.roundedRect(startX + imgWidth + gap - 4, qrYOffset - 4, qrSize + 8, qrSize + 8, 6).lineWidth(1).strokeColor("#E5DCCF").stroke();
     doc.image(qr, startX + imgWidth + gap, qrYOffset, { width: qrSize });
-  } else {
-    // Standard Centered QR
-    const qrSize = 120;
-    if (qr) {
-      doc.image(qr, x + (w - qrSize) / 2, qrY, { width: qrSize });
-    }
+
+  } else if (qr) {
+    // Centered QR
+    const qrSize = 96;
+    const qrYOffset = qrAreaY + (qrAreaH - qrSize) / 2;
+    doc.roundedRect(x + (w - qrSize) / 2 - 4, qrYOffset - 4, qrSize + 8, qrSize + 8, 6).fill("#FFFFFF");
+    doc.roundedRect(x + (w - qrSize) / 2 - 4, qrYOffset - 4, qrSize + 8, qrSize + 8, 6).lineWidth(1).strokeColor("#E5DCCF").stroke();
+    doc.image(qr, x + (w - qrSize) / 2, qrYOffset, { width: qrSize });
   }
 
-  // Delegate id
-  doc.fillColor(INK).font("Courier-Bold").fontSize(12).text(d.delegateId, x + 16, y + 320, { width: w - 32, align: "center" });
-  doc.fillColor(SLATE).font("Helvetica").fontSize(7).text("Scan at check-in · PARTICIPANT", x + 16, y + 338, { width: w - 32, align: "center" });
+  // Delegate ID
+  doc.fillColor(INK).font("Courier-Bold").fontSize(10.5).text(d.delegateId, x + 16, y + 364, { width: w - 32, align: "center", characterSpacing: 1 });
+  doc.fillColor(SLATE).font("Helvetica").fontSize(6.5).text("Scan at check-in desk", x + 16, y + 379, { width: w - 32, align: "center" });
 
-  // Border
-  doc.roundedRect(x, y, BADGE_W, BADGE_H, 10).lineWidth(1).strokeColor("#D97706").stroke();
+  // Bottom Footer band
+  const footerH = 22;
+  const footerY = y + BADGE_H - footerH;
+  doc.rect(x, footerY, w, footerH).fill(accent);
+  const footerText = isComp ? "COMPETITION PARTICIPANT" : "OFFICIAL MUN DELEGATE";
+  doc.fillColor("#FFFFFF").font("Helvetica-Bold").fontSize(7.5).text(footerText, x, footerY + 7, { width: w, align: "center", characterSpacing: 0.5 });
+
+  // Outer border
+  doc.roundedRect(x, y, BADGE_W, BADGE_H, 10).lineWidth(1).strokeColor(accent).stroke();
+  
   doc.restore();
 }
 
