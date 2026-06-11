@@ -1,8 +1,0 @@
-import Image from "next/image";
-
-<Image
-  src="\IMG_7820.JPG.jpeg"
-  alt="Logo"
-  width={120}
-  height={120}
-/>
