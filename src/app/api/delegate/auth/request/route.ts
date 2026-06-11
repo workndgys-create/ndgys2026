@@ -6,32 +6,46 @@ import { z } from "zod";
 
 export const runtime = "nodejs";
 const schema = z.object({ email: z.string().trim().email() });
-
 export async function POST(req: NextRequest) {
-  const ip = clientIp(req.headers);
-const parsed = schema.safeParse(await req.json().catch(() => null));
+  try {
+    const parsed = schema.safeParse(await req.json().catch(() => null));
 
-if (!parsed.success) {
-  return NextResponse.json({
-    debug: "validation failed"
-  });
-}
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid email" },
+        { status: 422 }
+      );
+    }
 
-const email = parsed.data.email.toLowerCase();
+    const email = parsed.data.email.toLowerCase();
 
-const paid = await prisma.registration.findFirst({
-  where: { email, status: "PAID" }
-});
+    const paid = await prisma.registration.findFirst({
+      where: {
+        email,
+        status: "PAID"
+      }
+    });
 
-const compPaid = !paid
-  ? await prisma.competitionRegistration.findFirst({
-      where: { email, status: "PAID" }
-    })
-  : null;
+    const compPaid = await prisma.competitionRegistration.findFirst({
+      where: {
+        email,
+        status: "PAID"
+      }
+    });
 
-return NextResponse.json({
-  email,
-  paid: !!paid,
-  compPaid: !!compPaid
-});
+    return NextResponse.json({
+      email,
+      munFound: !!paid,
+      compFound: !!compPaid,
+      compData: compPaid,
+    });
+  } catch (e: any) {
+    return NextResponse.json(
+      {
+        error: e.message,
+        stack: String(e.stack),
+      },
+      { status: 500 }
+    );
+  }
 }
