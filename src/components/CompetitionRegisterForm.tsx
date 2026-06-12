@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { feeForParticipation, validateTeam } from "@/lib/competitionRules";
 
@@ -66,14 +66,14 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
   ];
   const [IPL_TEAMS, setIplTeams] = useState<string[]>(IPL_TEAMS_STATIC);
 
+  const isIplAuction = slug === "ipl-auction";
   // Load teams dynamically from the API so admin can update them
-  useState(() => {
+  useEffect(() => {
     if (!isIplAuction) return;
     fetch('/api/ipl/teams').then((r) => r.json()).then((d) => {
       if (d && Array.isArray(d.teams) && d.teams.length > 0) setIplTeams(d.teams);
     }).catch(() => {});
-  });
-  const isIplAuction = slug === "ipl-auction";
+  }, [isIplAuction]);
   const [teamChoice, setTeamChoice] = useState("");
 
   function addMember() { if (members.length < max) setMembers((m) => [...m, { name: "", age: "", photoData: "", photoMime: "" }]); }
