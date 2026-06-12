@@ -198,8 +198,8 @@ export default function DelegationRegisterPage() {
                       <input value={m.fullName} onChange={(e) => setM(i, "fullName", e.target.value)} placeholder="Full Name" required className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
                     </div>
                     <div>
-                      <label className="text-xs font-500 text-ink/80 block mb-1">Email (optional)</label>
-                      <input value={m.email} onChange={(e) => setM(i, "email", e.target.value)} placeholder="Email" type="email" className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                      <label className="text-xs font-500 text-ink/80 block mb-1">Email *</label>
+                      <input value={m.email} onChange={(e) => setM(i, "email", e.target.value)} placeholder="Email" type="email" required className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
                     </div>
                     <div>
                       <label className="text-xs font-500 text-ink/80 block mb-1">Phone Number *</label>

@@ -151,7 +151,7 @@ export const competitionRegistrationSchemaWithTeam = competitionRegistrationBase
 
 export const delegationMemberSchema = z.object({
   fullName: z.string().trim().min(2, "Enter the delegate's name").max(120),
-  email: z.string().trim().email("Enter a valid email").optional().or(z.literal("")),
+  email: z.string().trim().email("Enter a valid email"),
   phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
   track: z.string().min(1, "Choose a committee"),
   portfolioId: z.string().optional().or(z.literal("")),
