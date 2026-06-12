@@ -11,7 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default async function CommitteesPage() {
-  const tracks = await getPublicTracks();
+  const tracksRaw = await getPublicTracks();
+  // Defensive: filter out any 'ipl' track (IPL is a competition, not a committee)
+  const tracks = tracksRaw.filter((t) => (t.slug ?? "") !== "ipl");
   return (
     <>
       <Navbar />

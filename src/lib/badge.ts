@@ -21,7 +21,6 @@ const TRACK_COLOURS: Record<string, string> = {
   "aippm":      "#FF8A00", // orange
   "lok-sabha":  "#92400E", // copper
   "war-cabinet":"#9C2B2B", // deep red
-  "ipl":        "#F472B6"  // pink (sports)
 };
 
 export interface BadgeData {

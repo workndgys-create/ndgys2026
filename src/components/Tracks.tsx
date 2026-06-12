@@ -19,7 +19,9 @@ const TRACK_IMAGES: Record<string, string> = {
 };
 
 export default async function Tracks() {
-  const tracks = await getPublicTracks();
+  const tracksRaw = await getPublicTracks();
+  // Defensive: ensure 'ipl' (a competition) is not treated as a committee track in this UI
+  const tracks = tracksRaw.filter((t) => (t.slug ?? "") !== "ipl");
   const showPricing = await getFlag("home.showTrackPricing");
   return (
     <section id="tracks" className="bg-cream grain py-24">
