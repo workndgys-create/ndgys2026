@@ -5,12 +5,11 @@ const stats = [
   { value: 2, suffix: "", label: "Days of Summit" },
   { value: 20, suffix: "+", label: "Competitions" },
   { value: 20, suffix: "+", label: "Speakers & Mentors" },
-<<<<<<< HEAD
   { value: 5000, suffix: "+", label: "Expected Delegates" },
   { value: 4, suffix: ".0", label: "Edition" }
-=======
+
   { value: 5000, suffix: "+", label: "Expected Attendees" }
->>>>>>> 25fa2aead5057d1754510c277ca82f8e4faadddc
+
 ];
 
 function useCountUp(target: number, run: boolean, ms = 1400) {
