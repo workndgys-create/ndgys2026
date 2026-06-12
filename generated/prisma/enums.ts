@@ -45,7 +45,10 @@ export type RegSource = (typeof RegSource)[keyof typeof RegSource]
 export const AnnouncementAudience = {
   ALL: 'ALL',
   PAID: 'PAID',
-  TRACK: 'TRACK'
+  MUN_ALL: 'MUN_ALL',
+  TRACK: 'TRACK',
+  COMPETITION_ALL: 'COMPETITION_ALL',
+  COMPETITION: 'COMPETITION'
 } as const
 
 export type AnnouncementAudience = (typeof AnnouncementAudience)[keyof typeof AnnouncementAudience]

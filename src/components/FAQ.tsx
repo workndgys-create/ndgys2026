@@ -10,7 +10,8 @@ const faqs = [
   { cat: "Registration", q: "How do I register and pay?", a: "Click Register, choose your track, fill in your details and pay securely online. You'll receive an instant email confirmation once payment succeeds." },
   { cat: "Tracks", q: "How many tracks are offered?", a: "Eight tracks spanning policy, climate, technology, entrepreneurship, human rights, press, leadership and a continuous crisis committee." },
   { cat: "Tracks", q: "Can I change my track later?", a: "Yes — email the team before allotments are finalised and we'll do our best to accommodate the switch." },
-  { cat: "General", q: "Is there a fee?", a: "Standard tracks are ₹2,500; flagship and crisis tracks are higher. The fee is shown on each track card before payment." }
+  { cat: "General", q: "Is there a fee?", a: "Standard tracks are ₹2,500; flagship and crisis tracks are higher. The fee is shown on each track card before payment." },
+  { cat: "General", q: "Is this an educational event, and will certificates be provided?", a: "Yes. This is an educational summit focused on learning, leadership and diplomacy. Participation certificates will be provided to attendees by the organising venue." }
 ];
 
 export default function FAQ() {

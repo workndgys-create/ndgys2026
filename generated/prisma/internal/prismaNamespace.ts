@@ -2642,6 +2642,7 @@ export const AnnouncementScalarFieldEnum = {
   body: 'body',
   audience: 'audience',
   trackSlug: 'trackSlug',
+  competitionId: 'competitionId',
   publishedAt: 'publishedAt'
 } as const
 
