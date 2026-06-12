@@ -17,10 +17,10 @@ function normaliseCompetitionScan(raw: string): string {
       );
     }
   } catch {
-    // Not a URL, continue
+    // Not a URL
   }
 
-  // Handle plain verify URLs without URL parsing
+  // Handle plain verify URLs
   if (refId.includes("/verify/")) {
     refId = decodeURIComponent(
       refId.split("/verify/").pop() || ""
@@ -41,6 +41,31 @@ function normaliseCompetitionScan(raw: string): string {
   }
 
   return refId;
+}
+
+export async function GET(req: NextRequest) {
+  const q = normaliseCompetitionScan(
+    req.nextUrl.searchParams.get("q") || ""
+  );
+
+  if (!q) {
+    return NextResponse.json({
+      results: [],
+    });
+  }
+
+  const participant =
+    await prisma.competitionRegistration.findFirst({
+      where: {
+        refId: q,
+        status: "PAID",
+      },
+    });
+
+  return NextResponse.json({
+    results: participant ? [participant] : [],
+    participant,
+  });
 }
 
 export async function POST(req: NextRequest) {
@@ -80,8 +105,7 @@ export async function POST(req: NextRequest) {
   if (!participant) {
     return NextResponse.json(
       {
-        error:
-          "No paid competition participant found.",
+        error: "No paid competition participant found.",
       },
       { status: 404 }
     );
