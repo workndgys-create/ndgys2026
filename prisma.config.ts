@@ -5,7 +5,7 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   datasource: {
     url: env("DATABASE_URL"),      // pooled — used at runtime
-    directUrl: env("DIRECT_URL"),  // direct — used for migrations
+     // direct — used for migrations
   },
   migrations: {
     path: "prisma/migrations",
