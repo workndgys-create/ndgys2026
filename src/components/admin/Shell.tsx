@@ -19,6 +19,8 @@ const GROUPS: NavGroup[] = [
     { href: "/admin/checkin", label: "Check-in", icon: "✓", perm: "checkin.manage" },
     { href: "/admin/badges", label: "Badges", icon: "▦", perm: "badges.read" },
     { href: "/admin/competition-entries", label: "Competition Entries", icon: "▣", perm: "registrations.read" },
+    { href: "/admin/competition-checkin", label: "Competition Check-in", icon: "✓", perm: "checkin.manage" },
+    { href: "/admin/competition-checkin/scanner", label: "Competition Scanner", icon: "📷", perm: "checkin.scan" },
     { href: "/admin/delegations", label: "Delegations", icon: "▤", perm: "registrations.read" },
     { href: "/admin/messages", label: "Messages", icon: "✉", perm: "messages.read" }
   ]},

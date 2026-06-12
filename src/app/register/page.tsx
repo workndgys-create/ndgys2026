@@ -56,11 +56,8 @@ function RegisterInner() {
   const [age, setAge] = useState<string>("");
   const [consent, setConsent] = useState(false);
   const [guardianConsent, setGuardianConsent] = useState(false);
-  const [age2, setAge2] = useState<string>("");
-  const [guardianConsent2, setGuardianConsent2] = useState(false);
   const isBeginnerTrack = BEGINNER_TRACKS.has(track);
   const isMinor = age !== "" && Number(age) > 0 && Number(age) < 18;
-  const isMinor2 = age2 !== "" && Number(age2) > 0 && Number(age2) < 18;
   const [questions, setQuestions] = useState<CustomQ[]>([]);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -104,29 +101,13 @@ function RegisterInner() {
   const handlePhotoChange2 = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhotoError2("");
     const file = e.target.files?.[0];
-    if (!file) {
-      setPhotoData2("");
-      setPhotoMime2("");
-      return;
-    }
+    if (!file) { setPhotoData2(""); setPhotoMime2(""); return; }
     if (file.type !== "image/jpeg" && file.type !== "image/png" && file.type !== "image/jpg") {
-      setPhotoError2("Only JPEG and PNG formats are supported.");
-      setPhotoData2("");
-      setPhotoMime2("");
-      return;
+      setPhotoError2("Only JPEG and PNG formats are supported."); setPhotoData2(""); setPhotoMime2(""); return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      setPhotoError2("Photo must be smaller than 2MB.");
-      setPhotoData2("");
-      setPhotoMime2("");
-      return;
-    }
+    if (file.size > 2 * 1024 * 1024) { setPhotoError2("Photo must be smaller than 2MB."); setPhotoData2(""); setPhotoMime2(""); return; }
     const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64 = (reader.result as string).split(",")[1];
-      setPhotoData2(base64);
-      setPhotoMime2(file.type);
-    };
+    reader.onloadend = () => { const base64 = (reader.result as string).split(",")[1]; setPhotoData2(base64); setPhotoMime2(file.type); };
     reader.readAsDataURL(file);
   };
 
@@ -287,11 +268,6 @@ function RegisterInner() {
       setStatus("error");
       return;
     }
-    if (track === "unsc" && !photoData2) {
-      setMessage("Please upload a passport size photo for Delegate 2.");
-      setStatus("error");
-      return;
-    }
     setStatus("processing");
     const fd = new FormData(e.currentTarget);
     const payload: Record<string, unknown> = Object.fromEntries(fd.entries());
@@ -304,20 +280,32 @@ function RegisterInner() {
     if (promo.trim()) payload.promoCode = promo.trim();
     payload.photoData = photoData;
     payload.photoMime = photoMime;
+    // If UNSC double-delegation fields present, include them as a nested object
     if (track === "unsc") {
-      payload.delegate2FullName = String(fd.get("delegate2FullName") || "");
-      payload.delegate2Email = String(fd.get("delegate2Email") || "");
-      payload.delegate2Phone = String(fd.get("delegate2Phone") || "");
-      payload.delegate2Institution = String(fd.get("delegate2Institution") || "");
-      payload.delegate2Age = Number(fd.get("delegate2Age") || 0) || undefined;
-      payload.delegate2Gender = String(fd.get("delegate2Gender") || "");
-      payload.delegate2City = String(fd.get("delegate2City") || "");
-      payload.delegate2EmergencyContact = String(fd.get("delegate2EmergencyContact") || "");
-      payload.photoData2 = photoData2;
-      payload.photoMime2 = photoMime2;
-      payload.guardianConsent2 = guardianConsent2 ? "true" : "";
-      payload.guardianName2 = String(fd.get("guardianName2") || "");
-      payload.guardianPhone2 = String(fd.get("guardianPhone2") || "");
+      const d2Full = (payload as any)["delegate2FullName"] as string | undefined;
+      if (d2Full && d2Full.trim()) {
+        (payload as any).delegate2 = {
+          fullName: d2Full,
+          email: (payload as any)["delegate2Email"] || "",
+          phone: (payload as any)["delegate2Phone"] || "",
+          institution: (payload as any)["delegate2Institution"] || "",
+          age: (payload as any)["delegate2Age"] ? Number((payload as any)["delegate2Age"]) : undefined,
+          gender: (payload as any)["delegate2Gender"] || undefined,
+          city: (payload as any)["delegate2City"] || "",
+          emergencyContact: (payload as any)["delegate2EmergencyContact"] || "",
+          photoData: photoData2 || undefined,
+          photoMime: photoMime2 || undefined
+        };
+        // remove flat keys
+        delete (payload as any)["delegate2FullName"];
+        delete (payload as any)["delegate2Email"];
+        delete (payload as any)["delegate2Phone"];
+        delete (payload as any)["delegate2Institution"];
+        delete (payload as any)["delegate2Age"];
+        delete (payload as any)["delegate2Gender"];
+        delete (payload as any)["delegate2City"];
+        delete (payload as any)["delegate2EmergencyContact"];
+      }
     }
     setForm(payload as Record<string, string>);
 
@@ -436,55 +424,48 @@ function RegisterInner() {
           <Field name="city" label="Place / City" errors={errors} />
           <Field name="emergencyContact" label="Emergency contact number" errors={errors} />
           {track === "unsc" && (
-            <div className="space-y-4 rounded-lg border border-ink/10 bg-cream/60 p-4">
-              <h2 className="text-sm font-600 text-ink">Delegate 2 Details</h2>
-              <div className="grid grid-cols-1 gap-3">
-                <Field name="delegate2FullName" label="Full Name" errors={errors} />
-                <Field name="delegate2Email" type="email" label="Email" errors={errors} />
+            <div className="space-y-3 rounded-xl border border-ink/10 bg-paper p-4">
+              <h3 className="text-ink font-600">Delegate 2 Details</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-500 text-ink/80">Full Name</label>
+                  <input name="delegate2FullName" type="text" required className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+                </div>
+                <div>
+                  <label className="text-sm font-500 text-ink/80">Email</label>
+                  <input name="delegate2Email" type="email" required className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 <Field name="delegate2Phone" label="Phone Number" errors={errors} />
                 <Field name="delegate2Institution" label="School / College" errors={errors} />
+              </div>
+              <div>
+                <label className="text-sm font-500 text-ink/80">Passport Size Photo (JPEG/PNG, Max 2MB) <span className="text-red-500">*</span></label>
+                <input
+                  type="file"
+                  accept="image/jpeg, image/png"
+                  required
+                  onChange={handlePhotoChange2}
+                  className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gold file:text-midnight hover:file:bg-goldlite"
+                />
+                {photoError2 && <p className="mt-1 text-xs text-red-600">{photoError2}</p>}
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm font-500 text-ink/80">Passport Size Photo (JPEG/PNG, Max 2MB) <span className="text-red-500">*</span></label>
-                  <input
-                    type="file"
-                    accept="image/jpeg, image/png"
-                    required
-                    onChange={handlePhotoChange2}
-                    className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gold file:text-midnight hover:file:bg-goldlite"
-                    name="delegate2Photo"
-                  />
-                  {photoError2 && <p className="mt-1 text-xs text-red-600">{photoError2}</p>}
+                  <label className="text-sm font-500 text-ink/80">Age</label>
+                  <input name="delegate2Age" type="number" min={8} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-sm font-500 text-ink/80">Age</label>
-                    <input name="delegate2Age" type="number" value={age2} onChange={(e) => setAge2(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
-                    {errors.delegate2Age && <p className="mt-1 text-xs text-red-600">{errors.delegate2Age[0]}</p>}
-                  </div>
-                  <div>
-                    <label className="text-sm font-500 text-ink/80">Gender</label>
-                    <select name="delegate2Gender" className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
-                      <option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
-                    </select>
-                  </div>
+                <div>
+                  <label className="text-sm font-500 text-ink/80">Gender</label>
+                  <select name="delegate2Gender" className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
+                    <option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
+                  </select>
                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 <Field name="delegate2City" label="Place / City" errors={errors} />
                 <Field name="delegate2EmergencyContact" label="Emergency contact number" errors={errors} />
-
-                {isMinor2 && (
-                  <div className="space-y-3 rounded-xl border border-[#D97706]/40 bg-[#D97706]/10 p-4">
-                    <p className="text-sm font-600 text-amber-900">Delegate 2 is under 18 — a parent/guardian must consent.</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      <Field name="guardianName2" label="Parent / guardian name" errors={errors} />
-                      <Field name="guardianPhone2" label="Guardian contact number" errors={errors} />
-                    </div>
-                    <label className="flex items-start gap-2 text-sm text-amber-900">
-                      <input type="checkbox" checked={guardianConsent2} onChange={(e) => setGuardianConsent2(e.target.checked)} className="mt-0.5 accent-gold" />
-                      <span>I am the parent/guardian and I consent to this delegate's participation.</span>
-                    </label>
-                    {errors.guardianConsent2 && <p className="text-xs text-red-600">{errors.guardianConsent2[0]}</p>}
-                  </div>
-                )}
               </div>
             </div>
           )}
@@ -676,7 +657,7 @@ function Field({ name, label, type = "text", errors, required = false }: { name:
   );
 }
 function Centered({ children }: { children: React.ReactNode }) {
-  return <main className="flex min-h-screen items-center justify-center bg-cream grain px-5 py-16 pt-36">{children}</main>;
+  return <main className="flex min-h-screen items-center justify-center bg-cream grain px-5 py-16">{children}</main>;
 }
 
 export default function RegisterPage() {

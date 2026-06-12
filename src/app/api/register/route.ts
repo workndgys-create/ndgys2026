@@ -79,40 +79,21 @@ export async function POST(req: NextRequest) {
     amount = promo.final; appliedCode = promo.code ?? null;
   }
 
-  // Create the PENDING registration first (so the hold can reference it)
-  // If delegate2 details were provided (UNSC double delegation), include them inside customAnswers
-  const answersToStore = Array.isArray(answers) ? [...answers] : [];
-  if (body?.delegate2FullName) {
-    try {
-      const d2 = {
-        fullName: body.delegate2FullName,
-        email: body.delegate2Email,
-        phone: body.delegate2Phone,
-        institution: body.delegate2Institution,
-        age: body.delegate2Age ?? null,
-        city: body.delegate2City ?? null,
-        gender: body.delegate2Gender ?? null,
-        emergencyContact: body.delegate2EmergencyContact ?? null,
-        guardianName: body.guardianName2 ?? null,
-        guardianPhone: body.guardianPhone2 ?? null,
-        guardianConsent: !!body.guardianConsent2,
-        photoData: body.photoData2 ?? null,
-        photoMime: body.photoMime2 ?? null
-      };
-      answersToStore.push({ questionId: "delegate2", label: "Delegate 2", value: JSON.stringify(d2) });
-    } catch (err) {
-      // ignore
-    }
+  // If delegate2 info was supplied (UNSC double-delegation), append it to customAnswers so both delegates are linked to this registration
+  const combinedAnswers = answers.slice();
+  if (data.delegate2) {
+    combinedAnswers.push({ questionId: "__delegate2__", label: "Delegate 2", value: data.delegate2 as any });
   }
 
+  // Create the PENDING registration first (so the hold can reference it)
   const createPayload: any = {
     fullName: data.fullName, email: data.email, phone: data.phone,
     institution: data.institution || null, trackSlug: track.slug, trackName: track.name,
     amount, status: "PENDING", portfolioId, promoCode: appliedCode,
     age: data.age ?? null, city: data.city || null, gender: data.gender ?? null,
-    emergencyContact: data.emergencyContact || null, howHeard: howHeard || null, notes: data.notes || null,
+    emergencyContact: data.emergencyContact ?? null, howHeard: howHeard || null, notes: data.notes || null,
     consentAccepted: true, guardianName: data.guardianName || null, guardianPhone: data.guardianPhone || null, guardianConsent: !!data.guardianConsent,
-    customAnswers: answersToStore.length ? JSON.stringify(answersToStore) : null
+    customAnswers: combinedAnswers.length ? JSON.stringify(combinedAnswers) : null
   };
 
   const reg = await prisma.registration.create({ data: createPayload });
