@@ -34,10 +34,9 @@ export default function AdminDashboard() {
         <p className="text-slatey">Loading…</p>
       ) : (
         <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
             <KpiCard label="Paid delegates" value={d.summary.paid} sub={`${d.summary.total} total registrations`} />
             <KpiCard label="Pending" value={d.summary.pending} sub={`${d.summary.cancelled} cancelled`} />
-            <KpiCard label="Revenue" value={`₹${d.summary.revenueInr.toLocaleString("en-IN")}`} />
             <KpiCard label="Today" value={d.summary.todaySignups} sub={`${d.summary.unreadMessages} unread messages`} />
           </div>
 
