@@ -22,7 +22,11 @@ export default function AnnouncementsPage() {
         const r = await fetch("/api/public/tracks");
         if (r.ok) setTracks(await r.json());
         const c = await fetch("/api/admin/competitions");
-        if (c.ok) setCompetitions(await c.json());
+        if (c.ok) {
+          const data = await c.json().catch(() => ({}));
+          const items = data.items || [];
+          setCompetitions(items.map((it: any) => ({ value: it.id, label: it.title })));
+        }
       } catch (_) { /* ignore */ }
     })();
   }, []);
