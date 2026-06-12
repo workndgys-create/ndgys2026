@@ -62,11 +62,14 @@ export type CompetitionRegistrationMinAggregateOutputType = {
   pastExperience: string | null
   answers: string | null
   consentAccepted: boolean | null
+  teamChoice: string | null
   guardianName: string | null
   guardianPhone: string | null
   guardianConsent: boolean | null
   gatewayOrderId: string | null
   gatewayPaymentId: string | null
+  checkedIn: boolean | null
+  checkedInAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -95,11 +98,14 @@ export type CompetitionRegistrationMaxAggregateOutputType = {
   pastExperience: string | null
   answers: string | null
   consentAccepted: boolean | null
+  teamChoice: string | null
   guardianName: string | null
   guardianPhone: string | null
   guardianConsent: boolean | null
   gatewayOrderId: string | null
   gatewayPaymentId: string | null
+  checkedIn: boolean | null
+  checkedInAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -128,11 +134,14 @@ export type CompetitionRegistrationCountAggregateOutputType = {
   pastExperience: number
   answers: number
   consentAccepted: number
+  teamChoice: number
   guardianName: number
   guardianPhone: number
   guardianConsent: number
   gatewayOrderId: number
   gatewayPaymentId: number
+  checkedIn: number
+  checkedInAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -175,11 +184,14 @@ export type CompetitionRegistrationMinAggregateInputType = {
   pastExperience?: true
   answers?: true
   consentAccepted?: true
+  teamChoice?: true
   guardianName?: true
   guardianPhone?: true
   guardianConsent?: true
   gatewayOrderId?: true
   gatewayPaymentId?: true
+  checkedIn?: true
+  checkedInAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -208,11 +220,14 @@ export type CompetitionRegistrationMaxAggregateInputType = {
   pastExperience?: true
   answers?: true
   consentAccepted?: true
+  teamChoice?: true
   guardianName?: true
   guardianPhone?: true
   guardianConsent?: true
   gatewayOrderId?: true
   gatewayPaymentId?: true
+  checkedIn?: true
+  checkedInAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -241,11 +256,14 @@ export type CompetitionRegistrationCountAggregateInputType = {
   pastExperience?: true
   answers?: true
   consentAccepted?: true
+  teamChoice?: true
   guardianName?: true
   guardianPhone?: true
   guardianConsent?: true
   gatewayOrderId?: true
   gatewayPaymentId?: true
+  checkedIn?: true
+  checkedInAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -361,11 +379,14 @@ export type CompetitionRegistrationGroupByOutputType = {
   pastExperience: string | null
   answers: string | null
   consentAccepted: boolean
+  teamChoice: string | null
   guardianName: string | null
   guardianPhone: string | null
   guardianConsent: boolean
   gatewayOrderId: string | null
   gatewayPaymentId: string | null
+  checkedIn: boolean
+  checkedInAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: CompetitionRegistrationCountAggregateOutputType | null
@@ -417,11 +438,14 @@ export type CompetitionRegistrationWhereInput = {
   pastExperience?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
   answers?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
   consentAccepted?: Prisma.BoolFilter<"CompetitionRegistration"> | boolean
+  teamChoice?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
   guardianName?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
   guardianPhone?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
   guardianConsent?: Prisma.BoolFilter<"CompetitionRegistration"> | boolean
   gatewayOrderId?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
   gatewayPaymentId?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
+  checkedIn?: Prisma.BoolFilter<"CompetitionRegistration"> | boolean
+  checkedInAt?: Prisma.DateTimeNullableFilter<"CompetitionRegistration"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"CompetitionRegistration"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CompetitionRegistration"> | Date | string
   photos?: Prisma.CompetitionPhotoListRelationFilter
@@ -451,11 +475,14 @@ export type CompetitionRegistrationOrderByWithRelationInput = {
   pastExperience?: Prisma.SortOrderInput | Prisma.SortOrder
   answers?: Prisma.SortOrderInput | Prisma.SortOrder
   consentAccepted?: Prisma.SortOrder
+  teamChoice?: Prisma.SortOrderInput | Prisma.SortOrder
   guardianName?: Prisma.SortOrderInput | Prisma.SortOrder
   guardianPhone?: Prisma.SortOrderInput | Prisma.SortOrder
   guardianConsent?: Prisma.SortOrder
   gatewayOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
   gatewayPaymentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  checkedIn?: Prisma.SortOrder
+  checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   photos?: Prisma.CompetitionPhotoOrderByRelationAggregateInput
@@ -489,10 +516,13 @@ export type CompetitionRegistrationWhereUniqueInput = Prisma.AtLeast<{
   pastExperience?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
   answers?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
   consentAccepted?: Prisma.BoolFilter<"CompetitionRegistration"> | boolean
+  teamChoice?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
   guardianName?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
   guardianPhone?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
   guardianConsent?: Prisma.BoolFilter<"CompetitionRegistration"> | boolean
   gatewayPaymentId?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
+  checkedIn?: Prisma.BoolFilter<"CompetitionRegistration"> | boolean
+  checkedInAt?: Prisma.DateTimeNullableFilter<"CompetitionRegistration"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"CompetitionRegistration"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CompetitionRegistration"> | Date | string
   photos?: Prisma.CompetitionPhotoListRelationFilter
@@ -522,11 +552,14 @@ export type CompetitionRegistrationOrderByWithAggregationInput = {
   pastExperience?: Prisma.SortOrderInput | Prisma.SortOrder
   answers?: Prisma.SortOrderInput | Prisma.SortOrder
   consentAccepted?: Prisma.SortOrder
+  teamChoice?: Prisma.SortOrderInput | Prisma.SortOrder
   guardianName?: Prisma.SortOrderInput | Prisma.SortOrder
   guardianPhone?: Prisma.SortOrderInput | Prisma.SortOrder
   guardianConsent?: Prisma.SortOrder
   gatewayOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
   gatewayPaymentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  checkedIn?: Prisma.SortOrder
+  checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CompetitionRegistrationCountOrderByAggregateInput
@@ -563,11 +596,14 @@ export type CompetitionRegistrationScalarWhereWithAggregatesInput = {
   pastExperience?: Prisma.StringNullableWithAggregatesFilter<"CompetitionRegistration"> | string | null
   answers?: Prisma.StringNullableWithAggregatesFilter<"CompetitionRegistration"> | string | null
   consentAccepted?: Prisma.BoolWithAggregatesFilter<"CompetitionRegistration"> | boolean
+  teamChoice?: Prisma.StringNullableWithAggregatesFilter<"CompetitionRegistration"> | string | null
   guardianName?: Prisma.StringNullableWithAggregatesFilter<"CompetitionRegistration"> | string | null
   guardianPhone?: Prisma.StringNullableWithAggregatesFilter<"CompetitionRegistration"> | string | null
   guardianConsent?: Prisma.BoolWithAggregatesFilter<"CompetitionRegistration"> | boolean
   gatewayOrderId?: Prisma.StringNullableWithAggregatesFilter<"CompetitionRegistration"> | string | null
   gatewayPaymentId?: Prisma.StringNullableWithAggregatesFilter<"CompetitionRegistration"> | string | null
+  checkedIn?: Prisma.BoolWithAggregatesFilter<"CompetitionRegistration"> | boolean
+  checkedInAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CompetitionRegistration"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CompetitionRegistration"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CompetitionRegistration"> | Date | string
 }
@@ -596,11 +632,14 @@ export type CompetitionRegistrationCreateInput = {
   pastExperience?: string | null
   answers?: string | null
   consentAccepted?: boolean
+  teamChoice?: string | null
   guardianName?: string | null
   guardianPhone?: string | null
   guardianConsent?: boolean
   gatewayOrderId?: string | null
   gatewayPaymentId?: string | null
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   photos?: Prisma.CompetitionPhotoCreateNestedManyWithoutCompetitionRegistrationInput
@@ -630,11 +669,14 @@ export type CompetitionRegistrationUncheckedCreateInput = {
   pastExperience?: string | null
   answers?: string | null
   consentAccepted?: boolean
+  teamChoice?: string | null
   guardianName?: string | null
   guardianPhone?: string | null
   guardianConsent?: boolean
   gatewayOrderId?: string | null
   gatewayPaymentId?: string | null
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   photos?: Prisma.CompetitionPhotoUncheckedCreateNestedManyWithoutCompetitionRegistrationInput
@@ -664,11 +706,14 @@ export type CompetitionRegistrationUpdateInput = {
   pastExperience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   answers?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  teamChoice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianConsent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   gatewayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   photos?: Prisma.CompetitionPhotoUpdateManyWithoutCompetitionRegistrationNestedInput
@@ -698,11 +743,14 @@ export type CompetitionRegistrationUncheckedUpdateInput = {
   pastExperience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   answers?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  teamChoice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianConsent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   gatewayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   photos?: Prisma.CompetitionPhotoUncheckedUpdateManyWithoutCompetitionRegistrationNestedInput
@@ -732,11 +780,14 @@ export type CompetitionRegistrationCreateManyInput = {
   pastExperience?: string | null
   answers?: string | null
   consentAccepted?: boolean
+  teamChoice?: string | null
   guardianName?: string | null
   guardianPhone?: string | null
   guardianConsent?: boolean
   gatewayOrderId?: string | null
   gatewayPaymentId?: string | null
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -765,11 +816,14 @@ export type CompetitionRegistrationUpdateManyMutationInput = {
   pastExperience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   answers?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  teamChoice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianConsent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   gatewayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -798,11 +852,14 @@ export type CompetitionRegistrationUncheckedUpdateManyInput = {
   pastExperience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   answers?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  teamChoice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianConsent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   gatewayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -831,11 +888,14 @@ export type CompetitionRegistrationCountOrderByAggregateInput = {
   pastExperience?: Prisma.SortOrder
   answers?: Prisma.SortOrder
   consentAccepted?: Prisma.SortOrder
+  teamChoice?: Prisma.SortOrder
   guardianName?: Prisma.SortOrder
   guardianPhone?: Prisma.SortOrder
   guardianConsent?: Prisma.SortOrder
   gatewayOrderId?: Prisma.SortOrder
   gatewayPaymentId?: Prisma.SortOrder
+  checkedIn?: Prisma.SortOrder
+  checkedInAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -870,11 +930,14 @@ export type CompetitionRegistrationMaxOrderByAggregateInput = {
   pastExperience?: Prisma.SortOrder
   answers?: Prisma.SortOrder
   consentAccepted?: Prisma.SortOrder
+  teamChoice?: Prisma.SortOrder
   guardianName?: Prisma.SortOrder
   guardianPhone?: Prisma.SortOrder
   guardianConsent?: Prisma.SortOrder
   gatewayOrderId?: Prisma.SortOrder
   gatewayPaymentId?: Prisma.SortOrder
+  checkedIn?: Prisma.SortOrder
+  checkedInAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -903,11 +966,14 @@ export type CompetitionRegistrationMinOrderByAggregateInput = {
   pastExperience?: Prisma.SortOrder
   answers?: Prisma.SortOrder
   consentAccepted?: Prisma.SortOrder
+  teamChoice?: Prisma.SortOrder
   guardianName?: Prisma.SortOrder
   guardianPhone?: Prisma.SortOrder
   guardianConsent?: Prisma.SortOrder
   gatewayOrderId?: Prisma.SortOrder
   gatewayPaymentId?: Prisma.SortOrder
+  checkedIn?: Prisma.SortOrder
+  checkedInAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -961,11 +1027,14 @@ export type CompetitionRegistrationCreateWithoutPhotosInput = {
   pastExperience?: string | null
   answers?: string | null
   consentAccepted?: boolean
+  teamChoice?: string | null
   guardianName?: string | null
   guardianPhone?: string | null
   guardianConsent?: boolean
   gatewayOrderId?: string | null
   gatewayPaymentId?: string | null
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -994,11 +1063,14 @@ export type CompetitionRegistrationUncheckedCreateWithoutPhotosInput = {
   pastExperience?: string | null
   answers?: string | null
   consentAccepted?: boolean
+  teamChoice?: string | null
   guardianName?: string | null
   guardianPhone?: string | null
   guardianConsent?: boolean
   gatewayOrderId?: string | null
   gatewayPaymentId?: string | null
+  checkedIn?: boolean
+  checkedInAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1043,11 +1115,14 @@ export type CompetitionRegistrationUpdateWithoutPhotosInput = {
   pastExperience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   answers?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  teamChoice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianConsent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   gatewayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1076,11 +1151,14 @@ export type CompetitionRegistrationUncheckedUpdateWithoutPhotosInput = {
   pastExperience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   answers?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  teamChoice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   guardianConsent?: Prisma.BoolFieldUpdateOperationsInput | boolean
   gatewayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkedIn?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1140,11 +1218,14 @@ export type CompetitionRegistrationSelect<ExtArgs extends runtime.Types.Extensio
   pastExperience?: boolean
   answers?: boolean
   consentAccepted?: boolean
+  teamChoice?: boolean
   guardianName?: boolean
   guardianPhone?: boolean
   guardianConsent?: boolean
   gatewayOrderId?: boolean
   gatewayPaymentId?: boolean
+  checkedIn?: boolean
+  checkedInAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   photos?: boolean | Prisma.CompetitionRegistration$photosArgs<ExtArgs>
@@ -1175,11 +1256,14 @@ export type CompetitionRegistrationSelectCreateManyAndReturn<ExtArgs extends run
   pastExperience?: boolean
   answers?: boolean
   consentAccepted?: boolean
+  teamChoice?: boolean
   guardianName?: boolean
   guardianPhone?: boolean
   guardianConsent?: boolean
   gatewayOrderId?: boolean
   gatewayPaymentId?: boolean
+  checkedIn?: boolean
+  checkedInAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["competitionRegistration"]>
@@ -1208,11 +1292,14 @@ export type CompetitionRegistrationSelectUpdateManyAndReturn<ExtArgs extends run
   pastExperience?: boolean
   answers?: boolean
   consentAccepted?: boolean
+  teamChoice?: boolean
   guardianName?: boolean
   guardianPhone?: boolean
   guardianConsent?: boolean
   gatewayOrderId?: boolean
   gatewayPaymentId?: boolean
+  checkedIn?: boolean
+  checkedInAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["competitionRegistration"]>
@@ -1241,16 +1328,19 @@ export type CompetitionRegistrationSelectScalar = {
   pastExperience?: boolean
   answers?: boolean
   consentAccepted?: boolean
+  teamChoice?: boolean
   guardianName?: boolean
   guardianPhone?: boolean
   guardianConsent?: boolean
   gatewayOrderId?: boolean
   gatewayPaymentId?: boolean
+  checkedIn?: boolean
+  checkedInAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CompetitionRegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "refId" | "competitionId" | "competitionTitle" | "participation" | "teamName" | "leaderName" | "email" | "phone" | "institution" | "members" | "teamSize" | "amount" | "status" | "age" | "city" | "gender" | "emergencyContact" | "howHeard" | "notes" | "pastExperience" | "answers" | "consentAccepted" | "guardianName" | "guardianPhone" | "guardianConsent" | "gatewayOrderId" | "gatewayPaymentId" | "createdAt" | "updatedAt", ExtArgs["result"]["competitionRegistration"]>
+export type CompetitionRegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "refId" | "competitionId" | "competitionTitle" | "participation" | "teamName" | "leaderName" | "email" | "phone" | "institution" | "members" | "teamSize" | "amount" | "status" | "age" | "city" | "gender" | "emergencyContact" | "howHeard" | "notes" | "pastExperience" | "answers" | "consentAccepted" | "teamChoice" | "guardianName" | "guardianPhone" | "guardianConsent" | "gatewayOrderId" | "gatewayPaymentId" | "checkedIn" | "checkedInAt" | "createdAt" | "updatedAt", ExtArgs["result"]["competitionRegistration"]>
 export type CompetitionRegistrationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   photos?: boolean | Prisma.CompetitionRegistration$photosArgs<ExtArgs>
   _count?: boolean | Prisma.CompetitionRegistrationCountOutputTypeDefaultArgs<ExtArgs>
@@ -1287,11 +1377,14 @@ export type $CompetitionRegistrationPayload<ExtArgs extends runtime.Types.Extens
     pastExperience: string | null
     answers: string | null
     consentAccepted: boolean
+    teamChoice: string | null
     guardianName: string | null
     guardianPhone: string | null
     guardianConsent: boolean
     gatewayOrderId: string | null
     gatewayPaymentId: string | null
+    checkedIn: boolean
+    checkedInAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["competitionRegistration"]>
@@ -1741,11 +1834,14 @@ export interface CompetitionRegistrationFieldRefs {
   readonly pastExperience: Prisma.FieldRef<"CompetitionRegistration", 'String'>
   readonly answers: Prisma.FieldRef<"CompetitionRegistration", 'String'>
   readonly consentAccepted: Prisma.FieldRef<"CompetitionRegistration", 'Boolean'>
+  readonly teamChoice: Prisma.FieldRef<"CompetitionRegistration", 'String'>
   readonly guardianName: Prisma.FieldRef<"CompetitionRegistration", 'String'>
   readonly guardianPhone: Prisma.FieldRef<"CompetitionRegistration", 'String'>
   readonly guardianConsent: Prisma.FieldRef<"CompetitionRegistration", 'Boolean'>
   readonly gatewayOrderId: Prisma.FieldRef<"CompetitionRegistration", 'String'>
   readonly gatewayPaymentId: Prisma.FieldRef<"CompetitionRegistration", 'String'>
+  readonly checkedIn: Prisma.FieldRef<"CompetitionRegistration", 'Boolean'>
+  readonly checkedInAt: Prisma.FieldRef<"CompetitionRegistration", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"CompetitionRegistration", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"CompetitionRegistration", 'DateTime'>
 }

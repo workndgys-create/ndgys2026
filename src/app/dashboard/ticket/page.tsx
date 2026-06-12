@@ -7,8 +7,6 @@ type Ticket = { id: string; delegateId: string; fullName: string; trackName: str
 export default function TicketPage() {
   const [t, setT] = useState<Ticket | null>(null);
   const [err, setErr] = useState("");
-  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
-  const [uploadErrors, setUploadErrors] = useState<Record<number, string>>({});
   const [photoStatuses, setPhotoStatuses] = useState<Record<number, boolean>>({});
   const [version, setVersion] = useState(0); // cache buster for image URL
 
@@ -29,46 +27,6 @@ export default function TicketPage() {
     });
   }, []);
 
-  async function handlePhotoUpload(memberIndex: number, file: File) {
-    if (!file) return;
-    setUploadErrors((prev) => ({ ...prev, [memberIndex]: "" }));
-
-    if (file.type !== "image/jpeg" && file.type !== "image/png" && file.type !== "image/jpg") {
-      setUploadErrors((prev) => ({ ...prev, [memberIndex]: "Only JPEG and PNG formats are supported." }));
-      return;
-    }
-
-    if (file.size > 2 * 1024 * 1024) {
-      setUploadErrors((prev) => ({ ...prev, [memberIndex]: "Photo must be smaller than 2MB." }));
-      return;
-    }
-
-    setUploadingIndex(memberIndex);
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      try {
-        const base64 = (reader.result as string).split(",")[1];
-        const res = await fetch("/api/delegate/photo", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ photoData: base64, photoMime: file.type, memberIndex })
-        });
-        const resData = await res.json().catch(() => ({}));
-        if (res.ok && resData.ok) {
-          setPhotoStatuses((prev) => ({ ...prev, [memberIndex]: true }));
-          setVersion((v) => v + 1);
-        } else {
-          setUploadErrors((prev) => ({ ...prev, [memberIndex]: resData.error || "Upload failed. Please try again." }));
-        }
-      } catch (err) {
-        setUploadErrors((prev) => ({ ...prev, [memberIndex]: "An error occurred during upload." }));
-      } finally {
-        setUploadingIndex(null);
-      }
-    };
-    reader.readAsDataURL(file);
-  }
-
   if (err) return <p className="text-ink/70">{err}</p>;
   if (!t) return <p className="text-slatey">Loading ticket…</p>;
 
@@ -87,8 +45,6 @@ export default function TicketPage() {
       <div className={`grid grid-cols-1 ${participants.length > 1 ? "md:grid-cols-2" : "max-w-md mx-auto"} gap-6`}>
         {participants.map((p) => {
           const hasPhoto = photoStatuses[p.memberIndex];
-          const uploading = uploadingIndex === p.memberIndex;
-          const uploadError = uploadErrors[p.memberIndex];
 
           return (
             <div key={p.memberIndex} className="overflow-hidden rounded-3xl border border-ink/10 bg-paper shadow-xl print:shadow-none flex flex-col justify-between">
@@ -109,30 +65,10 @@ export default function TicketPage() {
                         />
                         <img src={p.qr} alt="Check-in QR" className="h-32 w-32 border border-ink/5 p-1 rounded-xl bg-white" />
                       </div>
-                      <label className="text-xs font-600 text-gold hover:text-goldlite cursor-pointer hover:underline mb-2">
-                        {uploading ? "Uploading..." : "Change photo"}
-                        <input type="file" accept="image/jpeg, image/png" onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handlePhotoUpload(p.memberIndex, file);
-                        }} disabled={uploading} className="hidden" />
-                      </label>
-                      {uploadError && <p className="text-xs text-red-600 mb-2">{uploadError}</p>}
                     </div>
                   ) : (
                     <div className="space-y-4">
                       <img src={p.qr} alt="Check-in QR" className="mx-auto h-56 w-56 border border-ink/5 p-2 rounded-2xl bg-white" />
-                      
-                      <div className="rounded-2xl border border-dashed border-gold/40 bg-goldlite/10 p-4">
-                        <p className="text-xs font-500 text-ink/80 mb-2.5">Upload a passport-size photo to complete badge for {p.name}:</p>
-                        <label className="inline-block rounded-full bg-gold px-4 py-2 text-xs font-600 text-midnight hover:bg-goldlite cursor-pointer transition">
-                          {uploading ? "Uploading..." : "Upload Photo"}
-                          <input type="file" accept="image/jpeg, image/png" onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handlePhotoUpload(p.memberIndex, file);
-                          }} disabled={uploading} className="hidden" />
-                        </label>
-                        {uploadError && <p className="mt-2 text-xs text-red-600">{uploadError}</p>}
-                      </div>
                     </div>
                   )}
                 </div>
