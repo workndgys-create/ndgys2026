@@ -231,8 +231,8 @@ export default function DelegationRegisterPage() {
                       <div className="flex gap-2">
                         <input value={committeeSearch} onChange={(e) => setCommitteeSearch(e.target.value)} placeholder="Search" className="w-20 rounded-lg border border-ink/15 bg-paper px-2 py-1 text-xs outline-none focus:border-gold" />
                         <div className="flex-1">
-                          <div className="rounded-t-md bg-ink/60 text-cream px-3 py-2 text-sm font-600 border border-ink/15 border-b-0">{tracks.find((t) => t.value === m.track)?.label || "Select committee"}</div>
-                          <div className="border border-ink/15 bg-cream h-40 overflow-auto text-sm">
+                          <div className="rounded-t-md bg-ink/60 text-cream px-3 py-1 text-sm font-600 border border-ink/15 border-b-0 truncate whitespace-nowrap">{tracks.find((t) => t.value === m.track)?.label || "Select committee"}</div>
+                          <div className="border border-ink/15 bg-cream max-h-32 h-32 overflow-auto text-sm">
                             {tracks
                               .filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase()))
                               .map((t) => {
@@ -243,7 +243,7 @@ export default function DelegationRegisterPage() {
                                     key={t.value}
                                     type="button"
                                     onClick={() => { setM(i, "track", t.value); setM(i, "experience", "beginner"); }}
-                                    className={`w-full text-left px-3 py-2 ${selected ? "bg-ink/60 text-cream" : "text-ink hover:bg-goldlite"}`}
+                                    className={`w-full text-left px-3 py-1.5 ${selected ? "bg-ink/60 text-cream" : "text-ink hover:bg-goldlite"} truncate whitespace-nowrap leading-tight`}
                                   >
                                     {t.label}{note}
                                   </button>
