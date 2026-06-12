@@ -16,13 +16,13 @@ function loadCashfree(): Promise<boolean> {
   });
 }
 
-type Member = { fullName: string; email: string; phone: string; track: string; age: string; experience?: string; photoData?: string; photoMime?: string };
+type Member = { fullName: string; email: string; phone: string; track: string; age: string; experience?: string; photoData?: string; photoMime?: string; guardianName?: string; guardianPhone?: string; guardianConsent?: boolean };
 
 export default function DelegationRegisterPage() {
   const BEGINNER_CLIENT = new Set<string>(["unep", "aippm"]);
   const [members, setMembers] = useState<Member[]>([ 
-    { fullName: "", email: "", phone: "", track: "", age: "", experience: "beginner", photoData: "", photoMime: "" },
-    { fullName: "", email: "", phone: "", track: "", age: "", experience: "beginner", photoData: "", photoMime: "" }
+    { fullName: "", email: "", phone: "", track: "", age: "", experience: "beginner", photoData: "", photoMime: "", guardianName: "", guardianPhone: "", guardianConsent: false },
+    { fullName: "", email: "", phone: "", track: "", age: "", experience: "beginner", photoData: "", photoMime: "", guardianName: "", guardianPhone: "", guardianConsent: false }
   ]);
   const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number }[]>([]);
   const [committeeSearch, setCommitteeSearch] = useState("");
@@ -43,7 +43,7 @@ export default function DelegationRegisterPage() {
 
   function addMember() { if (members.length < 40) setMembers((m) => [...m, { fullName: "", email: "", phone: "", track: tracks[0]?.value || "", age: "", experience: "beginner", photoData: "", photoMime: "" }]); }
   function removeMember(i: number) { if (members.length > 1) setMembers((m) => m.filter((_, idx) => idx !== i)); }
-  function setM(i: number, k: keyof Member, v: string) { setMembers((m) => m.map((mm, idx) => (idx === i ? { ...mm, [k]: v } : mm))); }
+  function setM(i: number, k: keyof Member, v: any) { setMembers((m) => m.map((mm, idx) => (idx === i ? { ...mm, [k]: v } : mm))); }
 
   function matchTrack(token: string): string {
     const t = token.trim().toLowerCase();
@@ -106,7 +106,10 @@ export default function DelegationRegisterPage() {
         track: m.track,
         age: Number(m.age),
         photoData: m.photoData,
-        photoMime: m.photoMime
+        photoMime: m.photoMime,
+        guardianName: m.guardianName || "",
+        guardianPhone: m.guardianPhone || "",
+        guardianConsent: !!m.guardianConsent
       }))
     };
 
@@ -250,6 +253,26 @@ export default function DelegationRegisterPage() {
                         </div>
                       </div>
                     </div>
+                    {/* guardian block shown when member is under 18 */}
+                    {Number(m.age) && Number(m.age) < 18 && (
+                      <div className="rounded-lg border border-ink/10 bg-cream/60 p-3">
+                        <p className="text-sm font-600 text-ink mb-2">You're under 18 — a parent/guardian must consent.</p>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div>
+                            <label className="text-xs font-500 text-ink/80 block mb-1">Parent / guardian name</label>
+                            <input value={m.guardianName || ""} onChange={(e) => setM(i, "guardianName", e.target.value)} placeholder="Parent / guardian name" className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                          </div>
+                          <div>
+                            <label className="text-xs font-500 text-ink/80 block mb-1">Guardian contact number</label>
+                            <input value={m.guardianPhone || ""} onChange={(e) => setM(i, "guardianPhone", e.target.value)} placeholder="Contact number" className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                          </div>
+                        </div>
+                        <label className="mt-3 flex items-start gap-2 text-sm text-ink/80">
+                          <input type="checkbox" checked={!!m.guardianConsent} onChange={(e) => setM(i, "guardianConsent", e.target.checked)} className="mt-0.5 accent-gold" />
+                          <span>I am the parent/guardian and I consent to this delegate's participation.</span>
+                        </label>
+                      </div>
+                    )}
                   </div>
 
                   <div>

@@ -156,6 +156,9 @@ export const delegationMemberSchema = z.object({
   track: z.string().min(1, "Choose a committee"),
   portfolioId: z.string().optional().or(z.literal("")),
   age: z.coerce.number().int().min(8).max(99),
+  guardianName: z.string().trim().max(120).optional().or(z.literal("")),
+  guardianPhone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
+  guardianConsent: z.coerce.boolean().optional(),
   photoData: z.string().optional(),
   photoMime: z.string().optional()
 });
@@ -190,6 +193,12 @@ function refineDelegation(v: z.infer<typeof delegationSchema>, ctx: z.Refinement
       } else if (m.age < 12 || m.age > 16) {
         ctx.addIssue({ code: "custom", path: ["members", String(i), "age"], message: "Beginner committees are only open to delegates aged 12-16." });
       }
+    }
+    // If delegate is under 18, guardian info is required
+    if (typeof m.age === "number" && m.age < 18) {
+      if (!m.guardianName || !m.guardianName.trim()) ctx.addIssue({ code: "custom", path: ["members", String(i), "guardianName"], message: "Parent/guardian name is required for delegates under 18" });
+      if (!m.guardianPhone || !m.guardianPhone.trim()) ctx.addIssue({ code: "custom", path: ["members", String(i), "guardianPhone"], message: "Parent/guardian contact is required for delegates under 18" });
+      if (!m.guardianConsent) ctx.addIssue({ code: "custom", path: ["members", String(i), "guardianConsent"], message: "Parent/guardian consent is required for delegates under 18" });
     }
   }
 }
