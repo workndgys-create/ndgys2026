@@ -4,7 +4,7 @@ import { requirePermission, audit } from "@/lib/adminSession";
 export const runtime = "nodejs";
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const s = await requirePermission("settings.manage");
+  const s = await requirePermission("payments.manage");
   if (!s) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   try {
     const b = await req.json().catch(() => ({}));
@@ -26,7 +26,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  const s = await requirePermission("settings.manage");
+  const s = await requirePermission("payments.manage");
   if (!s) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   try {
     await prisma.promoCode.delete({ where: { id: params.id } });

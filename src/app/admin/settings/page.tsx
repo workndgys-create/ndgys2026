@@ -15,6 +15,8 @@ const TEXT_SETTINGS: { key: string; label: string; area?: boolean }[] = [
 
 const TOGGLES: { key: string; label: string; help: string }[] = [
   { key: "home.published", label: "Home page content live", help: "Master switch for events, competitions, speakers and event flow on the home page." },
+  { key: "home.showTrackPricing", label: "Show MUN committee pricing on home", help: "Display committee pricing cards in the Track section on the home page." },
+  { key: "home.showCompetitionPricing", label: "Show competition pricing on home", help: "Display competition fee details in the Competitions section on the home page." },
   { key: "allocations.live", label: "Portfolio allocations live", help: "Show the live allocations section on the home page." },
   { key: "registration.open", label: "Registration open", help: "When off, the registration API rejects new sign-ups." }
 ];

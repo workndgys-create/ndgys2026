@@ -16,14 +16,24 @@ function logPublicDataError(scope: string, error: unknown) {
 /** Reads tracks from the DB with live seats-remaining; falls back to the seed list if the DB is empty/unavailable. */
 export async function getPublicTracks(): Promise<PublicTrack[]> {
   try {
-    const [tracks, paid, portfolioCounts] = await Promise.all([
+    const [tracksRaw, paid, portfolioCounts] = await Promise.all([
       prisma.track.findMany({ orderBy: { createdAt: "asc" } }),
       // Count only registrations that have been allocated a portfolio (and paid).
       prisma.registration.groupBy({ by: ["trackSlug"], where: { status: "PAID", NOT: { portfolio: null } }, _count: true }),
       // Count portfolios per track to derive total seats dynamically
       prisma.portfolio.groupBy({ by: ["trackSlug"], _count: true })
     ]);
-    if (tracks.length === 0) throw new Error("empty");
+    if (tracksRaw.length === 0) throw new Error("empty");
+    // Exclude any track that represents the IPL competition so it is not shown as a committee.
+    // Be defensive: filter by slug or name case-insensitively and also exclude slugs that contain 'ipl'.
+    const tracks = tracksRaw.filter((t) => {
+      const slug = String(t.slug || "").trim().toLowerCase();
+      const name = String(t.name || "").trim().toLowerCase();
+      if (!slug) return true;
+      if (slug === "ipl" || slug.includes("ipl")) return false;
+      if (name.includes("indian premier league") || name === "ipl") return false;
+      return true;
+    });
     // `paid` here represents count of allocations (PAID + portfolio set)
     const paidMap = new Map((paid as unknown as { trackSlug: string; _count: number }[]).map((p) => [p.trackSlug, p._count]));
     const portfolioMap = new Map((portfolioCounts as unknown as { trackSlug: string; _count: number }[]).map((p) => [p.trackSlug, p._count]));

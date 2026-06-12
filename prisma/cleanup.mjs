@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 const NEW_SLUGS = [
   'unsc', 'unga', 'unhrc', 'csw', 'unicef', 'unep', 'wto',
-  'aippm', 'lok-sabha', 'war-cabinet', 'ipl'
+  'aippm', 'lok-sabha', 'war-cabinet'
 ];
 
 async function main() {

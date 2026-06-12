@@ -13,9 +13,83 @@ export async function GET(req: NextRequest) {
 
   if (id) {
     const r = await prisma.registration.findUnique({ where: { id }, include: { photo: true } });
-    if (!r || !r.delegateId) return NextResponse.json({ error: "Delegate not found or unpaid" }, { status: 404 });
-    const pdf = await generateBadgePdf({
-      delegateId: r.delegateId,
+    if (r && r.delegateId) {
+      const pdf = await generateBadgePdf({
+        delegateId: r.delegateId,
+        fullName: r.fullName,
+        trackName: r.trackName,
+        trackSlug: r.trackSlug,
+        portfolio: r.portfolio,
+        institution: r.institution,
+        city: r.city,
+        categoryLabel: "Portfolio",
+        photoData: r.photo?.data ? Buffer.from(r.photo.data) : undefined,
+        photoMime: r.photo?.mime
+      });
+      return new NextResponse(new Uint8Array(pdf), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="badge-${r.delegateId}.pdf"` } });
+    } else {
+      const c = await prisma.competitionRegistration.findUnique({ where: { id } });
+      if (!c || c.status !== "PAID" || !c.refId) return NextResponse.json({ error: "Attendee not found or unpaid" }, { status: 404 });
+      const comp = await prisma.competition.findUnique({ where: { id: c.competitionId } });
+      const trackSlug = comp?.slug || c.competitionId;
+
+      const compPhotos = await prisma.competitionPhoto.findMany({
+        where: { competitionRegistrationId: c.id }
+      });
+      const photoByMemberIndex = new Map(compPhotos.map(p => [p.memberIndex, p]));
+
+      const members: { name: string; age?: number }[] =
+        typeof c.members === "string" ? JSON.parse(c.members) : c.members || [];
+
+      const allParticipants = [
+        { name: c.leaderName, index: 0 },
+        ...members.map((m, idx) => ({ name: m.name, index: idx + 1 }))
+      ];
+
+      const list = allParticipants.map((p) => {
+        const memberId = p.index === 0 ? c.refId : `${c.refId}-M${p.index + 1}`;
+        const photo = photoByMemberIndex.get(p.index);
+        return {
+          delegateId: memberId,
+          fullName: p.name,
+          trackName: c.competitionTitle,
+          trackSlug,
+          portfolio: null,
+          institution: c.institution,
+          city: c.city,
+          categoryLabel: "Competition",
+          photoData: photo?.data ? Buffer.from(photo.data) : undefined,
+          photoMime: photo?.mime
+        };
+      });
+
+      const pdf = await generateBadgeSheet(list);
+      return new NextResponse(new Uint8Array(pdf), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="badges-${c.refId}.pdf"` } });
+    }
+  }
+
+  let list: BadgeData[] = [];
+
+  // 1. MUN Registrations
+  const munWhere: any = { status: "PAID", NOT: { delegateId: null } };
+  let fetchMun = true;
+  if (track) {
+    const trackExists = await prisma.track.findUnique({ where: { slug: track } });
+    if (trackExists) {
+      munWhere.trackSlug = track;
+    } else {
+      fetchMun = false;
+    }
+  }
+
+  if (fetchMun) {
+    const regs = await prisma.registration.findMany({
+      where: munWhere,
+      include: { photo: true },
+      orderBy: [{ trackSlug: "asc" }, { fullName: "asc" }]
+    });
+    list = list.concat(regs.map((r) => ({
+      delegateId: r.delegateId!,
       fullName: r.fullName,
       trackName: r.trackName,
       trackSlug: r.trackSlug,
@@ -25,28 +99,115 @@ export async function GET(req: NextRequest) {
       categoryLabel: "Portfolio",
       photoData: r.photo?.data ? Buffer.from(r.photo.data) : undefined,
       photoMime: r.photo?.mime
+    })));
+  }
+  // 2. Competition Registrations
+  const compWhere: any = { status: "PAID" };
+  let fetchComps = true;
+
+  if (track) {
+    const comp = await prisma.competition.findUnique({
+      where: { slug: track }
     });
-    return new NextResponse(new Uint8Array(pdf), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="badge-${r.delegateId}.pdf"` } });
+
+    if (comp) {
+      compWhere.competitionId = comp.id;
+    } else {
+      fetchComps = false;
+    }
   }
 
-  const where: any = { status: "PAID", NOT: { delegateId: null }, ...(track ? { trackSlug: track } : {}) };
-  const regs = await prisma.registration.findMany({
-    where,
-    include: { photo: true },
-    orderBy: [{ trackSlug: "asc" }, { fullName: "asc" }]
-  });
-  const list: BadgeData[] = regs.map((r) => ({
-    delegateId: r.delegateId!,
-    fullName: r.fullName,
-    trackName: r.trackName,
-    trackSlug: r.trackSlug,
-    portfolio: r.portfolio,
-    institution: r.institution,
-    city: r.city,
-    categoryLabel: "Portfolio",
-    photoData: r.photo?.data ? Buffer.from(r.photo.data) : undefined,
-    photoMime: r.photo?.mime
-  }));
+  if (fetchComps) {
+    const compRegs = await prisma.competitionRegistration.findMany({
+      where: compWhere,
+      orderBy: [
+        { competitionTitle: "asc" },
+        { leaderName: "asc" }
+      ]
+    });
+
+    const compIds = Array.from(
+      new Set(compRegs.map((c) => c.competitionId))
+    );
+
+    const comps = await prisma.competition.findMany({
+      where: {
+        id: {
+          in: compIds
+        }
+      }
+    });
+
+    const slugMap = new Map(
+      comps.map((c) => [c.id, c.slug])
+    );
+
+    const compRegIds = compRegs.map((c) => c.id);
+    const compPhotos = await prisma.competitionPhoto.findMany({
+      where: { competitionRegistrationId: { in: compRegIds } }
+    });
+
+    const photoMap = new Map<string, Map<number, { mime: string; data: Buffer }>>();
+    for (const p of compPhotos) {
+      if (!photoMap.has(p.competitionRegistrationId)) {
+        photoMap.set(p.competitionRegistrationId, new Map());
+      }
+      photoMap.get(p.competitionRegistrationId)!.set(p.memberIndex, { mime: p.mime, data: Buffer.from(p.data) });
+    }
+
+    for (const c of compRegs) {
+      const members: { name: string; age?: number }[] =
+        typeof c.members === "string"
+          ? JSON.parse(c.members)
+          : c.members || [];
+
+      const trackSlug = slugMap.get(c.competitionId) || c.competitionId;
+      const regPhotos = photoMap.get(c.id);
+
+      // Build a flat list: leader always first, then additional members.
+      // Each participant gets a unique derived ID so their QR codes differ:
+      //   leader  → refId          (e.g. NDGYS-C-2026-0042)
+      //   member2 → refId-M2       (e.g. NDGYS-C-2026-0042-M2)
+      //   member3 → refId-M3       ...
+      const allParticipants: { name: string }[] = [
+        { name: c.leaderName },
+        ...members
+      ];
+
+      allParticipants.forEach((participant, index) => {
+        // index 0 = leader keeps the canonical refId for backward compatibility.
+        // All subsequent members get a deterministic per-seat suffix.
+        const memberId = index === 0 ? c.refId : `${c.refId}-M${index + 1}`;
+        const photo = regPhotos?.get(index);
+
+        list.push({
+          delegateId: memberId,
+          fullName: participant.name,
+          trackName: c.competitionTitle,
+          trackSlug,
+          portfolio: null,
+          institution: c.institution,
+          city: c.city,
+          categoryLabel: "Competition",
+          photoData: photo?.data,
+          photoMime: photo?.mime
+        });
+      });
+    }
+  }
+
   const pdf = await generateBadgeSheet(list);
-  return new NextResponse(new Uint8Array(pdf), { headers: { "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="badges${track ? "-" + track : ""}.pdf"` } });
+
+  return new NextResponse(
+    new Uint8Array(pdf),
+    {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition":
+          `attachment; filename="badges${
+            track ? "-" + track : ""
+          }.pdf`
+      }
+    }
+  );
 }

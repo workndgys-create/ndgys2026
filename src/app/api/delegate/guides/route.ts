@@ -11,5 +11,5 @@ export async function GET() {
     orderBy: { uploadedAt: "desc" },
     select: { id: true, title: true, fileName: true, sizeBytes: true, uploadedAt: true }
   });
-  return NextResponse.json({ trackName: me.trackName, guides });
+  return NextResponse.json({ trackName: me.trackName, guides, isCompetition: !!(me as any).isCompetition });
 }

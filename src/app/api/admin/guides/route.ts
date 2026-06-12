@@ -12,7 +12,7 @@ export async function GET() {
   return NextResponse.json({ items });
 }
 
-const MAX_BYTES = 15 * 1024 * 1024; // 15MB cap for study guides
+const MAX_BYTES = 15 * 1024 * 1024; // 15MB cap for rules & regulations
 
 export async function POST(req: NextRequest) {
   const s = await requirePermission("content.manage");

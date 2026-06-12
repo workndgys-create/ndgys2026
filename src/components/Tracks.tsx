@@ -2,6 +2,7 @@ import Link from "next/link";
 import SectionKicker from "./SectionKicker";
 import Reveal from "./Reveal";
 import { getPublicTracks } from "@/lib/publicData";
+import { getFlag } from "@/lib/settings";
 
 const TRACK_IMAGES: Record<string, string> = {
   unsc: "/UNSC.jpeg",
@@ -15,11 +16,13 @@ const TRACK_IMAGES: Record<string, string> = {
   aippm: "/AIPPM.jpeg",
   "lok-sabha": "/LOKSABHA.jpeg",
   "war-cabinet": "/IWC.jpeg",
-  ipl: "/IPL.jpeg",
 };
 
 export default async function Tracks() {
-  const tracks = await getPublicTracks();
+  const tracksRaw = await getPublicTracks();
+  // Defensive: ensure 'ipl' (a competition) is not treated as a committee track in this UI
+  const tracks = tracksRaw.filter((t) => (t.slug ?? "") !== "ipl");
+  const showPricing = await getFlag("home.showTrackPricing");
   return (
     <section id="tracks" className="bg-cream grain py-24">
       <div className="mx-auto max-w-6xl px-5">
@@ -53,8 +56,12 @@ export default async function Tracks() {
                   <div className="flex items-center gap-2">
                     <h3 className="font-display text-xl font-700 leading-tight text-ink">{t.name}</h3>
                   </div>
+                  {showPricing && (
+                    <p className="mt-1 text-sm font-700 text-[#92400E]">Rs {Number(t.fee).toLocaleString("en-IN")}</p>
+                  )}
                   <span className="mt-1 text-[11px] uppercase tracking-wider text-slatey">{t.difficulty}</span>
                   <p className="mt-3 flex-1 text-sm leading-relaxed text-ink/70">{t.agenda}</p>
+                  <p className="mt-2 text-xs font-600 text-ink/70">Participation certificate will be provided by the organising venue.</p>
                   <div className="mt-5 flex gap-2">
                     <Link href={`/committees/${t.slug}`} className="rounded-full border border-ink/15 px-4 py-2 text-sm font-500 text-ink hover:border-gold">
                       Details

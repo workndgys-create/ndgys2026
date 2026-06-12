@@ -46,10 +46,6 @@ const WAR_CABINET_POSTS = [
   "Chief of Defence Staff", "Army Chief", "Navy Chief", "Air Chief", "National Security Advisor"
 ];
 
-const IPL_TEAMS = [
-  "Mumbai Indians", "Chennai Super Kings", "Royal Challengers Bangalore", "Kolkata Knight Riders",
-  "Rajasthan Royals", "Delhi Capitals", "Punjab Kings", "Sunrisers Hyderabad"
-];
 
 function numbered(prefix: string, count: number) {
   return Array.from({ length: count }, (_, idx) => `${prefix} ${String(idx + 1).padStart(2, "0")}`);
@@ -70,7 +66,7 @@ function portfoliosFor(slug: string): string[] {
   if (slug === "aippm") return INDIAN_PARTIES;
   if (slug === "lok-sabha") return LOK_SABHA_SEATS;
   if (slug === "war-cabinet") return WAR_CABINET_POSTS;
-  if (slug === "ipl") return IPL_TEAMS;
+  // no dedicated IPL committee — IPL is a competition handled via `ipl-auction`
   return COUNTRIES;
 }
 

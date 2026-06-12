@@ -47,14 +47,15 @@ export default async function HomePage() {
         {/* Venue preview inserted above Contact (full-height preview) */}
 
         <EventsFeatured />
-        <Competitions />
         <Speakers />
         <Secretariat />
         <EventFlow />
         <Sponsors />
         <Tracks />
+        <Competitions />
         <Resources />
         <FAQ />
+        
 
         <section id="venue-preview" className="py-0">
           <div className="mx-auto max-w-full">

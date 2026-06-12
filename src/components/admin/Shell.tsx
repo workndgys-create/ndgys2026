@@ -30,13 +30,13 @@ const GROUPS: NavGroup[] = [
     { href: "/admin/secretariat", label: "Secretariat", icon: "❖", perm: "content.read" },
     { href: "/admin/sponsors", label: "Sponsors", icon: "◈", perm: "content.read" },
     { href: "/admin/accommodation", label: "Stay & Travel", icon: "⌂", perm: "content.read" },
-    { href: "/admin/guides", label: "Study Guides", icon: "▢", perm: "content.manage" },
+    { href: "/admin/guides", label: "Rules & Regulations", icon: "▢", perm: "content.manage" },
     { href: "/admin/background-guides", label: "Background Guides", icon: "▣", perm: "content.manage" },
     { href: "/admin/announcements", label: "Announcements", icon: "◈", perm: "announcements.manage" }
   ]},
   { title: "Administration", items: [
     { href: "/admin/team", label: "Team & Roles", icon: "👥", perm: "team.manage" },
-    { href: "/admin/promo-codes", label: "Promo Codes", icon: "%", perm: "settings.manage" },
+    { href: "/admin/promo-codes", label: "Promo Codes", icon: "%", perm: "payments.manage" },
     { href: "/admin/settings", label: "Settings", icon: "⚙", perm: "settings.manage" }
   ]}
 ];

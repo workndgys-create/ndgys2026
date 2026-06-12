@@ -13,8 +13,7 @@ export const TRACKS = [
   { slug: "international-press", name: "International Press", fee: 2000, capacity: 130, difficulty: "Intermediate", agenda: "Real-time summit journalism through reporting, caricature and photography." },
   { slug: "aippm", name: "All India Political Parties Meet", fee: 1500, capacity: 60, difficulty: "Beginner", agenda: "National multiparty dialogue and consensus building." },
   { slug: "lok-sabha", name: "Lok Sabha", fee: 1500, capacity: 60, difficulty: "Beginner", agenda: "Parliamentary debate and lawmaking." },
-  { slug: "war-cabinet", name: "Indian War Cabinet", fee: 1500, capacity: 30, difficulty: "Advanced", agenda: "Crisis governance and strategic decision-making." },
-  { slug: "ipl", name: "Indian Premier League", fee: 1500, capacity: 40, difficulty: "Beginner", agenda: "Sports governance and league administration." }
+  { slug: "war-cabinet", name: "Indian War Cabinet", fee: 1500, capacity: 30, difficulty: "Advanced", agenda: "Crisis governance and strategic decision-making." }
 ] as const;
 
 export const seedTrackBySlug = (slug: string) => TRACKS.find((t) => t.slug === slug);
@@ -97,10 +96,12 @@ export const profileSchema = z.object({
 
 export const competitionMemberSchema = z.object({
   name: z.string().trim().min(2, "Member name is too short").max(120),
-  age: z.coerce.number().int().min(5).max(99).optional()
+  age: z.coerce.number().int().min(5).max(99).optional(),
+  photoData: z.string().optional(),
+  photoMime: z.string().optional()
 });
 
-export const competitionRegistrationSchema = z.object({
+const competitionRegistrationBase = z.object({
   competitionId: z.string().min(1, "Choose a competition"),
   participation: z.enum(["SOLO", "GROUP"]),
   teamName: z.string().trim().max(120).optional().or(z.literal("")),
@@ -122,8 +123,12 @@ export const competitionRegistrationSchema = z.object({
   guardianName: z.string().trim().max(120).optional().or(z.literal("")),
   guardianPhone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
   guardianConsent: z.coerce.boolean().optional(),
+  photoData: z.string().optional(),
+  photoMime: z.string().optional(),
   company: z.string().max(0).optional() // honeypot
-}).superRefine((v, ctx) => {
+});
+
+function refineCompetitionRegistration(v: z.infer<typeof competitionRegistrationBase>, ctx: z.RefinementCtx) {
   if (v.participation === "GROUP") {
     if (!v.teamName || !v.teamName.trim()) ctx.addIssue({ code: "custom", path: ["teamName"], message: "Team name is required for group entries" });
     if (v.members.length === 0) ctx.addIssue({ code: "custom", path: ["members"], message: "Add at least one team member" });
@@ -136,15 +141,26 @@ export const competitionRegistrationSchema = z.object({
   if ((v.howHeard === "Friend / Word of mouth" || v.howHeard === "Other") && !v.howHeardDetail?.trim()) {
     ctx.addIssue({ code: "custom", path: ["howHeardDetail"], message: "Please add a short description" });
   }
-});
+}
+
+export const competitionRegistrationSchema = competitionRegistrationBase.superRefine(refineCompetitionRegistration);
 export type CompetitionRegistrationInput = z.infer<typeof competitionRegistrationSchema>;
+
+// allow optional teamChoice for competitions (e.g., IPL Auction)
+export const competitionRegistrationSchemaWithTeam = competitionRegistrationBase.extend({ teamChoice: z.string().optional().or(z.literal("") ) }).superRefine(refineCompetitionRegistration);
 
 export const delegationMemberSchema = z.object({
   fullName: z.string().trim().min(2, "Enter the delegate's name").max(120),
-  email: z.string().trim().email("Enter a valid email").optional().or(z.literal("")),
+  email: z.string().trim().email("Enter a valid email"),
   phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
   track: z.string().min(1, "Choose a committee"),
-  portfolioId: z.string().optional().or(z.literal(""))
+  portfolioId: z.string().optional().or(z.literal("")),
+  age: z.coerce.number().int().min(8).max(99),
+  guardianName: z.string().trim().max(120).optional().or(z.literal("")),
+  guardianPhone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
+  guardianConsent: z.coerce.boolean().optional(),
+  photoData: z.string().optional(),
+  photoMime: z.string().optional()
 });
 export const delegationSchema = z.object({
   schoolName: z.string().trim().min(2, "Enter the school / institution").max(160),
@@ -158,3 +174,34 @@ export const delegationSchema = z.object({
   company: z.string().max(0).optional() // honeypot
 });
 export type DelegationInput = z.infer<typeof delegationSchema>;
+
+// Additional delegation-level refinements (age restrictions per committee)
+const AGE_18_TRACK_SLUGS = new Set<string>(["unsc"]);
+
+function refineDelegation(v: z.infer<typeof delegationSchema>, ctx: z.RefinementCtx) {
+  for (let i = 0; i < v.members.length; i++) {
+    const m = v.members[i];
+    if (AGE_18_TRACK_SLUGS.has(m.track)) {
+      if (typeof m.age !== "number" || m.age < 18) {
+        ctx.addIssue({ code: "custom", path: ["members", String(i), "age"], message: `Members in this committee must be 18 or older` });
+      }
+    }
+    // Enforce beginner age range for beginner-designated committees
+    if (BEGINNER_TRACK_SLUGS.has(m.track)) {
+      if (typeof m.age !== "number") {
+        ctx.addIssue({ code: "custom", path: ["members", String(i), "age"], message: "Age is required for beginner committees (12-16 only)." });
+      } else if (m.age < 12 || m.age > 16) {
+        ctx.addIssue({ code: "custom", path: ["members", String(i), "age"], message: "Beginner committees are only open to delegates aged 12-16." });
+      }
+    }
+    // If delegate is under 18, guardian info is required
+    if (typeof m.age === "number" && m.age < 18) {
+      if (!m.guardianName || !m.guardianName.trim()) ctx.addIssue({ code: "custom", path: ["members", String(i), "guardianName"], message: "Parent/guardian name is required for delegates under 18" });
+      if (!m.guardianPhone || !m.guardianPhone.trim()) ctx.addIssue({ code: "custom", path: ["members", String(i), "guardianPhone"], message: "Parent/guardian contact is required for delegates under 18" });
+      if (!m.guardianConsent) ctx.addIssue({ code: "custom", path: ["members", String(i), "guardianConsent"], message: "Parent/guardian consent is required for delegates under 18" });
+    }
+  }
+}
+
+export const delegationSchemaWithRefine = delegationSchema.superRefine(refineDelegation);
+export type DelegationInputWithRefine = z.infer<typeof delegationSchemaWithRefine>;

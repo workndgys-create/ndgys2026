@@ -57,6 +57,19 @@ export async function POST(req: NextRequest) {
       }
     });
     createdIds.push(reg.id);
+    if (m.photoData && m.photoMime) {
+      try {
+        await prisma.registrationPhoto.create({
+          data: {
+            registrationId: reg.id,
+            mime: m.photoMime,
+            data: Buffer.from(m.photoData, "base64")
+          }
+        });
+      } catch (err) {
+        console.error(`[delegation] Failed to save photo for member ${m.fullName}:`, err);
+      }
+    }
     if (m.portfolioId) {
       const hold = await holdPortfolio(m.portfolioId, reg.id);
       if (!hold.ok) {

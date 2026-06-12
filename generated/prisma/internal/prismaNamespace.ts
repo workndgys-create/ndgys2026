@@ -402,6 +402,7 @@ export const ModelName = {
   Setting: 'Setting',
   Portfolio: 'Portfolio',
   CompetitionRegistration: 'CompetitionRegistration',
+  CompetitionPhoto: 'CompetitionPhoto',
   PromoCode: 'PromoCode',
   Delegation: 'Delegation',
   CommitteeGuide: 'CommitteeGuide',
@@ -425,7 +426,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "registration" | "registrationPhoto" | "invoice" | "contactMessage" | "adminUser" | "adminAction" | "track" | "speaker" | "scheduleItem" | "resource" | "announcement" | "waitlist" | "magicLinkToken" | "competition" | "event" | "setting" | "portfolio" | "competitionRegistration" | "promoCode" | "delegation" | "committeeGuide" | "backgroundGuide" | "secretariatMember" | "sponsor" | "accommodationOption" | "registrationQuestion"
+    modelProps: "registration" | "registrationPhoto" | "invoice" | "contactMessage" | "adminUser" | "adminAction" | "track" | "speaker" | "scheduleItem" | "resource" | "announcement" | "waitlist" | "magicLinkToken" | "competition" | "event" | "setting" | "portfolio" | "competitionRegistration" | "competitionPhoto" | "promoCode" | "delegation" | "committeeGuide" | "backgroundGuide" | "secretariatMember" | "sponsor" | "accommodationOption" | "registrationQuestion"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1761,6 +1762,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CompetitionPhoto: {
+      payload: Prisma.$CompetitionPhotoPayload<ExtArgs>
+      fields: Prisma.CompetitionPhotoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CompetitionPhotoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompetitionPhotoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CompetitionPhotoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompetitionPhotoPayload>
+        }
+        findFirst: {
+          args: Prisma.CompetitionPhotoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompetitionPhotoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CompetitionPhotoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompetitionPhotoPayload>
+        }
+        findMany: {
+          args: Prisma.CompetitionPhotoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompetitionPhotoPayload>[]
+        }
+        create: {
+          args: Prisma.CompetitionPhotoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompetitionPhotoPayload>
+        }
+        createMany: {
+          args: Prisma.CompetitionPhotoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CompetitionPhotoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompetitionPhotoPayload>[]
+        }
+        delete: {
+          args: Prisma.CompetitionPhotoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompetitionPhotoPayload>
+        }
+        update: {
+          args: Prisma.CompetitionPhotoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompetitionPhotoPayload>
+        }
+        deleteMany: {
+          args: Prisma.CompetitionPhotoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CompetitionPhotoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CompetitionPhotoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompetitionPhotoPayload>[]
+        }
+        upsert: {
+          args: Prisma.CompetitionPhotoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompetitionPhotoPayload>
+        }
+        aggregate: {
+          args: Prisma.CompetitionPhotoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCompetitionPhoto>
+        }
+        groupBy: {
+          args: Prisma.CompetitionPhotoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CompetitionPhotoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CompetitionPhotoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CompetitionPhotoCountAggregateOutputType> | number
+        }
+      }
+    }
     PromoCode: {
       payload: Prisma.$PromoCodePayload<ExtArgs>
       fields: Prisma.PromoCodeFieldRefs
@@ -2567,6 +2642,7 @@ export const AnnouncementScalarFieldEnum = {
   body: 'body',
   audience: 'audience',
   trackSlug: 'trackSlug',
+  competitionId: 'competitionId',
   publishedAt: 'publishedAt'
 } as const
 
@@ -2704,6 +2780,18 @@ export const CompetitionRegistrationScalarFieldEnum = {
 } as const
 
 export type CompetitionRegistrationScalarFieldEnum = (typeof CompetitionRegistrationScalarFieldEnum)[keyof typeof CompetitionRegistrationScalarFieldEnum]
+
+
+export const CompetitionPhotoScalarFieldEnum = {
+  id: 'id',
+  competitionRegistrationId: 'competitionRegistrationId',
+  memberIndex: 'memberIndex',
+  mime: 'mime',
+  data: 'data',
+  createdAt: 'createdAt'
+} as const
+
+export type CompetitionPhotoScalarFieldEnum = (typeof CompetitionPhotoScalarFieldEnum)[keyof typeof CompetitionPhotoScalarFieldEnum]
 
 
 export const PromoCodeScalarFieldEnum = {
@@ -3126,6 +3214,7 @@ export type GlobalOmitConfig = {
   setting?: Prisma.SettingOmit
   portfolio?: Prisma.PortfolioOmit
   competitionRegistration?: Prisma.CompetitionRegistrationOmit
+  competitionPhoto?: Prisma.CompetitionPhotoOmit
   promoCode?: Prisma.PromoCodeOmit
   delegation?: Prisma.DelegationOmit
   committeeGuide?: Prisma.CommitteeGuideOmit

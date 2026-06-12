@@ -35,9 +35,15 @@ export default function PortfolioAllocationsBoard() {
   }, [fetchData]);
   useEffect(() => { const t = setInterval(() => setSecsAgo((s) => s + 1), 1000); return () => clearInterval(t); }, [data]);
 
-  const committees = (data?.committees ?? []).filter((c) => filter === "all" || c.slug === filter);
-  const totalTaken = (data?.committees ?? []).reduce((s, c) => s + c.taken, 0);
-  const totalSeats = (data?.committees ?? []).reduce((s, c) => s + c.total, 0);
+  const committees = (data?.committees ?? [])
+    .filter((c) => c.slug !== "ipl") // Remove IPL
+    .filter((c) => filter === "all" || c.slug === filter);
+  const totalTaken = (data?.committees ?? [])
+    .filter((c) => c.slug !== "ipl")
+    .reduce((s, c) => s + c.taken, 0);
+  const totalSeats = (data?.committees ?? [])
+    .filter((c) => c.slug !== "ipl")
+    .reduce((s, c) => s + c.total, 0);
 
   if (loading) {
     return <div className="mt-6 grid gap-5 sm:grid-cols-2">{[0, 1, 2, 3].map((i) => <div key={i} className="h-40 animate-pulse rounded-2xl bg-ink/5" />)}</div>;
@@ -60,14 +66,16 @@ export default function PortfolioAllocationsBoard() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold/70" />
             <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-gold" />
           </span>
-          {error ? "Reconnecting..." : `Live - ${totalTaken}/${totalSeats} portfolios allotted - updated ${secsAgo}s ago`}
+          {error ? "Reconnecting..." : `Live - updated ${secsAgo}s ago`}
         </div>
         <button onClick={fetchData} className="rounded-full border border-ink/15 px-4 py-1.5 text-sm font-500 text-ink hover:border-gold">Refresh</button>
       </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <Chip active={filter === "all"} onClick={() => setFilter("all")}>All committees</Chip>
-        {(data.committees ?? []).map((c) => <Chip key={c.slug} active={filter === c.slug} onClick={() => setFilter(c.slug)}>{c.name}</Chip>)}
+        {(data.committees ?? [])
+          .filter((c) => c.slug !== "ipl")
+          .map((c) => <Chip key={c.slug} active={filter === c.slug} onClick={() => setFilter(c.slug)}>{c.name}</Chip>)}
       </div>
 
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
@@ -78,10 +86,7 @@ export default function PortfolioAllocationsBoard() {
           return (
             <article key={c.slug} className="overflow-hidden rounded-2xl border border-ink/10 bg-paper">
               <div className="border-b border-ink/5 px-5 py-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-display text-lg font-700 text-ink">{c.name}</h3>
-                  <span className="text-xs tabular-nums text-slatey">{c.taken}/{c.total} allotted</span>
-                </div>
+                <h3 className="font-display text-lg font-700 text-ink">{c.name}</h3>
                 <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-ink/10"><div className="h-full rounded-full bg-gold" style={{ width: `${pct}%` }} /></div>
               </div>
               <div className="flex flex-wrap gap-1.5 p-4">

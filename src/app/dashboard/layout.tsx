@@ -1,5 +1,6 @@
 import Link from "next/link";
 import LogoutButton from "@/components/dashboard/LogoutButton";
+import { currentDelegate } from "@/lib/delegateSession";
 
 const nav = [
   { href: "/dashboard", label: "Overview" },
@@ -7,11 +8,19 @@ const nav = [
   { href: "/dashboard/ticket", label: "Pass & QR" },
   { href: "/dashboard/schedule", label: "My Schedule" },
   { href: "/dashboard/committee", label: "Event Group" },
-  { href: "/dashboard/guides", label: "Resources" },
+  { href: "/dashboard/guides", label: "Rules & Regulations" },
   { href: "/dashboard/profile", label: "Profile" }
 ];
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const me = await currentDelegate();
+  const isComp = me ? (me as any).isCompetition : false;
+
+  const filteredNav = nav.filter((n) => {
+    if (isComp && n.href === "/dashboard/committee") return false;
+    return true;
+  });
+
   return (
     <div className="min-h-screen bg-cream grain">
       <header className="flex items-center justify-between border-b border-ink/10 bg-midnight px-5 py-4 text-cream">
@@ -27,7 +36,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </header>
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-8 md:flex-row">
         <nav className="flex gap-2 overflow-x-auto md:w-56 md:flex-col">
-          {nav.map((n) => (
+          {filteredNav.map((n) => (
             <Link key={n.href} href={n.href} className="whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-500 text-ink/75 hover:bg-paper hover:text-ink">
               {n.label}
             </Link>

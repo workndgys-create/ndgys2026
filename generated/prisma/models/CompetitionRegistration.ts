@@ -424,6 +424,7 @@ export type CompetitionRegistrationWhereInput = {
   gatewayPaymentId?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CompetitionRegistration"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CompetitionRegistration"> | Date | string
+  photos?: Prisma.CompetitionPhotoListRelationFilter
 }
 
 export type CompetitionRegistrationOrderByWithRelationInput = {
@@ -457,6 +458,7 @@ export type CompetitionRegistrationOrderByWithRelationInput = {
   gatewayPaymentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  photos?: Prisma.CompetitionPhotoOrderByRelationAggregateInput
 }
 
 export type CompetitionRegistrationWhereUniqueInput = Prisma.AtLeast<{
@@ -493,6 +495,7 @@ export type CompetitionRegistrationWhereUniqueInput = Prisma.AtLeast<{
   gatewayPaymentId?: Prisma.StringNullableFilter<"CompetitionRegistration"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CompetitionRegistration"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CompetitionRegistration"> | Date | string
+  photos?: Prisma.CompetitionPhotoListRelationFilter
 }, "id" | "refId" | "gatewayOrderId">
 
 export type CompetitionRegistrationOrderByWithAggregationInput = {
@@ -600,6 +603,7 @@ export type CompetitionRegistrationCreateInput = {
   gatewayPaymentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  photos?: Prisma.CompetitionPhotoCreateNestedManyWithoutCompetitionRegistrationInput
 }
 
 export type CompetitionRegistrationUncheckedCreateInput = {
@@ -633,6 +637,7 @@ export type CompetitionRegistrationUncheckedCreateInput = {
   gatewayPaymentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  photos?: Prisma.CompetitionPhotoUncheckedCreateNestedManyWithoutCompetitionRegistrationInput
 }
 
 export type CompetitionRegistrationUpdateInput = {
@@ -666,6 +671,7 @@ export type CompetitionRegistrationUpdateInput = {
   gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  photos?: Prisma.CompetitionPhotoUpdateManyWithoutCompetitionRegistrationNestedInput
 }
 
 export type CompetitionRegistrationUncheckedUpdateInput = {
@@ -699,6 +705,7 @@ export type CompetitionRegistrationUncheckedUpdateInput = {
   gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  photos?: Prisma.CompetitionPhotoUncheckedUpdateManyWithoutCompetitionRegistrationNestedInput
 }
 
 export type CompetitionRegistrationCreateManyInput = {
@@ -911,6 +918,202 @@ export type CompetitionRegistrationSumOrderByAggregateInput = {
   age?: Prisma.SortOrder
 }
 
+export type CompetitionRegistrationScalarRelationFilter = {
+  is?: Prisma.CompetitionRegistrationWhereInput
+  isNot?: Prisma.CompetitionRegistrationWhereInput
+}
+
+export type CompetitionRegistrationCreateNestedOneWithoutPhotosInput = {
+  create?: Prisma.XOR<Prisma.CompetitionRegistrationCreateWithoutPhotosInput, Prisma.CompetitionRegistrationUncheckedCreateWithoutPhotosInput>
+  connectOrCreate?: Prisma.CompetitionRegistrationCreateOrConnectWithoutPhotosInput
+  connect?: Prisma.CompetitionRegistrationWhereUniqueInput
+}
+
+export type CompetitionRegistrationUpdateOneRequiredWithoutPhotosNestedInput = {
+  create?: Prisma.XOR<Prisma.CompetitionRegistrationCreateWithoutPhotosInput, Prisma.CompetitionRegistrationUncheckedCreateWithoutPhotosInput>
+  connectOrCreate?: Prisma.CompetitionRegistrationCreateOrConnectWithoutPhotosInput
+  upsert?: Prisma.CompetitionRegistrationUpsertWithoutPhotosInput
+  connect?: Prisma.CompetitionRegistrationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompetitionRegistrationUpdateToOneWithWhereWithoutPhotosInput, Prisma.CompetitionRegistrationUpdateWithoutPhotosInput>, Prisma.CompetitionRegistrationUncheckedUpdateWithoutPhotosInput>
+}
+
+export type CompetitionRegistrationCreateWithoutPhotosInput = {
+  id?: string
+  refId: string
+  competitionId: string
+  competitionTitle: string
+  participation: string
+  teamName?: string | null
+  leaderName: string
+  email: string
+  phone: string
+  institution?: string | null
+  members?: string
+  teamSize?: number
+  amount: number
+  status?: string
+  age?: number | null
+  city?: string | null
+  gender?: string | null
+  emergencyContact?: string | null
+  howHeard?: string | null
+  notes?: string | null
+  pastExperience?: string | null
+  answers?: string | null
+  consentAccepted?: boolean
+  guardianName?: string | null
+  guardianPhone?: string | null
+  guardianConsent?: boolean
+  gatewayOrderId?: string | null
+  gatewayPaymentId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CompetitionRegistrationUncheckedCreateWithoutPhotosInput = {
+  id?: string
+  refId: string
+  competitionId: string
+  competitionTitle: string
+  participation: string
+  teamName?: string | null
+  leaderName: string
+  email: string
+  phone: string
+  institution?: string | null
+  members?: string
+  teamSize?: number
+  amount: number
+  status?: string
+  age?: number | null
+  city?: string | null
+  gender?: string | null
+  emergencyContact?: string | null
+  howHeard?: string | null
+  notes?: string | null
+  pastExperience?: string | null
+  answers?: string | null
+  consentAccepted?: boolean
+  guardianName?: string | null
+  guardianPhone?: string | null
+  guardianConsent?: boolean
+  gatewayOrderId?: string | null
+  gatewayPaymentId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CompetitionRegistrationCreateOrConnectWithoutPhotosInput = {
+  where: Prisma.CompetitionRegistrationWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompetitionRegistrationCreateWithoutPhotosInput, Prisma.CompetitionRegistrationUncheckedCreateWithoutPhotosInput>
+}
+
+export type CompetitionRegistrationUpsertWithoutPhotosInput = {
+  update: Prisma.XOR<Prisma.CompetitionRegistrationUpdateWithoutPhotosInput, Prisma.CompetitionRegistrationUncheckedUpdateWithoutPhotosInput>
+  create: Prisma.XOR<Prisma.CompetitionRegistrationCreateWithoutPhotosInput, Prisma.CompetitionRegistrationUncheckedCreateWithoutPhotosInput>
+  where?: Prisma.CompetitionRegistrationWhereInput
+}
+
+export type CompetitionRegistrationUpdateToOneWithWhereWithoutPhotosInput = {
+  where?: Prisma.CompetitionRegistrationWhereInput
+  data: Prisma.XOR<Prisma.CompetitionRegistrationUpdateWithoutPhotosInput, Prisma.CompetitionRegistrationUncheckedUpdateWithoutPhotosInput>
+}
+
+export type CompetitionRegistrationUpdateWithoutPhotosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  refId?: Prisma.StringFieldUpdateOperationsInput | string
+  competitionId?: Prisma.StringFieldUpdateOperationsInput | string
+  competitionTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  participation?: Prisma.StringFieldUpdateOperationsInput | string
+  teamName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leaderName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.StringFieldUpdateOperationsInput | string
+  teamSize?: Prisma.IntFieldUpdateOperationsInput | number
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  howHeard?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pastExperience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  answers?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  consentAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianConsent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gatewayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CompetitionRegistrationUncheckedUpdateWithoutPhotosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  refId?: Prisma.StringFieldUpdateOperationsInput | string
+  competitionId?: Prisma.StringFieldUpdateOperationsInput | string
+  competitionTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  participation?: Prisma.StringFieldUpdateOperationsInput | string
+  teamName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leaderName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  institution?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.StringFieldUpdateOperationsInput | string
+  teamSize?: Prisma.IntFieldUpdateOperationsInput | number
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  age?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  howHeard?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pastExperience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  answers?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  consentAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianConsent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gatewayOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gatewayPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type CompetitionRegistrationCountOutputType
+ */
+
+export type CompetitionRegistrationCountOutputType = {
+  photos: number
+}
+
+export type CompetitionRegistrationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  photos?: boolean | CompetitionRegistrationCountOutputTypeCountPhotosArgs
+}
+
+/**
+ * CompetitionRegistrationCountOutputType without action
+ */
+export type CompetitionRegistrationCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CompetitionRegistrationCountOutputType
+   */
+  select?: Prisma.CompetitionRegistrationCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * CompetitionRegistrationCountOutputType without action
+ */
+export type CompetitionRegistrationCountOutputTypeCountPhotosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CompetitionPhotoWhereInput
+}
 
 
 export type CompetitionRegistrationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -944,6 +1147,8 @@ export type CompetitionRegistrationSelect<ExtArgs extends runtime.Types.Extensio
   gatewayPaymentId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  photos?: boolean | Prisma.CompetitionRegistration$photosArgs<ExtArgs>
+  _count?: boolean | Prisma.CompetitionRegistrationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["competitionRegistration"]>
 
 export type CompetitionRegistrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1046,10 +1251,18 @@ export type CompetitionRegistrationSelectScalar = {
 }
 
 export type CompetitionRegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "refId" | "competitionId" | "competitionTitle" | "participation" | "teamName" | "leaderName" | "email" | "phone" | "institution" | "members" | "teamSize" | "amount" | "status" | "age" | "city" | "gender" | "emergencyContact" | "howHeard" | "notes" | "pastExperience" | "answers" | "consentAccepted" | "guardianName" | "guardianPhone" | "guardianConsent" | "gatewayOrderId" | "gatewayPaymentId" | "createdAt" | "updatedAt", ExtArgs["result"]["competitionRegistration"]>
+export type CompetitionRegistrationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  photos?: boolean | Prisma.CompetitionRegistration$photosArgs<ExtArgs>
+  _count?: boolean | Prisma.CompetitionRegistrationCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type CompetitionRegistrationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type CompetitionRegistrationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $CompetitionRegistrationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CompetitionRegistration"
-  objects: {}
+  objects: {
+    photos: Prisma.$CompetitionPhotoPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     refId: string
@@ -1475,6 +1688,7 @@ readonly fields: CompetitionRegistrationFieldRefs;
  */
 export interface Prisma__CompetitionRegistrationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  photos<T extends Prisma.CompetitionRegistration$photosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompetitionRegistration$photosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompetitionPhotoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1551,6 +1765,10 @@ export type CompetitionRegistrationFindUniqueArgs<ExtArgs extends runtime.Types.
    */
   omit?: Prisma.CompetitionRegistrationOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompetitionRegistrationInclude<ExtArgs> | null
+  /**
    * Filter, which CompetitionRegistration to fetch.
    */
   where: Prisma.CompetitionRegistrationWhereUniqueInput
@@ -1569,6 +1787,10 @@ export type CompetitionRegistrationFindUniqueOrThrowArgs<ExtArgs extends runtime
    */
   omit?: Prisma.CompetitionRegistrationOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompetitionRegistrationInclude<ExtArgs> | null
+  /**
    * Filter, which CompetitionRegistration to fetch.
    */
   where: Prisma.CompetitionRegistrationWhereUniqueInput
@@ -1586,6 +1808,10 @@ export type CompetitionRegistrationFindFirstArgs<ExtArgs extends runtime.Types.E
    * Omit specific fields from the CompetitionRegistration
    */
   omit?: Prisma.CompetitionRegistrationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompetitionRegistrationInclude<ExtArgs> | null
   /**
    * Filter, which CompetitionRegistration to fetch.
    */
@@ -1635,6 +1861,10 @@ export type CompetitionRegistrationFindFirstOrThrowArgs<ExtArgs extends runtime.
    */
   omit?: Prisma.CompetitionRegistrationOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompetitionRegistrationInclude<ExtArgs> | null
+  /**
    * Filter, which CompetitionRegistration to fetch.
    */
   where?: Prisma.CompetitionRegistrationWhereInput
@@ -1682,6 +1912,10 @@ export type CompetitionRegistrationFindManyArgs<ExtArgs extends runtime.Types.Ex
    * Omit specific fields from the CompetitionRegistration
    */
   omit?: Prisma.CompetitionRegistrationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompetitionRegistrationInclude<ExtArgs> | null
   /**
    * Filter, which CompetitionRegistrations to fetch.
    */
@@ -1731,6 +1965,10 @@ export type CompetitionRegistrationCreateArgs<ExtArgs extends runtime.Types.Exte
    */
   omit?: Prisma.CompetitionRegistrationOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompetitionRegistrationInclude<ExtArgs> | null
+  /**
    * The data needed to create a CompetitionRegistration.
    */
   data: Prisma.XOR<Prisma.CompetitionRegistrationCreateInput, Prisma.CompetitionRegistrationUncheckedCreateInput>
@@ -1778,6 +2016,10 @@ export type CompetitionRegistrationUpdateArgs<ExtArgs extends runtime.Types.Exte
    * Omit specific fields from the CompetitionRegistration
    */
   omit?: Prisma.CompetitionRegistrationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompetitionRegistrationInclude<ExtArgs> | null
   /**
    * The data needed to update a CompetitionRegistration.
    */
@@ -1845,6 +2087,10 @@ export type CompetitionRegistrationUpsertArgs<ExtArgs extends runtime.Types.Exte
    */
   omit?: Prisma.CompetitionRegistrationOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompetitionRegistrationInclude<ExtArgs> | null
+  /**
    * The filter to search for the CompetitionRegistration to update in case it exists.
    */
   where: Prisma.CompetitionRegistrationWhereUniqueInput
@@ -1871,6 +2117,10 @@ export type CompetitionRegistrationDeleteArgs<ExtArgs extends runtime.Types.Exte
    */
   omit?: Prisma.CompetitionRegistrationOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompetitionRegistrationInclude<ExtArgs> | null
+  /**
    * Filter which CompetitionRegistration to delete.
    */
   where: Prisma.CompetitionRegistrationWhereUniqueInput
@@ -1891,6 +2141,30 @@ export type CompetitionRegistrationDeleteManyArgs<ExtArgs extends runtime.Types.
 }
 
 /**
+ * CompetitionRegistration.photos
+ */
+export type CompetitionRegistration$photosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CompetitionPhoto
+   */
+  select?: Prisma.CompetitionPhotoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CompetitionPhoto
+   */
+  omit?: Prisma.CompetitionPhotoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompetitionPhotoInclude<ExtArgs> | null
+  where?: Prisma.CompetitionPhotoWhereInput
+  orderBy?: Prisma.CompetitionPhotoOrderByWithRelationInput | Prisma.CompetitionPhotoOrderByWithRelationInput[]
+  cursor?: Prisma.CompetitionPhotoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CompetitionPhotoScalarFieldEnum | Prisma.CompetitionPhotoScalarFieldEnum[]
+}
+
+/**
  * CompetitionRegistration without action
  */
 export type CompetitionRegistrationDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1902,4 +2176,8 @@ export type CompetitionRegistrationDefaultArgs<ExtArgs extends runtime.Types.Ext
    * Omit specific fields from the CompetitionRegistration
    */
   omit?: Prisma.CompetitionRegistrationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompetitionRegistrationInclude<ExtArgs> | null
 }

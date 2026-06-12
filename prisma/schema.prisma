@@ -34,7 +34,10 @@ enum RegSource {
 enum AnnouncementAudience {
   ALL
   PAID
+  MUN_ALL
   TRACK
+  COMPETITION_ALL
+  COMPETITION
 }
 
 model Registration {
@@ -194,6 +197,7 @@ model Announcement {
   body        String
   audience    AnnouncementAudience @default(ALL)
   trackSlug   String?
+  competitionId String?
   publishedAt DateTime             @default(now())
 }
 
@@ -312,10 +316,23 @@ model CompetitionRegistration {
   guardianConsent   Boolean  @default(false)
   gatewayOrderId   String?  @unique
   gatewayPaymentId String?
+  photos            CompetitionPhoto[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
   @@index([competitionId, status])
+}
+
+model CompetitionPhoto {
+  id                        String                  @id @default(cuid())
+  competitionRegistration   CompetitionRegistration @relation(fields: [competitionRegistrationId], references: [id], onDelete: Cascade)
+  competitionRegistrationId String
+  memberIndex               Int                     // 0 for leader/solo, 1..N for members
+  mime                      String
+  data                      Bytes
+  createdAt                 DateTime                @default(now())
+
+  @@unique([competitionRegistrationId, memberIndex])
 }
 
 model PromoCode {

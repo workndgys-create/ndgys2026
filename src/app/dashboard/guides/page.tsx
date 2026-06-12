@@ -10,11 +10,13 @@ export default function Page() {
   const [bg, setBg] = useState<Guide[] | null>(null);
   const [locked, setLocked] = useState(false);
   const [trackName, setTrackName] = useState("");
+  const [isComp, setIsComp] = useState(false);
 
   useEffect(() => {
     fetch("/api/delegate/guides").then(async (r) => {
       const d = await r.json().catch(() => ({}));
       setLocked(!!d.locked); setGuides(d.guides || []); setTrackName(d.trackName || "");
+      setIsComp(!!d.isCompetition);
     });
     fetch("/api/delegate/background-guides").then(async (r) => {
       const d = await r.json().catch(() => ({}));
@@ -24,10 +26,10 @@ export default function Page() {
 
   return (
     <div>
-      <h1 className="font-display text-3xl font-700 text-ink">Study Guides</h1>
-      {trackName && <p className="mt-1 text-ink/70">Guides for <b>{trackName}</b>.</p>}
+      <h1 className="font-display text-3xl font-700 text-ink">Rules & Regulations</h1>
+      {trackName && <p className="mt-1 text-ink/70">Rules & regulations for <b>{trackName}</b>.</p>}
 
-      {!locked && bg && bg.length > 0 && (
+      {!locked && !isComp && bg && bg.length > 0 && (
         <div className="mt-6">
           <h2 className="font-display text-xl font-700 text-ink">Background guides (MUN)</h2>
           <div className="mt-2 space-y-2">
@@ -44,13 +46,13 @@ export default function Page() {
         </div>
       )}
 
-      <h2 className="mt-8 font-display text-xl font-700 text-ink">Study guides & guidelines</h2>
+      <h2 className="mt-8 font-display text-xl font-700 text-ink">Rules & Regulations</h2>
       {locked ? (
-        <p className="mt-6 rounded-xl border border-ink/10 bg-paper p-6 text-ink/70">Study guides unlock once your registration is paid.</p>
+        <p className="mt-6 rounded-xl border border-ink/10 bg-paper p-6 text-ink/70">Rules & Regulations unlock once your registration is paid.</p>
       ) : !guides ? (
         <p className="mt-6 text-slatey">Loading…</p>
       ) : guides.length === 0 ? (
-        <p className="mt-6 rounded-xl border border-dashed border-ink/15 bg-cream p-6 text-slatey">No guides have been published for your committee yet — check back soon.</p>
+        <p className="mt-6 rounded-xl border border-dashed border-ink/15 bg-cream p-6 text-slatey">No rules & regulations have been published for your committee or competition yet — check back soon.</p>
       ) : (
         <div className="mt-6 space-y-2">
           {guides.map((g) => (

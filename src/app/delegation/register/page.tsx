@@ -16,12 +16,13 @@ function loadCashfree(): Promise<boolean> {
   });
 }
 
-type Member = { fullName: string; email: string; phone: string; track: string; experience?: string };
+type Member = { fullName: string; email: string; phone: string; track: string; age: string; experience?: string; photoData?: string; photoMime?: string; guardianName?: string; guardianPhone?: string; guardianConsent?: boolean };
 
 export default function DelegationRegisterPage() {
+  const BEGINNER_CLIENT = new Set<string>(["unep", "aippm"]);
   const [members, setMembers] = useState<Member[]>([ 
-    { fullName: "", email: "", phone: "", track: "", experience: "beginner" },
-    { fullName: "", email: "", phone: "", track: "", experience: "beginner" }
+    { fullName: "", email: "", phone: "", track: "", age: "", experience: "beginner", photoData: "", photoMime: "", guardianName: "", guardianPhone: "", guardianConsent: false },
+    { fullName: "", email: "", phone: "", track: "", age: "", experience: "beginner", photoData: "", photoMime: "", guardianName: "", guardianPhone: "", guardianConsent: false }
   ]);
   const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number }[]>([]);
   const [committeeSearch, setCommitteeSearch] = useState("");
@@ -40,9 +41,9 @@ export default function DelegationRegisterPage() {
   const subtotal = useMemo(() => members.reduce((s, m) => s + feeOf(m.track), 0), [members]);
   const total = Math.max(0, subtotal - discount);
 
-  function addMember() { if (members.length < 40) setMembers((m) => [...m, { fullName: "", email: "", phone: "", track: tracks[0]?.value || "", experience: "beginner" }]); }
+  function addMember() { if (members.length < 40) setMembers((m) => [...m, { fullName: "", email: "", phone: "", track: tracks[0]?.value || "", age: "", experience: "beginner", photoData: "", photoMime: "" }]); }
   function removeMember(i: number) { if (members.length > 1) setMembers((m) => m.filter((_, idx) => idx !== i)); }
-  function setM(i: number, k: keyof Member, v: string) { setMembers((m) => m.map((mm, idx) => (idx === i ? { ...mm, [k]: v } : mm))); }
+  function setM(i: number, k: keyof Member, v: any) { setMembers((m) => m.map((mm, idx) => (idx === i ? { ...mm, [k]: v } : mm))); }
 
   function matchTrack(token: string): string {
     const t = token.trim().toLowerCase();
@@ -55,7 +56,7 @@ export default function DelegationRegisterPage() {
   function importBulk() {
     const lines = bulkText.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
     const parsed: Member[] = [];
-    for (const line of lines) {
+      for (const line of lines) {
       const cols = line.split(/[\t,;]+/).map((c) => c.trim()).filter(Boolean);
       if (!cols.length) continue;
       const emailCol = cols.find((c) => c.includes("@")) || "";
@@ -63,7 +64,7 @@ export default function DelegationRegisterPage() {
       const name = cols[0];
       // committee = last column that is neither the name, email nor phone
       const committeeCol = [...cols].reverse().find((c) => c !== name && c !== emailCol && c !== phoneCol) || "";
-      parsed.push({ fullName: name, email: emailCol, phone: phoneCol, track: committeeCol ? matchTrack(committeeCol) : (tracks[0]?.value || "") });
+      parsed.push({ fullName: name, email: emailCol, phone: phoneCol, track: committeeCol ? matchTrack(committeeCol) : (tracks[0]?.value || ""), age: "", photoData: "", photoMime: "" });
     }
     if (!parsed.length) { setBulkMsg("Could not read any rows."); return; }
     setMembers(parsed.slice(0, 40));
@@ -85,11 +86,31 @@ export default function DelegationRegisterPage() {
     setStatus("processing"); setMessage(""); setErrors({});
     if (!consent) { setMessage("Please accept the Terms and Code of Conduct to continue."); setStatus("error"); return; }
     const fd = new FormData(e.currentTarget);
-    const payload: Record<string, unknown> = {
+    
+    // Check if any member has missing photo
+    const missingPhoto = members.some((m) => !m.photoData || !m.photoMime);
+    if (missingPhoto) {
+      setMessage("Please upload a passport size photo for all delegates.");
+      setStatus("error");
+      return;
+    }
+
+      const payload: Record<string, unknown> = {
       schoolName: fd.get("schoolName"), headName: fd.get("headName"), email: fd.get("email"),
       phone: fd.get("phone"), institution: fd.get("institution") || "",
       promoCode: promo.trim() || "", consentAccepted: consent, company: fd.get("company") || "",
-      members: members.filter((m) => m.fullName.trim()).map((m) => ({ fullName: m.fullName.trim(), email: m.email.trim(), phone: m.phone.trim(), track: m.track }))
+      members: members.filter((m) => m.fullName.trim()).map((m) => ({
+        fullName: m.fullName.trim(),
+        email: m.email.trim(),
+        phone: m.phone.trim(),
+        track: m.track,
+        age: Number(m.age),
+        photoData: m.photoData,
+        photoMime: m.photoMime,
+        guardianName: m.guardianName || "",
+        guardianPhone: m.guardianPhone || "",
+        guardianConsent: !!m.guardianConsent
+      }))
     };
 
     const res = await fetch("/api/delegation/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -167,34 +188,127 @@ export default function DelegationRegisterPage() {
                 </div>
               </div>
             )}
-            <div className="mt-2 space-y-2">
+            <div className="mt-2 space-y-4">
               {members.map((m, i) => (
-                <div key={i} className="grid grid-cols-12 gap-2">
-                  <input value={m.fullName} onChange={(e) => setM(i, "fullName", e.target.value)} placeholder={`Delegate ${i + 1} name`} className="col-span-4 rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold" />
-                  <input value={m.email} onChange={(e) => setM(i, "email", e.target.value)} placeholder="Email (optional)" className="col-span-3 rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold" />
-                  <input value={m.phone} onChange={(e) => setM(i, "phone", e.target.value)} placeholder="Number" className="col-span-2 rounded-lg border border-ink/15 bg-cream px-2 py-2 text-sm outline-none focus:border-gold" />
-                  <div className="col-span-2">
-                    <input value={committeeSearch} onChange={(e) => setCommitteeSearch(e.target.value)} placeholder="Search committee" className="mb-1 w-full rounded-lg border border-ink/15 bg-cream px-2 py-1 text-sm outline-none focus:border-gold" />
-                    <select
-                      value={`${m.track}::${m.experience ?? "beginner"}`}
-                      onChange={(e) => {
-                        const val = e.target.value || "";
-                        const parts = val.split("::");
-                        const slug = parts[0] || "";
-                        const level = parts[1] || "beginner";
-                        setM(i, "track", slug);
-                        setM(i, "experience", level);
-                      }}
-                      className="w-full rounded-lg border border-ink/15 bg-cream px-2 py-2 text-sm outline-none focus:border-gold"
-                    >
-                      {tracks.filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase())).flatMap((t) => [
-                        <option key={`${t.value}::beginner`} value={`${t.value}::beginner`}>{`${t.label} – Beginner`}</option>,
-                        <option key={`${t.value}::intermediate`} value={`${t.value}::intermediate`}>{`${t.label} – Intermediate`}</option>,
-                        <option key={`${t.value}::advanced`} value={`${t.value}::advanced`}>{`${t.label} – Advanced`}</option>
-                      ])}
-                    </select>
+                <div key={i} className="space-y-4 rounded-xl border border-ink/10 bg-cream/30 p-4">
+                  <div className="flex items-center justify-between border-b border-ink/5 pb-2">
+                    <span className="text-sm font-600 text-ink">Delegate {i + 1}</span>
+                    <button type="button" onClick={() => removeMember(i)} disabled={members.length <= 1} className="text-xs font-600 text-red-600 hover:underline disabled:opacity-40">Remove</button>
                   </div>
-                  <button type="button" onClick={() => removeMember(i)} disabled={members.length <= 1} className="col-span-1 rounded-lg border border-ink/15 text-sm text-red-600 hover:border-red-300 disabled:opacity-30">&times;</button>
+                  
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <label className="text-xs font-500 text-ink/80 block mb-1">Full Name *</label>
+                      <input value={m.fullName} onChange={(e) => setM(i, "fullName", e.target.value)} placeholder="Full Name" required className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-500 text-ink/80 block mb-1">Email *</label>
+                      <input value={m.email} onChange={(e) => setM(i, "email", e.target.value)} placeholder="Email" type="email" required className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-500 text-ink/80 block mb-1">Phone Number *</label>
+                      <input value={m.phone} onChange={(e) => setM(i, "phone", e.target.value)} placeholder="Number" required className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                    </div>
+                                    <div>
+                                      <label className="text-xs font-500 text-ink/80 block mb-1">Age *</label>
+                                      {
+                                        BEGINNER_CLIENT.has(m.track) ? (
+                                          <>
+                                            <input value={m.age} onChange={(e) => setM(i, "age", e.target.value)} placeholder="Age" inputMode="numeric" type="number" min={12} max={16} required className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                                            {(!m.age || Number(m.age) < 12 || Number(m.age) > 16) ? (
+                                              <p className="mt-1 text-xs text-red-600">Beginner committees require delegates aged 12–16.</p>
+                                            ) : (
+                                              <p className="mt-1 text-xs text-ink/70">Beginner committee — age 12–16 required.</p>
+                                            )}
+                                          </>
+                                        ) : (
+                                          <input value={m.age} onChange={(e) => setM(i, "age", e.target.value)} placeholder="Age" inputMode="numeric" type="number" min={8} max={99} required className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                                        )
+                                      }
+                                    </div>
+                    <div>
+                      <label className="text-xs font-500 text-ink/80 block mb-1">MUN Committee *</label>
+                      <div className="flex gap-2">
+                        <input value={committeeSearch} onChange={(e) => setCommitteeSearch(e.target.value)} placeholder="Search" className="w-20 rounded-lg border border-ink/15 bg-paper px-2 py-1 text-xs outline-none focus:border-gold" />
+                        <div className="flex-1">
+                          <div className="rounded-t-md bg-ink/60 text-cream px-3 py-1 text-sm font-600 border border-ink/15 border-b-0 truncate whitespace-nowrap">{tracks.find((t) => t.value === m.track)?.label || "Select committee"}</div>
+                          <div className="border border-ink/15 bg-cream max-h-32 h-32 overflow-auto text-sm">
+                            {tracks
+                              .filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase()))
+                              .map((t) => {
+                                const note = (t.value === "unep" || t.value === "aippm" || t.label.includes("Environment Programme") || t.label.includes("All India Political Parties Meet")) ? " (Beginner, age 12-16)" : "";
+                                const selected = m.track === t.value;
+                                return (
+                                  <button
+                                    key={t.value}
+                                    type="button"
+                                    onClick={() => { setM(i, "track", t.value); setM(i, "experience", "beginner"); }}
+                                    className={`w-full text-left px-3 py-1.5 ${selected ? "bg-ink/60 text-cream" : "text-ink hover:bg-goldlite"} truncate whitespace-nowrap leading-tight`}
+                                  >
+                                    {t.label}{note}
+                                  </button>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {/* guardian block shown when member is under 18 */}
+                    {Number(m.age) && Number(m.age) < 18 && (
+                      <div className="rounded-lg border border-ink/10 bg-cream/60 p-3">
+                        <p className="text-sm font-600 text-ink mb-2">You're under 18 — a parent/guardian must consent.</p>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div>
+                            <label className="text-xs font-500 text-ink/80 block mb-1">Parent / guardian name</label>
+                            <input value={m.guardianName || ""} onChange={(e) => setM(i, "guardianName", e.target.value)} placeholder="Parent / guardian name" className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                          </div>
+                          <div>
+                            <label className="text-xs font-500 text-ink/80 block mb-1">Guardian contact number</label>
+                            <input value={m.guardianPhone || ""} onChange={(e) => setM(i, "guardianPhone", e.target.value)} placeholder="Contact number" className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                          </div>
+                        </div>
+                        <label className="mt-3 flex items-start gap-2 text-sm text-ink/80">
+                          <input type="checkbox" checked={!!m.guardianConsent} onChange={(e) => setM(i, "guardianConsent", e.target.checked)} className="mt-0.5 accent-gold" />
+                          <span>I am the parent/guardian and I consent to this delegate's participation.</span>
+                        </label>
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-500 text-ink/80 block mb-1">Passport Photo (JPEG/PNG, Max 2MB) *</label>
+                    <input
+                      type="file"
+                      accept="image/jpeg, image/png"
+                      required
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) {
+                          setM(i, "photoData", "");
+                          setM(i, "photoMime", "");
+                          return;
+                        }
+                        if (file.type !== "image/jpeg" && file.type !== "image/png" && file.type !== "image/jpg") {
+                          alert("Only JPEG and PNG formats are supported.");
+                          e.target.value = "";
+                          return;
+                        }
+                        if (file.size > 2 * 1024 * 1024) {
+                          alert("Photo must be smaller than 2MB.");
+                          e.target.value = "";
+                          return;
+                        }
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          const base64 = (reader.result as string).split(",")[1];
+                          setM(i, "photoData", base64);
+                          setM(i, "photoMime", file.type);
+                        };
+                        reader.readAsDataURL(file);
+                      }}
+                      className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-1.5 text-xs outline-none focus:border-gold file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[11px] file:font-semibold file:bg-gold file:text-midnight hover:file:bg-goldlite"
+                    />
+                  </div>
                 </div>
               ))}
             </div>

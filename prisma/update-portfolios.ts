@@ -59,10 +59,7 @@ async function updatePortfolios() {
       "Prime Minister", "Defence Minister", "Foreign Minister", "Finance Minister", "Home Minister",
       "Chief of Defence Staff", "Army Chief", "Navy Chief", "Air Chief", "National Security Advisor"
     ],
-    ipl: [
-      "Mumbai Indians", "Chennai Super Kings", "Royal Challengers Bangalore", "Kolkata Knight Riders",
-      "Rajasthan Royals", "Delhi Capitals", "Punjab Kings", "Sunrisers Hyderabad"
-    ]
+    
   };
 
   for (const [slug, portfolios] of Object.entries(portfolioData)) {

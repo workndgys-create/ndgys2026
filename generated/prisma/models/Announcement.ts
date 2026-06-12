@@ -30,6 +30,7 @@ export type AnnouncementMinAggregateOutputType = {
   body: string | null
   audience: $Enums.AnnouncementAudience | null
   trackSlug: string | null
+  competitionId: string | null
   publishedAt: Date | null
 }
 
@@ -39,6 +40,7 @@ export type AnnouncementMaxAggregateOutputType = {
   body: string | null
   audience: $Enums.AnnouncementAudience | null
   trackSlug: string | null
+  competitionId: string | null
   publishedAt: Date | null
 }
 
@@ -48,6 +50,7 @@ export type AnnouncementCountAggregateOutputType = {
   body: number
   audience: number
   trackSlug: number
+  competitionId: number
   publishedAt: number
   _all: number
 }
@@ -59,6 +62,7 @@ export type AnnouncementMinAggregateInputType = {
   body?: true
   audience?: true
   trackSlug?: true
+  competitionId?: true
   publishedAt?: true
 }
 
@@ -68,6 +72,7 @@ export type AnnouncementMaxAggregateInputType = {
   body?: true
   audience?: true
   trackSlug?: true
+  competitionId?: true
   publishedAt?: true
 }
 
@@ -77,6 +82,7 @@ export type AnnouncementCountAggregateInputType = {
   body?: true
   audience?: true
   trackSlug?: true
+  competitionId?: true
   publishedAt?: true
   _all?: true
 }
@@ -159,6 +165,7 @@ export type AnnouncementGroupByOutputType = {
   body: string
   audience: $Enums.AnnouncementAudience
   trackSlug: string | null
+  competitionId: string | null
   publishedAt: Date
   _count: AnnouncementCountAggregateOutputType | null
   _min: AnnouncementMinAggregateOutputType | null
@@ -189,6 +196,7 @@ export type AnnouncementWhereInput = {
   body?: Prisma.StringFilter<"Announcement"> | string
   audience?: Prisma.EnumAnnouncementAudienceFilter<"Announcement"> | $Enums.AnnouncementAudience
   trackSlug?: Prisma.StringNullableFilter<"Announcement"> | string | null
+  competitionId?: Prisma.StringNullableFilter<"Announcement"> | string | null
   publishedAt?: Prisma.DateTimeFilter<"Announcement"> | Date | string
 }
 
@@ -198,6 +206,7 @@ export type AnnouncementOrderByWithRelationInput = {
   body?: Prisma.SortOrder
   audience?: Prisma.SortOrder
   trackSlug?: Prisma.SortOrderInput | Prisma.SortOrder
+  competitionId?: Prisma.SortOrderInput | Prisma.SortOrder
   publishedAt?: Prisma.SortOrder
 }
 
@@ -210,6 +219,7 @@ export type AnnouncementWhereUniqueInput = Prisma.AtLeast<{
   body?: Prisma.StringFilter<"Announcement"> | string
   audience?: Prisma.EnumAnnouncementAudienceFilter<"Announcement"> | $Enums.AnnouncementAudience
   trackSlug?: Prisma.StringNullableFilter<"Announcement"> | string | null
+  competitionId?: Prisma.StringNullableFilter<"Announcement"> | string | null
   publishedAt?: Prisma.DateTimeFilter<"Announcement"> | Date | string
 }, "id">
 
@@ -219,6 +229,7 @@ export type AnnouncementOrderByWithAggregationInput = {
   body?: Prisma.SortOrder
   audience?: Prisma.SortOrder
   trackSlug?: Prisma.SortOrderInput | Prisma.SortOrder
+  competitionId?: Prisma.SortOrderInput | Prisma.SortOrder
   publishedAt?: Prisma.SortOrder
   _count?: Prisma.AnnouncementCountOrderByAggregateInput
   _max?: Prisma.AnnouncementMaxOrderByAggregateInput
@@ -234,6 +245,7 @@ export type AnnouncementScalarWhereWithAggregatesInput = {
   body?: Prisma.StringWithAggregatesFilter<"Announcement"> | string
   audience?: Prisma.EnumAnnouncementAudienceWithAggregatesFilter<"Announcement"> | $Enums.AnnouncementAudience
   trackSlug?: Prisma.StringNullableWithAggregatesFilter<"Announcement"> | string | null
+  competitionId?: Prisma.StringNullableWithAggregatesFilter<"Announcement"> | string | null
   publishedAt?: Prisma.DateTimeWithAggregatesFilter<"Announcement"> | Date | string
 }
 
@@ -243,6 +255,7 @@ export type AnnouncementCreateInput = {
   body: string
   audience?: $Enums.AnnouncementAudience
   trackSlug?: string | null
+  competitionId?: string | null
   publishedAt?: Date | string
 }
 
@@ -252,6 +265,7 @@ export type AnnouncementUncheckedCreateInput = {
   body: string
   audience?: $Enums.AnnouncementAudience
   trackSlug?: string | null
+  competitionId?: string | null
   publishedAt?: Date | string
 }
 
@@ -261,6 +275,7 @@ export type AnnouncementUpdateInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   audience?: Prisma.EnumAnnouncementAudienceFieldUpdateOperationsInput | $Enums.AnnouncementAudience
   trackSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  competitionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -270,6 +285,7 @@ export type AnnouncementUncheckedUpdateInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   audience?: Prisma.EnumAnnouncementAudienceFieldUpdateOperationsInput | $Enums.AnnouncementAudience
   trackSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  competitionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -279,6 +295,7 @@ export type AnnouncementCreateManyInput = {
   body: string
   audience?: $Enums.AnnouncementAudience
   trackSlug?: string | null
+  competitionId?: string | null
   publishedAt?: Date | string
 }
 
@@ -288,6 +305,7 @@ export type AnnouncementUpdateManyMutationInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   audience?: Prisma.EnumAnnouncementAudienceFieldUpdateOperationsInput | $Enums.AnnouncementAudience
   trackSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  competitionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -297,6 +315,7 @@ export type AnnouncementUncheckedUpdateManyInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   audience?: Prisma.EnumAnnouncementAudienceFieldUpdateOperationsInput | $Enums.AnnouncementAudience
   trackSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  competitionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -306,6 +325,7 @@ export type AnnouncementCountOrderByAggregateInput = {
   body?: Prisma.SortOrder
   audience?: Prisma.SortOrder
   trackSlug?: Prisma.SortOrder
+  competitionId?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrder
 }
 
@@ -315,6 +335,7 @@ export type AnnouncementMaxOrderByAggregateInput = {
   body?: Prisma.SortOrder
   audience?: Prisma.SortOrder
   trackSlug?: Prisma.SortOrder
+  competitionId?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrder
 }
 
@@ -324,6 +345,7 @@ export type AnnouncementMinOrderByAggregateInput = {
   body?: Prisma.SortOrder
   audience?: Prisma.SortOrder
   trackSlug?: Prisma.SortOrder
+  competitionId?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrder
 }
 
@@ -339,6 +361,7 @@ export type AnnouncementSelect<ExtArgs extends runtime.Types.Extensions.Internal
   body?: boolean
   audience?: boolean
   trackSlug?: boolean
+  competitionId?: boolean
   publishedAt?: boolean
 }, ExtArgs["result"]["announcement"]>
 
@@ -348,6 +371,7 @@ export type AnnouncementSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   body?: boolean
   audience?: boolean
   trackSlug?: boolean
+  competitionId?: boolean
   publishedAt?: boolean
 }, ExtArgs["result"]["announcement"]>
 
@@ -357,6 +381,7 @@ export type AnnouncementSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   body?: boolean
   audience?: boolean
   trackSlug?: boolean
+  competitionId?: boolean
   publishedAt?: boolean
 }, ExtArgs["result"]["announcement"]>
 
@@ -366,10 +391,11 @@ export type AnnouncementSelectScalar = {
   body?: boolean
   audience?: boolean
   trackSlug?: boolean
+  competitionId?: boolean
   publishedAt?: boolean
 }
 
-export type AnnouncementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "body" | "audience" | "trackSlug" | "publishedAt", ExtArgs["result"]["announcement"]>
+export type AnnouncementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "body" | "audience" | "trackSlug" | "competitionId" | "publishedAt", ExtArgs["result"]["announcement"]>
 
 export type $AnnouncementPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Announcement"
@@ -380,6 +406,7 @@ export type $AnnouncementPayload<ExtArgs extends runtime.Types.Extensions.Intern
     body: string
     audience: $Enums.AnnouncementAudience
     trackSlug: string | null
+    competitionId: string | null
     publishedAt: Date
   }, ExtArgs["result"]["announcement"]>
   composites: {}
@@ -809,6 +836,7 @@ export interface AnnouncementFieldRefs {
   readonly body: Prisma.FieldRef<"Announcement", 'String'>
   readonly audience: Prisma.FieldRef<"Announcement", 'AnnouncementAudience'>
   readonly trackSlug: Prisma.FieldRef<"Announcement", 'String'>
+  readonly competitionId: Prisma.FieldRef<"Announcement", 'String'>
   readonly publishedAt: Prisma.FieldRef<"Announcement", 'DateTime'>
 }
     

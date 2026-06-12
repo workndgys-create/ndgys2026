@@ -13,21 +13,71 @@ export async function currentDelegate() {
   const session = token ? await verifyDelegateSession(token) : null;
   if (!session) return null;
   const reg = await prisma.registration.findFirst({ where: { email: session.email, status: "PAID" }, orderBy: { createdAt: "desc" } });
-  if (!reg) return null;
-  if (reg.delegateId) return reg;
+  if (reg) {
+    if (reg.delegateId) return { ...reg, isCompetition: false };
 
-  // Backfill for legacy PAID rows created before delegateId assignment became strict.
-  for (let i = 0; i < 3; i++) {
-    const candidate = await generateDelegateId();
-    const updated = await prisma.registration.updateMany({
-      where: { id: reg.id, status: "PAID", delegateId: null },
-      data: { delegateId: candidate }
-    });
-    if (updated.count === 1) return { ...reg, delegateId: candidate };
+    // Backfill for legacy PAID rows created before delegateId assignment became strict.
+    for (let i = 0; i < 3; i++) {
+      const candidate = await generateDelegateId();
+      const updated = await prisma.registration.updateMany({
+        where: { id: reg.id, status: "PAID", delegateId: null },
+        data: { delegateId: candidate }
+      });
+      if (updated.count === 1) return { ...reg, delegateId: candidate, isCompetition: false };
 
-    const latest = await prisma.registration.findUnique({ where: { id: reg.id } });
-    if (latest?.delegateId) return latest;
+      const latest = await prisma.registration.findUnique({ where: { id: reg.id } });
+      if (latest?.delegateId) return { ...latest, isCompetition: false };
+    }
+    return { ...reg, isCompetition: false };
   }
 
-  return reg;
+  // Check CompetitionRegistration
+  const compReg = await prisma.competitionRegistration.findFirst({ where: { email: session.email, status: "PAID" }, orderBy: { createdAt: "desc" } });
+  if (compReg) {
+    const comp = await prisma.competition.findUnique({ where: { id: compReg.competitionId } });
+    const trackSlug = comp?.slug || compReg.competitionId;
+    return {
+      id: compReg.id,
+      delegateId: compReg.refId,
+      fullName: compReg.leaderName,
+      email: compReg.email,
+      phone: compReg.phone,
+      institution: compReg.institution || "",
+      trackSlug,
+      trackName: compReg.competitionTitle,
+      status: "PAID" as const,
+      experience: compReg.pastExperience || "",
+      amount: compReg.amount,
+      source: "online" as const,
+      portfolio: null,
+      portfolioId: null,
+      delegationId: null,
+      promoCode: null,
+      nudgedAt: null,
+      cancelledAt: null,
+      rosterOptIn: false,
+      age: compReg.age,
+      city: compReg.city,
+      gender: compReg.gender,
+      emergencyContact: compReg.emergencyContact,
+      howHeard: compReg.howHeard,
+      notes: compReg.notes,
+      consentAccepted: compReg.consentAccepted,
+      guardianName: compReg.guardianName,
+      guardianPhone: compReg.guardianPhone,
+      guardianConsent: compReg.guardianConsent,
+      customAnswers: null,
+      dietary: null,
+      accessibility: null,
+      checkedInDay1: false,
+      checkedInDay2: false,
+      gatewayOrderId: compReg.gatewayOrderId,
+      gatewayPaymentId: compReg.gatewayPaymentId,
+      createdAt: compReg.createdAt,
+      updatedAt: compReg.updatedAt,
+      isCompetition: true
+    };
+  }
+
+  return null;
 }

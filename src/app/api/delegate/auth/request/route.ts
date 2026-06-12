@@ -6,25 +6,58 @@ import { z } from "zod";
 
 export const runtime = "nodejs";
 const schema = z.object({ email: z.string().trim().email() });
-
 export async function POST(req: NextRequest) {
-  const ip = clientIp(req.headers);
-  if (!rateLimit(`dlgreq:${ip}`, 5, 300).ok) return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+  try {
+    const parsed = schema.safeParse(await req.json().catch(() => null));
 
-  const parsed = schema.safeParse(await req.json().catch(() => null));
-  if (!parsed.success) return NextResponse.json({ error: "Enter a valid email." }, { status: 422 });
-  const email = parsed.data.email.toLowerCase();
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid email" },
+        { status: 422 }
+      );
+    }
 
-  if (!rateLimit(`dlgreq-email:${email}`, 4, 900).ok) return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+    const email = parsed.data.email.toLowerCase();
 
-  // Panel access is granted only after payment.
-  const paid = await prisma.registration.findFirst({ where: { email, status: "PAID" } });
-  if (paid) {
-    const token = await createDelegateSession({ email });
-    const res = NextResponse.json({ ok: true, authenticated: true });
-    res.cookies.set(delegateCookieName, token, delegateCookieOptions);
-    return res;
+    const paid = await prisma.registration.findFirst({
+      where: {
+        email,
+        status: "PAID"
+      }
+    });
+
+    const compPaid = await prisma.competitionRegistration.findFirst({
+      where: {
+        email,
+        status: "PAID"
+      }
+    });
+if (paid || compPaid) {
+  const token = await createDelegateSession({ email });
+
+  const res = NextResponse.json({
+    ok: true,
+    authenticated: true,
+  });
+
+  res.cookies.set(
+    delegateCookieName,
+    token,
+    delegateCookieOptions
+  );
+
+  return res;
+}
+    
+  } catch (e: any) {
+    return NextResponse.json(
+  {
+    ok: false,
+    error:
+      "This email is not eligible for login. Use the email from a successfully paid registration or competition entry.",
+  },
+  { status: 403 }
+);
+  
   }
-
-  return NextResponse.json({ ok: false, error: "This email is not eligible for delegate login. Use the email from a successfully paid registration." }, { status: 403 });
 }

@@ -126,8 +126,7 @@ function RegisterInner() {
           { value: "international-press", label: "International Press", fee: 2000 },
           { value: "aippm", label: "All India Political Parties Meet", fee: 1500 },
           { value: "lok-sabha", label: "Lok Sabha", fee: 1500 },
-          { value: "war-cabinet", label: "Indian War Cabinet", fee: 1500 },
-          { value: "ipl", label: "Indian Premier League", fee: 1500 }
+          { value: "war-cabinet", label: "Indian War Cabinet", fee: 1500 }
         ];
         setTracks(mockTracks);
         if (preTrack && mockTracks.some((x: any) => x.value === preTrack)) {
@@ -166,7 +165,7 @@ function RegisterInner() {
       aippm: ["Bharatiya Janata Party", "Indian National Congress", "All India Majlis-e-Ittehaad-ul-Muslimeen", "Biju Janata Dal", "Trinamool Congress", "Dravida Munnetra Kazhagam", "Samajwadi Party", "Shivsena", "Telugu Desam Party", "Jharkhand Mukti Morcha", "Nationalist Congress Party", "Communist Party of India", "Aam Aadmi Party", "Yadav Samaj", "Regional Alliance"],
       "lok-sabha": ["Mumbai (South)", "Delhi Central", "Bangalore South", "Chennai South", "Hyderabad", "Kolkata South", "Chandigarh", "Lucknow", "Pune", "Ahmedabad", "Jaipur", "Indore"],
       "war-cabinet": ["Prime Minister", "Defence Minister", "Foreign Minister", "Finance Minister", "Home Minister", "Chief of Defence Staff", "Army Chief", "Navy Chief", "Air Chief", "National Security Advisor"],
-      ipl: ["Mumbai Indians", "Chennai Super Kings", "Royal Challengers Bangalore", "Kolkata Knight Riders", "Rajasthan Royals", "Delhi Capitals", "Punjab Kings", "Sunrisers Hyderabad"]
+      
     };
     
     try {

@@ -4,7 +4,8 @@ import { defineConfig, env } from "prisma/config";
 export default defineConfig({
   schema: "prisma/schema.prisma",
   datasource: {
-    url: env("DATABASE_URL")
+    url: env("DATABASE_URL"),      // pooled — used at runtime
+     // direct — used for migrations
   },
   migrations: {
     path: "prisma/migrations",
