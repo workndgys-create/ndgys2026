@@ -256,5 +256,5 @@ setScanMessage("Participant checked in successfully.");      }
   );
 }
 
-
+}
             
