@@ -61,6 +61,7 @@ export default async function Tracks() {
                   )}
                   <span className="mt-1 text-[11px] uppercase tracking-wider text-slatey">{t.difficulty}</span>
                   <p className="mt-3 flex-1 text-sm leading-relaxed text-ink/70">{t.agenda}</p>
+                  <p className="mt-2 text-xs font-600 text-ink/70">Participation certificate will be provided by the organising venue.</p>
                   <div className="mt-5 flex gap-2">
                     <Link href={`/committees/${t.slug}`} className="rounded-full border border-ink/15 px-4 py-2 text-sm font-500 text-ink hover:border-gold">
                       Details

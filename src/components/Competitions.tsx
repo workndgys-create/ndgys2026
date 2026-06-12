@@ -55,6 +55,7 @@ export default async function Competitions() {
                             : ""}
                     </p>
                   )}
+                  <p className="mt-2 text-xs font-600 text-ink/70">Participation certificate will be provided by the organising venue.</p>
                   <div className="mt-4 flex items-center justify-between">
                     <span />
                     {c.registrationOpen && (c.feeSolo || c.feeGroup)
