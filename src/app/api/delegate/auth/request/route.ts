@@ -8,7 +8,9 @@ export const runtime = "nodejs";
 const schema = z.object({ email: z.string().trim().email() });
 export async function POST(req: NextRequest) {
   try {
-    const parsed = schema.safeParse(await req.json().catch(() => null));
+    const parsed = schema.safeParse(
+      await req.json().catch(() => null)
+    );
 
     if (!parsed.success) {
       return NextResponse.json(
@@ -22,42 +24,57 @@ export async function POST(req: NextRequest) {
     const paid = await prisma.registration.findFirst({
       where: {
         email,
-        status: "PAID"
-      }
+        status: "PAID",
+      },
     });
 
-    const compPaid = await prisma.competitionRegistration.findFirst({
-      where: {
+    const compPaid =
+      await prisma.competitionRegistration.findFirst({
+        where: {
+          email,
+          status: "PAID",
+        },
+      });
+
+    if (paid || compPaid) {
+      const token = await createDelegateSession({
         email,
-        status: "PAID"
-      }
-    });
-if (paid || compPaid) {
-  const token = await createDelegateSession({ email });
+      });
 
-  const res = NextResponse.json({
-    ok: true,
-    authenticated: true,
-  });
+      const res = NextResponse.json({
+        ok: true,
+        authenticated: true,
+      });
 
-  res.cookies.set(
-    delegateCookieName,
-    token,
-    delegateCookieOptions
-  );
+      res.cookies.set(
+        delegateCookieName,
+        token,
+        delegateCookieOptions
+      );
 
-  return res;
-}
-    
-  } catch (e: any) {
+      return res;
+    }
+
+    // ← THIS WAS MISSING
     return NextResponse.json(
-  {
-    ok: false,
-    error:
-      "This email is not eligible for login. Use the email from a successfully paid registration or competition entry.",
-  },
-  { status: 403 }
-);
-  
+      {
+        ok: false,
+        error:
+          "This email is not eligible for login. Use the email from a successfully paid registration or competition entry.",
+      },
+      { status: 403 }
+    );
+  } catch (e) {
+    console.error(e);
+
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Internal server error",
+      },
+      { status: 500 }
+    );
   }
 }
+
+    
