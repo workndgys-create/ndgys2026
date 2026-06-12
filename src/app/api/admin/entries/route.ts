@@ -43,9 +43,7 @@ export async function GET() {
     const pending = regs.filter((r: any) => r.status === "PENDING").length;
     const cancelled = regs.filter((r: any) => r.status === "CANCELLED").length;
 
-    const revenue = regs
-      .filter((r: any) => r.status === "PAID")
-      .reduce((sum: number, r: any) => sum + (r.amount ?? 0), 0);
+    // revenue calculation removed — dashboard no longer exposes revenue
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -91,13 +89,8 @@ export async function GET() {
           month: "short",
         }),
         count: dayRegs.length,
-        revenue:
-          dayRegs
-            .filter((r: any) => r.status === "PAID")
-            .reduce(
-              (sum: number, r: any) => sum + (r.amount ?? 0),
-              0
-            ),
+        // revenue per day omitted
+        
       });
     }
 
@@ -116,7 +109,6 @@ export async function GET() {
         paid,
         pending,
         cancelled,
-        revenueInr: revenue,
         todaySignups,
         unreadMessages,
         total: regs.length,
@@ -129,12 +121,11 @@ export async function GET() {
   } catch (error) {
     console.error("Admin entries API error:", error);
 
-    return NextResponse.json({
+      return NextResponse.json({
       summary: {
         paid: 0,
         pending: 0,
         cancelled: 0,
-        revenueInr: 0,
         todaySignups: 0,
         unreadMessages: 0,
         total: 0,
