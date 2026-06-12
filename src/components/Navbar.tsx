@@ -82,7 +82,13 @@ export default function Navbar() {
         </div>
 
         {/* CTA right */}
-        <div className="hidden md:flex shrink-0">
+        <div className="hidden md:flex shrink-0 items-center gap-5">
+          <Link
+            href="/dashboard"
+            className={`text-sm font-600 transition ${isActive("/dashboard") ? "text-[#F59E0B]" : "text-[#FFF8E7]/85 hover:text-[#F59E0B]"}`}
+          >
+            Participant Login
+          </Link>
           <Link
             href="/register"
             className={`group relative overflow-hidden rounded-full px-6 py-2.5 text-sm font-700 transition-all duration-300 shadow-md ${isActive("/register")
@@ -119,7 +125,8 @@ export default function Navbar() {
             { href: "/", label: "Home" },
             ...about,
             ...resources,
-            { href: "/#contact", label: "Contact" }
+            { href: "/#contact", label: "Contact" },
+            { href: "/dashboard", label: "Participant Login" }
           ].map((i) => (
             <Link
               key={i.label}
