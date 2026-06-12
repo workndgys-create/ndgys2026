@@ -14,7 +14,7 @@ const TRACKS = [
   { slug: 'aippm', name: 'All India Political Parties Meet', fee: 1500, capacity: 60, agenda: 'National multiparty dialogue and consensus building.', difficulty: 'Beginner' },
   { slug: 'lok-sabha', name: 'Lok Sabha', fee: 1500, capacity: 60, agenda: 'Parliamentary debate and lawmaking.', difficulty: 'Beginner' },
   { slug: 'war-cabinet', name: 'Indian War Cabinet', fee: 1500, capacity: 30, agenda: 'Crisis governance and strategic decision-making.', difficulty: 'Advanced' },
-  { slug: 'ipl', name: 'Indian Premier League', fee: 1500, capacity: 40, agenda: 'Sports governance and league administration.', difficulty: 'Beginner' }
+  
 ];
 
 async function main() {

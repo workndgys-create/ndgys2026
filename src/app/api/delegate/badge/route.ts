@@ -52,52 +52,60 @@ export async function GET() {
       );
 
     const members =
-      typeof compReg.members ===
-      "string"
+      typeof compReg.members === "string"
         ? JSON.parse(compReg.members)
         : compReg.members || [];
+
+    const compPhotos = await prisma.competitionPhoto.findMany({
+      where: { competitionRegistrationId: compReg.id }
+    });
+    const photoByMemberIndex = new Map(compPhotos.map(p => [p.memberIndex, p]));
 
     const memberBadges =
       members.map(
         (
           member: any,
           index: number
-        ) => ({
-          delegateId:
-            member.participantId ||
-            `${compReg.refId}-${String(
-              index + 1
-            ).padStart(2, "0")}`,
+        ) => {
+          const photo = photoByMemberIndex.get(index + 1);
+          return {
+            delegateId:
+              member.participantId ||
+              `${compReg.refId}-${String(
+                index + 1
+              ).padStart(2, "0")}`,
 
-          fullName:
-            member.name,
+            fullName:
+              member.name,
 
-          trackName:
-            compReg.competitionTitle,
+            trackName:
+              compReg.competitionTitle,
 
-          trackSlug:
-            competition?.slug ||
-            compReg.competitionId,
+            trackSlug:
+              competition?.slug ||
+              compReg.competitionId,
 
-          portfolio: null,
+            portfolio: null,
 
-          institution:
-            compReg.institution,
+            institution:
+              compReg.institution,
 
-          city:
-            compReg.city,
+            city:
+              compReg.city,
 
-          categoryLabel:
-            "Competition",
+            categoryLabel:
+              "Competition",
 
-          photoData:
-            undefined,
+            photoData:
+              photo?.data ? Buffer.from(photo.data) : undefined,
 
-          photoMime:
-            undefined,
-        })
+            photoMime:
+              photo?.mime,
+          };
+        }
       );
 
+    const leaderPhoto = photoByMemberIndex.get(0);
     const allBadges = [
       {
         delegateId:
@@ -125,10 +133,10 @@ export async function GET() {
           "Competition",
 
         photoData:
-          undefined,
+          leaderPhoto?.data ? Buffer.from(leaderPhoto.data) : undefined,
 
         photoMime:
-          undefined,
+          leaderPhoto?.mime,
       },
 
       ...memberBadges,

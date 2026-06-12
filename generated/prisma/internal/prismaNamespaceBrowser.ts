@@ -69,6 +69,7 @@ export const ModelName = {
   Setting: 'Setting',
   Portfolio: 'Portfolio',
   CompetitionRegistration: 'CompetitionRegistration',
+  CompetitionPhoto: 'CompetitionPhoto',
   PromoCode: 'PromoCode',
   Delegation: 'Delegation',
   CommitteeGuide: 'CommitteeGuide',
@@ -407,6 +408,18 @@ export const CompetitionRegistrationScalarFieldEnum = {
 } as const
 
 export type CompetitionRegistrationScalarFieldEnum = (typeof CompetitionRegistrationScalarFieldEnum)[keyof typeof CompetitionRegistrationScalarFieldEnum]
+
+
+export const CompetitionPhotoScalarFieldEnum = {
+  id: 'id',
+  competitionRegistrationId: 'competitionRegistrationId',
+  memberIndex: 'memberIndex',
+  mime: 'mime',
+  data: 'data',
+  createdAt: 'createdAt'
+} as const
+
+export type CompetitionPhotoScalarFieldEnum = (typeof CompetitionPhotoScalarFieldEnum)[keyof typeof CompetitionPhotoScalarFieldEnum]
 
 
 export const PromoCodeScalarFieldEnum = {

@@ -18,16 +18,19 @@ function loadCashfree(): Promise<boolean> {
 }
 
 type Comp = { id: string; title: string; format: "SOLO" | "GROUP" | "BOTH"; minTeam: number | null; maxTeam: number | null; feeSolo: number | null; feeGroup: number | null; questions?: string[] };
-type Member = { name: string; age: string };
+type Member = { name: string; age: string; photoData?: string; photoMime?: string };
 
 const HEARD = ["Instagram", "WhatsApp", "School / College", "Friend / Word of mouth", "Other"];
 
-export default function CompetitionRegisterForm({ competition: c }: { competition: Comp }) {
+type CompetitionRegisterFormProps = { competition: Comp; slug?: string };
+
+export default function CompetitionRegisterForm(props: CompetitionRegisterFormProps) {
+  const { competition: c, slug } = props;
   const initialPart: "SOLO" | "GROUP" = c.format === "GROUP" ? "GROUP" : "SOLO";
   const [participation, setParticipation] = useState<"SOLO" | "GROUP">(initialPart);
   const min = c.minTeam ?? 2;
   const max = c.maxTeam ?? 5;
-  const [members, setMembers] = useState<Member[]>(Array.from({ length: Math.min(2, max) }, () => ({ name: "", age: "" })));
+  const [members, setMembers] = useState<Member[]>(Array.from({ length: Math.min(2, max) }, () => ({ name: "", age: "", photoData: "", photoMime: "" })));
   const [status, setStatus] = useState<"idle" | "processing" | "paid" | "error">("idle");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
@@ -40,9 +43,40 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
   const [guardianConsent, setGuardianConsent] = useState(false);
   const isMinor = age !== "" && Number(age) > 0 && Number(age) < 18;
 
+  const [photoData, setPhotoData] = useState("");
+  const [photoMime, setPhotoMime] = useState("");
+  const [photoError, setPhotoError] = useState("");
+
   const fee = useMemo(() => feeForParticipation(c, participation) ?? 0, [c, participation]);
 
-  function addMember() { if (members.length < max) setMembers((m) => [...m, { name: "", age: "" }]); }
+  const IPL_TEAMS_STATIC = [
+    "Chennai Super Kings",
+    "Deccan Chargers",
+    "Delhi Capitals",
+    "Royal Challengers Bangalore",
+    "Gujarat Titans",
+    "Kolkata Knight Riders",
+    "Lucknow Super Giants",
+    "Mumbai Indians",
+    "Punjab Kings",
+    "Rajasthan Royals",
+    "Rising Pune Supergiant",
+    "Royal Challengers Bengaluru",
+    "Sunrisers Hyderabad"
+  ];
+  const [IPL_TEAMS, setIplTeams] = useState<string[]>(IPL_TEAMS_STATIC);
+
+  // Load teams dynamically from the API so admin can update them
+  useState(() => {
+    if (!isIplAuction) return;
+    fetch('/api/ipl/teams').then((r) => r.json()).then((d) => {
+      if (d && Array.isArray(d.teams) && d.teams.length > 0) setIplTeams(d.teams);
+    }).catch(() => {});
+  });
+  const isIplAuction = slug === "ipl-auction";
+  const [teamChoice, setTeamChoice] = useState("");
+
+  function addMember() { if (members.length < max) setMembers((m) => [...m, { name: "", age: "", photoData: "", photoMime: "" }]); }
   function removeMember(i: number) { if (members.length > 1) setMembers((m) => m.filter((_, idx) => idx !== i)); }
   function setMember(i: number, key: keyof Member, val: string) { setMembers((m) => m.map((mm, idx) => (idx === i ? { ...mm, [key]: val } : mm))); }
 
@@ -50,7 +84,7 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
     e.preventDefault();
     setStatus("processing"); setMessage(""); setErrors({});
     const fd = new FormData(e.currentTarget);
-    const cleanMembers = participation === "GROUP" ? members.filter((m) => m.name.trim()).map((m) => ({ name: m.name.trim(), age: m.age ? Number(m.age) : undefined })) : [];
+    const cleanMembers = participation === "GROUP" ? members.filter((m) => m.name.trim()).map((m) => ({ name: m.name.trim(), age: m.age ? Number(m.age) : undefined, photoData: m.photoData, photoMime: m.photoMime })) : [];
 
     if (participation === "GROUP") {
       const v = validateTeam(c, "GROUP", cleanMembers.length);
@@ -58,6 +92,22 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
     }
     if (!consent) { setMessage("Please accept the Terms and Code of Conduct to continue."); setStatus("error"); return; }
     if (isMinor && !guardianConsent) { setMessage("Parent/guardian consent is required for participants under 18."); setStatus("error"); return; }
+
+    if (isIplAuction && !teamChoice) { setMessage("Please choose an IPL team for the IPL Auction."); setStatus("error"); return; }
+
+    if (!photoData || !photoMime) {
+      setMessage("Please upload a passport size photo for the leader/participant.");
+      setStatus("error");
+      return;
+    }
+    if (participation === "GROUP") {
+      const missingPhoto = cleanMembers.some((m) => !m.photoData || !m.photoMime);
+      if (missingPhoto) {
+        setMessage("Please upload a passport size photo for all team members.");
+        setStatus("error");
+        return;
+      }
+    }
 
     const payload: Record<string, unknown> = {
       competitionId: c.id,
@@ -81,6 +131,9 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
       guardianName: fd.get("guardianName") || "",
       guardianPhone: fd.get("guardianPhone") || "",
       guardianConsent,
+      photoData,
+      photoMime,
+      teamChoice: isIplAuction ? teamChoice : undefined,
       company: fd.get("company") || ""
     };
 
@@ -151,11 +204,62 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
           </select>
         </div>
       </div>
+      {isIplAuction && (
+        <div>
+          <label className="text-sm font-500 text-ink/80">Choose your IPL team</label>
+          <select value={teamChoice} onChange={(e) => setTeamChoice(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
+            <option value="">-- Select team --</option>
+            {IPL_TEAMS.map((t) => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </div>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Field name="city" label="Place / City" errors={errors} />
         <Field name="emergencyContact" label="Emergency contact" errors={errors} />
       </div>
       <Field name="institution" label="School / College" errors={errors} required />
+
+      <div>
+        <label className="text-sm font-500 text-ink/80 block">
+          Passport Size Photo (JPEG/PNG, Max 2MB) <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="file"
+          accept="image/jpeg, image/png"
+          required
+          onChange={(e) => {
+            setPhotoError("");
+            const file = e.target.files?.[0];
+            if (!file) {
+              setPhotoData("");
+              setPhotoMime("");
+              return;
+            }
+            if (file.type !== "image/jpeg" && file.type !== "image/png" && file.type !== "image/jpg") {
+              setPhotoError("Only JPEG and PNG formats are supported.");
+              setPhotoData("");
+              setPhotoMime("");
+              return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+              setPhotoError("Photo must be smaller than 2MB.");
+              setPhotoData("");
+              setPhotoMime("");
+              return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const base64 = (reader.result as string).split(",")[1];
+              setPhotoData(base64);
+              setPhotoMime(file.type);
+            };
+            reader.readAsDataURL(file);
+          }}
+          className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gold file:text-midnight hover:file:bg-goldlite"
+        />
+        {photoError && <p className="mt-1 text-xs text-red-600">{photoError}</p>}
+      </div>
+
       <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
       {isTeam && (
@@ -165,12 +269,51 @@ export default function CompetitionRegisterForm({ competition: c }: { competitio
             <button type="button" onClick={addMember} disabled={members.length >= max} className="text-sm font-600 text-gold hover:underline disabled:opacity-40">+ Add member</button>
           </div>
           <p className="mt-0.5 text-xs text-slatey">Maximum {max} members per team.</p>
-          <div className="mt-2 space-y-2">
+          <div className="mt-2 space-y-4">
             {members.map((m, i) => (
-              <div key={i} className="flex gap-2">
-                <input value={m.name} onChange={(e) => setMember(i, "name", e.target.value)} placeholder={`Member ${i + 1} name`} className="flex-1 rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold" />
-                <input value={m.age} onChange={(e) => setMember(i, "age", e.target.value)} placeholder="Age" inputMode="numeric" className="w-20 rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold" />
-                <button type="button" onClick={() => removeMember(i)} disabled={members.length <= 1} className="rounded-lg border border-ink/15 px-3 text-sm text-red-600 hover:border-red-300 disabled:opacity-30">&times;</button>
+              <div key={i} className="space-y-3 rounded-xl border border-ink/10 bg-cream/40 p-4">
+                <div className="flex items-center justify-between border-b border-ink/5 pb-2">
+                  <span className="text-xs font-600 text-slatey">Team Member {i + 1}</span>
+                  <button type="button" onClick={() => removeMember(i)} disabled={members.length <= 1} className="text-xs font-600 text-red-600 hover:underline disabled:opacity-30">Remove</button>
+                </div>
+                <div className="flex gap-2">
+                  <input value={m.name} onChange={(e) => setMember(i, "name", e.target.value)} placeholder={`Member ${i + 1} name`} required className="flex-1 rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                  <input value={m.age} onChange={(e) => setMember(i, "age", e.target.value)} placeholder="Age" inputMode="numeric" required className="w-20 rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                </div>
+                <div>
+                  <label className="text-[11px] font-500 text-ink/75 block mb-1">Passport Photo (JPEG/PNG, Max 2MB) *</label>
+                  <input
+                    type="file"
+                    accept="image/jpeg, image/png"
+                    required
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) {
+                        setMember(i, "photoData", "");
+                        setMember(i, "photoMime", "");
+                        return;
+                      }
+                      if (file.type !== "image/jpeg" && file.type !== "image/png" && file.type !== "image/jpg") {
+                        alert("Only JPEG and PNG formats are supported.");
+                        e.target.value = "";
+                        return;
+                      }
+                      if (file.size > 2 * 1024 * 1024) {
+                        alert("Photo must be smaller than 2MB.");
+                        e.target.value = "";
+                        return;
+                      }
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        const base64 = (reader.result as string).split(",")[1];
+                        setMember(i, "photoData", base64);
+                        setMember(i, "photoMime", file.type);
+                      };
+                      reader.readAsDataURL(file);
+                    }}
+                    className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-1.5 text-xs outline-none focus:border-gold file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[11px] file:font-semibold file:bg-gold file:text-midnight hover:file:bg-goldlite"
+                  />
+                </div>
               </div>
             ))}
           </div>

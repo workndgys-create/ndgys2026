@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { competitionRegistrationSchema } from "@/lib/validation";
+import { competitionRegistrationSchemaWithTeam } from "@/lib/validation";
 import {
   feeForParticipation,
   validateTeam,
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const parsed = competitionRegistrationSchema.safeParse(
+  const parsed = competitionRegistrationSchemaWithTeam.safeParse(
     await req.json().catch(() => null)
   );
 
@@ -197,6 +197,8 @@ export async function POST(req: NextRequest) {
     guardianConsent:
       !!d.guardianConsent,
 
+    teamChoice: (d as any).teamChoice || null,
+
     amount,
 
     status: "PENDING",
@@ -206,6 +208,38 @@ export async function POST(req: NextRequest) {
     await prisma.competitionRegistration.create({
       data: createPayload,
     });
+
+  // Store photos for leader (index 0) and members (index 1..N) if provided
+  try {
+    if (d.photoData && d.photoMime) {
+      await prisma.competitionPhoto.create({
+        data: {
+          competitionRegistrationId: entry.id,
+          memberIndex: 0,
+          mime: d.photoMime,
+          data: Buffer.from(d.photoData, "base64")
+        }
+      });
+    }
+
+    if (d.members && d.members.length > 0) {
+      for (let i = 0; i < d.members.length; i++) {
+        const m = d.members[i];
+        if (m.photoData && m.photoMime) {
+          await prisma.competitionPhoto.create({
+            data: {
+              competitionRegistrationId: entry.id,
+              memberIndex: i + 1,
+              mime: m.photoMime,
+              data: Buffer.from(m.photoData, "base64")
+            }
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error("[competition-register] Failed to save competition photos:", err);
+  }
 
   try {
     const order = await createCashfreeOrder({

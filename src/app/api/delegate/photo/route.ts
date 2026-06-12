@@ -9,13 +9,11 @@ export async function POST(req: NextRequest) {
   if (!delegate) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if ((delegate as any).isCompetition) {
-    return NextResponse.json({ error: "Photo upload not required for competition participants" }, { status: 400 });
-  }
 
   try {
     const body = await req.json().catch(() => null);
-    const { photoData, photoMime } = body || {};
+    const { photoData, photoMime, memberIndex } = body || {};
+    const mIdx = memberIndex !== undefined ? Number(memberIndex) : 0;
 
     if (!photoData || !photoMime) {
       return NextResponse.json({ error: "Photo data and MIME type are required" }, { status: 422 });
@@ -34,12 +32,38 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Photo must be smaller than 2MB" }, { status: 422 });
     }
 
-    // Upsert the photo record linked to this delegate's registration
-    await prisma.registrationPhoto.upsert({
-      where: { registrationId: delegate.id },
-      update: { mime: photoMime, data: buf },
-      create: { registrationId: delegate.id, mime: photoMime, data: buf }
-    });
+    if ((delegate as any).isCompetition) {
+      const compReg = await prisma.competitionRegistration.findUnique({ where: { id: delegate.id } });
+      if (!compReg) {
+        return NextResponse.json({ error: "Registration not found" }, { status: 404 });
+      }
+      if (mIdx < 0 || mIdx > compReg.teamSize - 1) {
+        return NextResponse.json({ error: "Invalid member index" }, { status: 422 });
+      }
+
+      await prisma.competitionPhoto.upsert({
+        where: {
+          competitionRegistrationId_memberIndex: {
+            competitionRegistrationId: delegate.id,
+            memberIndex: mIdx
+          }
+        },
+        update: { mime: photoMime, data: buf },
+        create: {
+          competitionRegistrationId: delegate.id,
+          memberIndex: mIdx,
+          mime: photoMime,
+          data: buf
+        }
+      });
+    } else {
+      // Upsert the photo record linked to this delegate's registration
+      await prisma.registrationPhoto.upsert({
+        where: { registrationId: delegate.id },
+        update: { mime: photoMime, data: buf },
+        create: { registrationId: delegate.id, mime: photoMime, data: buf }
+      });
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {

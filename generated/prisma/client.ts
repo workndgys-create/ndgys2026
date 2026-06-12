@@ -132,6 +132,11 @@ export type Portfolio = Prisma.PortfolioModel
  */
 export type CompetitionRegistration = Prisma.CompetitionRegistrationModel
 /**
+ * Model CompetitionPhoto
+ * 
+ */
+export type CompetitionPhoto = Prisma.CompetitionPhotoModel
+/**
  * Model PromoCode
  * 
  */

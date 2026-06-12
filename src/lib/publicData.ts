@@ -16,14 +16,16 @@ function logPublicDataError(scope: string, error: unknown) {
 /** Reads tracks from the DB with live seats-remaining; falls back to the seed list if the DB is empty/unavailable. */
 export async function getPublicTracks(): Promise<PublicTrack[]> {
   try {
-    const [tracks, paid, portfolioCounts] = await Promise.all([
+    const [tracksRaw, paid, portfolioCounts] = await Promise.all([
       prisma.track.findMany({ orderBy: { createdAt: "asc" } }),
       // Count only registrations that have been allocated a portfolio (and paid).
       prisma.registration.groupBy({ by: ["trackSlug"], where: { status: "PAID", NOT: { portfolio: null } }, _count: true }),
       // Count portfolios per track to derive total seats dynamically
       prisma.portfolio.groupBy({ by: ["trackSlug"], _count: true })
     ]);
-    if (tracks.length === 0) throw new Error("empty");
+    if (tracksRaw.length === 0) throw new Error("empty");
+    // Exclude the "ipl" slug which is a competition (IPL Auction), not a committee
+    const tracks = tracksRaw.filter((t) => (t.slug ?? "") !== "ipl");
     // `paid` here represents count of allocations (PAID + portfolio set)
     const paidMap = new Map((paid as unknown as { trackSlug: string; _count: number }[]).map((p) => [p.trackSlug, p._count]));
     const portfolioMap = new Map((portfolioCounts as unknown as { trackSlug: string; _count: number }[]).map((p) => [p.trackSlug, p._count]));

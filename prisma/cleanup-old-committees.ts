@@ -2,7 +2,7 @@ import { prisma } from "../src/lib/prisma";
 
 const NEW_COMMITTEE_SLUGS = [
   "unsc", "unga", "unhrc", "csw", "unicef", "unep", "wto", 
-  "aippm", "lok-sabha", "war-cabinet", "ipl"
+  "aippm", "lok-sabha", "war-cabinet"
 ];
 
 async function cleanup() {

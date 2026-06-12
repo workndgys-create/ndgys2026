@@ -13,12 +13,11 @@ export const TRACKS = [
   { slug: "international-press", name: "International Press", fee: 2000, capacity: 130, difficulty: "Intermediate", agenda: "Real-time summit journalism through reporting, caricature and photography." },
   { slug: "aippm", name: "All India Political Parties Meet", fee: 1500, capacity: 60, difficulty: "Beginner", agenda: "National multiparty dialogue and consensus building." },
   { slug: "lok-sabha", name: "Lok Sabha", fee: 1500, capacity: 60, difficulty: "Beginner", agenda: "Parliamentary debate and lawmaking." },
-  { slug: "war-cabinet", name: "Indian War Cabinet", fee: 1500, capacity: 30, difficulty: "Advanced", agenda: "Crisis governance and strategic decision-making." },
-  { slug: "ipl", name: "Indian Premier League", fee: 1500, capacity: 40, difficulty: "Beginner", agenda: "Sports governance and league administration." }
+  { slug: "war-cabinet", name: "Indian War Cabinet", fee: 1500, capacity: 30, difficulty: "Advanced", agenda: "Crisis governance and strategic decision-making." }
 ] as const;
 
 export const seedTrackBySlug = (slug: string) => TRACKS.find((t) => t.slug === slug);
-export const BEGINNER_TRACK_SLUGS = new Set<string>(["unep", "aippm"]);
+export const BEGINNER_TRACK_SLUGS = new Set<string>(["unep", "aippm", "unsc"]);
 export const isBeginnerTrackSlug = (slug: string) => BEGINNER_TRACK_SLUGS.has(slug);
 
 export const GENDERS = ["male", "female", "other"] as const;
@@ -97,10 +96,12 @@ export const profileSchema = z.object({
 
 export const competitionMemberSchema = z.object({
   name: z.string().trim().min(2, "Member name is too short").max(120),
-  age: z.coerce.number().int().min(5).max(99).optional()
+  age: z.coerce.number().int().min(5).max(99).optional(),
+  photoData: z.string().optional(),
+  photoMime: z.string().optional()
 });
 
-export const competitionRegistrationSchema = z.object({
+const competitionRegistrationBase = z.object({
   competitionId: z.string().min(1, "Choose a competition"),
   participation: z.enum(["SOLO", "GROUP"]),
   teamName: z.string().trim().max(120).optional().or(z.literal("")),
@@ -122,8 +123,12 @@ export const competitionRegistrationSchema = z.object({
   guardianName: z.string().trim().max(120).optional().or(z.literal("")),
   guardianPhone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
   guardianConsent: z.coerce.boolean().optional(),
+  photoData: z.string().optional(),
+  photoMime: z.string().optional(),
   company: z.string().max(0).optional() // honeypot
-}).superRefine((v, ctx) => {
+});
+
+function refineCompetitionRegistration(v: z.infer<typeof competitionRegistrationBase>, ctx: z.RefinementCtx) {
   if (v.participation === "GROUP") {
     if (!v.teamName || !v.teamName.trim()) ctx.addIssue({ code: "custom", path: ["teamName"], message: "Team name is required for group entries" });
     if (v.members.length === 0) ctx.addIssue({ code: "custom", path: ["members"], message: "Add at least one team member" });
@@ -136,15 +141,23 @@ export const competitionRegistrationSchema = z.object({
   if ((v.howHeard === "Friend / Word of mouth" || v.howHeard === "Other") && !v.howHeardDetail?.trim()) {
     ctx.addIssue({ code: "custom", path: ["howHeardDetail"], message: "Please add a short description" });
   }
-});
+}
+
+export const competitionRegistrationSchema = competitionRegistrationBase.superRefine(refineCompetitionRegistration);
 export type CompetitionRegistrationInput = z.infer<typeof competitionRegistrationSchema>;
+
+// allow optional teamChoice for competitions (e.g., IPL Auction)
+export const competitionRegistrationSchemaWithTeam = competitionRegistrationBase.extend({ teamChoice: z.string().optional().or(z.literal("") ) }).superRefine(refineCompetitionRegistration);
 
 export const delegationMemberSchema = z.object({
   fullName: z.string().trim().min(2, "Enter the delegate's name").max(120),
   email: z.string().trim().email("Enter a valid email").optional().or(z.literal("")),
   phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
   track: z.string().min(1, "Choose a committee"),
-  portfolioId: z.string().optional().or(z.literal(""))
+  portfolioId: z.string().optional().or(z.literal("")),
+  age: z.coerce.number().int().min(8).max(99).optional(),
+  photoData: z.string().optional(),
+  photoMime: z.string().optional()
 });
 export const delegationSchema = z.object({
   schoolName: z.string().trim().min(2, "Enter the school / institution").max(160),
