@@ -17,7 +17,7 @@ export const TRACKS = [
 ] as const;
 
 export const seedTrackBySlug = (slug: string) => TRACKS.find((t) => t.slug === slug);
-export const BEGINNER_TRACK_SLUGS = new Set<string>(["unep", "aippm", "unsc"]);
+export const BEGINNER_TRACK_SLUGS = new Set<string>(["unep", "aippm"]);
 export const isBeginnerTrackSlug = (slug: string) => BEGINNER_TRACK_SLUGS.has(slug);
 
 export const GENDERS = ["male", "female", "other"] as const;
@@ -173,7 +173,7 @@ export const delegationSchema = z.object({
 export type DelegationInput = z.infer<typeof delegationSchema>;
 
 // Additional delegation-level refinements (age restrictions per committee)
-const AGE_18_TRACK_SLUGS = new Set<string>(["unsc", "aippm"]);
+const AGE_18_TRACK_SLUGS = new Set<string>(["unsc"]);
 
 function refineDelegation(v: z.infer<typeof delegationSchema>, ctx: z.RefinementCtx) {
   for (let i = 0; i < v.members.length; i++) {
@@ -181,6 +181,14 @@ function refineDelegation(v: z.infer<typeof delegationSchema>, ctx: z.Refinement
     if (AGE_18_TRACK_SLUGS.has(m.track)) {
       if (typeof m.age !== "number" || m.age < 18) {
         ctx.addIssue({ code: "custom", path: ["members", String(i), "age"], message: `Members in this committee must be 18 or older` });
+      }
+    }
+    // Enforce beginner age range for beginner-designated committees
+    if (BEGINNER_TRACK_SLUGS.has(m.track)) {
+      if (typeof m.age !== "number") {
+        ctx.addIssue({ code: "custom", path: ["members", String(i), "age"], message: "Age is required for beginner committees (12-16 only)." });
+      } else if (m.age < 12 || m.age > 16) {
+        ctx.addIssue({ code: "custom", path: ["members", String(i), "age"], message: "Beginner committees are only open to delegates aged 12-16." });
       }
     }
   }
