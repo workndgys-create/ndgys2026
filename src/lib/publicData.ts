@@ -24,8 +24,16 @@ export async function getPublicTracks(): Promise<PublicTrack[]> {
       prisma.portfolio.groupBy({ by: ["trackSlug"], _count: true })
     ]);
     if (tracksRaw.length === 0) throw new Error("empty");
-    // Exclude the "ipl" slug which is a competition (IPL Auction), not a committee
-    const tracks = tracksRaw.filter((t) => (t.slug ?? "") !== "ipl");
+    // Exclude any track that represents the IPL competition so it is not shown as a committee.
+    // Be defensive: filter by slug or name case-insensitively and also exclude slugs that contain 'ipl'.
+    const tracks = tracksRaw.filter((t) => {
+      const slug = String(t.slug || "").trim().toLowerCase();
+      const name = String(t.name || "").trim().toLowerCase();
+      if (!slug) return true;
+      if (slug === "ipl" || slug.includes("ipl")) return false;
+      if (name.includes("indian premier league") || name === "ipl") return false;
+      return true;
+    });
     // `paid` here represents count of allocations (PAID + portfolio set)
     const paidMap = new Map((paid as unknown as { trackSlug: string; _count: number }[]).map((p) => [p.trackSlug, p._count]));
     const portfolioMap = new Map((portfolioCounts as unknown as { trackSlug: string; _count: number }[]).map((p) => [p.trackSlug, p._count]));
