@@ -80,6 +80,31 @@ export async function POST(req: NextRequest) {
   }
 
   // Create the PENDING registration first (so the hold can reference it)
+  // If delegate2 details were provided (UNSC double delegation), include them inside customAnswers
+  const answersToStore = Array.isArray(answers) ? [...answers] : [];
+  if (body?.delegate2FullName) {
+    try {
+      const d2 = {
+        fullName: body.delegate2FullName,
+        email: body.delegate2Email,
+        phone: body.delegate2Phone,
+        institution: body.delegate2Institution,
+        age: body.delegate2Age ?? null,
+        city: body.delegate2City ?? null,
+        gender: body.delegate2Gender ?? null,
+        emergencyContact: body.delegate2EmergencyContact ?? null,
+        guardianName: body.guardianName2 ?? null,
+        guardianPhone: body.guardianPhone2 ?? null,
+        guardianConsent: !!body.guardianConsent2,
+        photoData: body.photoData2 ?? null,
+        photoMime: body.photoMime2 ?? null
+      };
+      answersToStore.push({ questionId: "delegate2", label: "Delegate 2", value: JSON.stringify(d2) });
+    } catch (err) {
+      // ignore
+    }
+  }
+
   const createPayload: any = {
     fullName: data.fullName, email: data.email, phone: data.phone,
     institution: data.institution || null, trackSlug: track.slug, trackName: track.name,
@@ -87,7 +112,7 @@ export async function POST(req: NextRequest) {
     age: data.age ?? null, city: data.city || null, gender: data.gender ?? null,
     emergencyContact: data.emergencyContact || null, howHeard: howHeard || null, notes: data.notes || null,
     consentAccepted: true, guardianName: data.guardianName || null, guardianPhone: data.guardianPhone || null, guardianConsent: !!data.guardianConsent,
-    customAnswers: answers.length ? JSON.stringify(answers) : null
+    customAnswers: answersToStore.length ? JSON.stringify(answersToStore) : null
   };
 
   const reg = await prisma.registration.create({ data: createPayload });

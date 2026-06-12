@@ -43,6 +43,19 @@ export const registrationSchema = z.object({
   customAnswers: z.array(z.object({ questionId: z.string(), label: z.string().max(300), value: z.union([z.string().max(2000), z.array(z.string().max(500))]) })).optional(),
   photoData: z.string().optional(),
   photoMime: z.string().optional(),
+  // Delegate 2 support for certain committees (e.g., UNSC)
+  delegate2FullName: z.string().trim().min(2).max(120).optional().or(z.literal("")),
+  delegate2Email: z.string().trim().email("Enter a valid email").optional().or(z.literal("")),
+  delegate2Phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
+  delegate2Age: z.coerce.number().int().min(8).max(99).optional(),
+  delegate2City: z.string().trim().max(120).optional().or(z.literal("")),
+  delegate2Gender: z.enum(GENDERS).optional(),
+  delegate2EmergencyContact: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
+  photoData2: z.string().optional(),
+  photoMime2: z.string().optional(),
+  guardianName2: z.string().trim().max(120).optional().or(z.literal("")),
+  guardianPhone2: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
+  guardianConsent2: z.coerce.boolean().optional(),
   // honeypot — must be empty
   company: z.string().max(0).optional()
 }).superRefine((v, ctx) => {
@@ -58,6 +71,17 @@ export const registrationSchema = z.object({
     if (!v.guardianName || !v.guardianName.trim()) ctx.addIssue({ code: "custom", path: ["guardianName"], message: "Parent/guardian name is required for delegates under 18" });
     if (!v.guardianPhone || !v.guardianPhone.trim()) ctx.addIssue({ code: "custom", path: ["guardianPhone"], message: "Parent/guardian contact is required for delegates under 18" });
     if (!v.guardianConsent) ctx.addIssue({ code: "custom", path: ["guardianConsent"], message: "Parent/guardian consent is required for delegates under 18" });
+  }
+  // Delegate 2 validation for committees that require two delegates (e.g., UNSC)
+  if (v.track === "unsc") {
+    if (!v.delegate2FullName || !v.delegate2FullName.trim()) ctx.addIssue({ code: "custom", path: ["delegate2FullName"], message: "Please provide full name for Delegate 2" });
+    if (!v.delegate2Email || !v.delegate2Email.trim()) ctx.addIssue({ code: "custom", path: ["delegate2Email"], message: "Please provide email for Delegate 2" });
+    if (!v.photoData2) ctx.addIssue({ code: "custom", path: ["photoData2"], message: "Passport size photo is required for Delegate 2" });
+    if (typeof v.delegate2Age === "number" && v.delegate2Age < 18) {
+      if (!v.guardianName2 || !v.guardianName2.trim()) ctx.addIssue({ code: "custom", path: ["guardianName2"], message: "Parent/guardian name is required for Delegate 2 under 18" });
+      if (!v.guardianPhone2 || !v.guardianPhone2.trim()) ctx.addIssue({ code: "custom", path: ["guardianPhone2"], message: "Parent/guardian contact is required for Delegate 2 under 18" });
+      if (!v.guardianConsent2) ctx.addIssue({ code: "custom", path: ["guardianConsent2"], message: "Parent/guardian consent is required for Delegate 2 under 18" });
+    }
   }
   if ((v.howHeard === "Friend / Word of mouth" || v.howHeard === "Other") && !v.howHeardDetail?.trim()) {
     ctx.addIssue({ code: "custom", path: ["howHeardDetail"], message: "Please add a short description" });
