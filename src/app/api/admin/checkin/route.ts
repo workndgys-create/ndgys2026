@@ -171,14 +171,15 @@ if (!id && scanQ) {
   });
 }
 
-if (
-  (!target || target.status !== "PAID") &&
-  (!competitionTarget ||
-    competitionTarget.status !== "PAID")
-) {
+if (!target && !competitionTarget) {
   return NextResponse.json(
     {
-      error: "No paid participant found for this scan.",
+      error: "No paid participant found.",
+      debug: {
+        scanQ,
+        competitionFound: !!competitionTarget,
+        munFound: !!target,
+      },
     },
     { status: 404 }
   );
