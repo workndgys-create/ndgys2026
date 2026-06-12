@@ -165,7 +165,7 @@ if (!id && scanQ) {
     
     
     
-    else if (id) {
+    }  else if (id) {
   target = await prisma.registration.findUnique({
     where: { id },
   });
