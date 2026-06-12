@@ -8,8 +8,6 @@ const stats = [
   { value: 5000, suffix: "+", label: "Expected Delegates" },
   { value: 4, suffix: ".0", label: "Edition" }
 
-  { value: 5000, suffix: "+", label: "Expected Attendees" }
-
 ];
 
 function useCountUp(target: number, run: boolean, ms = 1400) {
