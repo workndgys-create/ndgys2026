@@ -127,7 +127,7 @@ if (!alreadyChecked) {
 setScanMessage("Participant checked in successfully.");     
     }
   }
-
+  }
   return (
     <AdminShell title="Check-in">
       <Panel
@@ -153,11 +153,12 @@ setScanMessage("Participant checked in successfully.");
       >
         <form onSubmit={search} className="flex gap-2">
           <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            autoFocus
-            placeholder="Scan QR or type competition reference ID”            className="flex-1 rounded-lg border border-ink/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-gold"
-          />
+  value={q}
+  onChange={(e) => setQ(e.target.value)}
+  autoFocus
+  placeholder="Scan QR or type competition reference ID"
+  className="flex-1 rounded-lg border border-ink/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-gold"
+/>
           <button className="rounded-full bg-midnight px-6 py-2.5 text-sm font-600 text-cream hover:bg-royal">Search</button>
         </form>
         <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-slatey">
