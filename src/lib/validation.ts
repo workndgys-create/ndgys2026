@@ -171,3 +171,20 @@ export const delegationSchema = z.object({
   company: z.string().max(0).optional() // honeypot
 });
 export type DelegationInput = z.infer<typeof delegationSchema>;
+
+// Additional delegation-level refinements (age restrictions per committee)
+const AGE_18_TRACK_SLUGS = new Set<string>(["unsc", "aippm"]);
+
+function refineDelegation(v: z.infer<typeof delegationSchema>, ctx: z.RefinementCtx) {
+  for (let i = 0; i < v.members.length; i++) {
+    const m = v.members[i];
+    if (AGE_18_TRACK_SLUGS.has(m.track)) {
+      if (typeof m.age !== "number" || m.age < 18) {
+        ctx.addIssue({ code: "custom", path: ["members", String(i), "age"], message: `Members in this committee must be 18 or older` });
+      }
+    }
+  }
+}
+
+export const delegationSchemaWithRefine = delegationSchema.superRefine(refineDelegation);
+export type DelegationInputWithRefine = z.infer<typeof delegationSchemaWithRefine>;
