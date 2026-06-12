@@ -36,7 +36,7 @@ const GROUPS: NavGroup[] = [
   ]},
   { title: "Administration", items: [
     { href: "/admin/team", label: "Team & Roles", icon: "👥", perm: "team.manage" },
-    { href: "/admin/promo-codes", label: "Promo Codes", icon: "%", perm: "settings.manage" },
+    { href: "/admin/promo-codes", label: "Promo Codes", icon: "%", perm: "payments.manage" },
     { href: "/admin/settings", label: "Settings", icon: "⚙", perm: "settings.manage" }
   ]}
 ];

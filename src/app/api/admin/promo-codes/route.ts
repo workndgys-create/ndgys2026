@@ -15,7 +15,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const s = await requirePermission("settings.manage");
+  const s = await requirePermission("payments.manage");
   if (!s) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   try {
     const b = await req.json().catch(() => null);
