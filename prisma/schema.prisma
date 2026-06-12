@@ -317,6 +317,8 @@ model CompetitionRegistration {
   guardianConsent   Boolean  @default(false)
   gatewayOrderId   String?  @unique
   gatewayPaymentId String?
+  checkedIn   Boolean   @default(false)
+  checkedInAt DateTime?
   photos            CompetitionPhoto[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
