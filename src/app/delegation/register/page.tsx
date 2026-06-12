@@ -19,6 +19,7 @@ function loadCashfree(): Promise<boolean> {
 type Member = { fullName: string; email: string; phone: string; track: string; age: string; experience?: string; photoData?: string; photoMime?: string };
 
 export default function DelegationRegisterPage() {
+  const BEGINNER_CLIENT = new Set<string>(["unep", "aippm"]);
   const [members, setMembers] = useState<Member[]>([ 
     { fullName: "", email: "", phone: "", track: "", age: "", experience: "beginner", photoData: "", photoMime: "" },
     { fullName: "", email: "", phone: "", track: "", age: "", experience: "beginner", photoData: "", photoMime: "" }
@@ -207,42 +208,46 @@ export default function DelegationRegisterPage() {
                     </div>
                                     <div>
                                       <label className="text-xs font-500 text-ink/80 block mb-1">Age *</label>
-                                      <input value={m.age} onChange={(e) => setM(i, "age", e.target.value)} placeholder="Age" inputMode="numeric" type="number" min={8} max={99} required className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                                      {
+                                        BEGINNER_CLIENT.has(m.track) ? (
+                                          <>
+                                            <input value={m.age} onChange={(e) => setM(i, "age", e.target.value)} placeholder="Age" inputMode="numeric" type="number" min={12} max={16} required className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                                            {(!m.age || Number(m.age) < 12 || Number(m.age) > 16) ? (
+                                              <p className="mt-1 text-xs text-red-600">Beginner committees require delegates aged 12–16.</p>
+                                            ) : (
+                                              <p className="mt-1 text-xs text-ink/70">Beginner committee — age 12–16 required.</p>
+                                            )}
+                                          </>
+                                        ) : (
+                                          <input value={m.age} onChange={(e) => setM(i, "age", e.target.value)} placeholder="Age" inputMode="numeric" type="number" min={8} max={99} required className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                                        )
+                                      }
                                     </div>
                     <div>
                       <label className="text-xs font-500 text-ink/80 block mb-1">MUN Committee *</label>
                       <div className="flex gap-2">
                         <input value={committeeSearch} onChange={(e) => setCommitteeSearch(e.target.value)} placeholder="Search" className="w-20 rounded-lg border border-ink/15 bg-paper px-2 py-1 text-xs outline-none focus:border-gold" />
-                        <div className="flex-1">
-                          <div className="rounded-t-md bg-ink/60 text-cream px-3 py-2 text-sm font-600">
-                            {tracks.find((t) => t.value === m.track)?.label || "Select committee"}
-                          </div>
-                          <select
-                            size={8}
-                            value={`${m.track}::${m.experience ?? "beginner"}`}
-                            onChange={(e) => {
-                              const val = e.target.value || "";
-                              const parts = val.split("::");
-                              const slug = parts[0] || "";
-                              const level = parts[1] || "beginner";
-                              setM(i, "track", slug);
-                              setM(i, "experience", level);
-                            }}
-                            className="w-full rounded-b-md border border-ink/15 bg-cream px-2 py-2 text-sm outline-none focus:border-gold h-40 overflow-auto"
-                          >
-                            {tracks
-                              .filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase()))
-                              .flatMap((t) => {
-                                const note = (t.label.includes("Environment Programme") || t.label.includes("All India Political Parties Meet") || t.value === "unep" || t.value === "aippm")
-                                  ? " (Beginner, age 12-16)" : "";
-                                return [
-                                  <option key={`${t.value}::beginner`} value={`${t.value}::beginner`}>{`${t.label}${note}`}</option>,
-                                  <option key={`${t.value}::intermediate`} value={`${t.value}::intermediate`}>{`${t.label} – Intermediate`}</option>,
-                                  <option key={`${t.value}::advanced`} value={`${t.value}::advanced`}>{`${t.label} – Advanced`}</option>
-                                ];
-                              })}
-                          </select>
-                        </div>
+                        <select
+                          value={`${m.track}::${m.experience ?? "beginner"}`}
+                          onChange={(e) => {
+                            const val = e.target.value || "";
+                            const parts = val.split("::");
+                            const slug = parts[0] || "";
+                            const level = parts[1] || "beginner";
+                            setM(i, "track", slug);
+                            setM(i, "experience", level);
+                          }}
+                          className="flex-1 rounded-lg border border-ink/15 bg-paper px-2 py-2 text-xs outline-none focus:border-gold"
+                        >
+                          {tracks.filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase())).flatMap((t) => {
+                            const note = (t.value === "unep" || t.value === "aippm" || t.label.includes("Environment Programme") || t.label.includes("All India Political Parties Meet")) ? " (Beginner, age 12-16)" : "";
+                            return [
+                              <option key={`${t.value}::beginner`} value={`${t.value}::beginner`}>{`${t.label}${note}`}</option>,
+                              <option key={`${t.value}::intermediate`} value={`${t.value}::intermediate`}>{`${t.label} – Intermediate`}</option>,
+                              <option key={`${t.value}::advanced`} value={`${t.value}::advanced`}>{`${t.label} – Advanced`}</option>
+                            ];
+                          })}
+                        </select>
                       </div>
                     </div>
                   </div>
