@@ -34,7 +34,10 @@ enum RegSource {
 enum AnnouncementAudience {
   ALL
   PAID
+  MUN_ALL
   TRACK
+  COMPETITION_ALL
+  COMPETITION
 }
 
 model Registration {
@@ -194,6 +197,7 @@ model Announcement {
   body        String
   audience    AnnouncementAudience @default(ALL)
   trackSlug   String?
+  competitionId String?
   publishedAt DateTime             @default(now())
 }
 

@@ -14,12 +14,15 @@ export default function AnnouncementsPage() {
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
   const [tracks, setTracks] = useState<{ value: string; label: string }[]>([]);
+  const [competitions, setCompetitions] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
     void (async () => {
       try {
         const r = await fetch("/api/public/tracks");
         if (r.ok) setTracks(await r.json());
+        const c = await fetch("/api/admin/competitions");
+        if (c.ok) setCompetitions(await c.json());
       } catch (_) { /* ignore */ }
     })();
   }, []);
@@ -52,16 +55,23 @@ export default function AnnouncementsPage() {
         <Panel title="New announcement">
           <form onSubmit={submit} className="space-y-3">
             <input name="title" required placeholder="Title" className="w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold" />
-            <textarea name="body" required rows={5} placeholder="Message to delegates…" className="w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold" />
+            <textarea name="body" required rows={5} placeholder="Message to recipients…" className="w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold" />
             <div className="grid grid-cols-2 gap-2">
               <select name="audience" value={audience} onChange={(e) => setAudience(e.target.value)} className="rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold">
-                <option value="ALL">All delegates</option>
-                <option value="PAID">Paid delegates</option>
-                <option value="TRACK">Specific track</option>
+                <option value="ALL">All Participants</option>
+                <option value="MUN_ALL">All MUN Delegates</option>
+                <option value="TRACK">Specific MUN Committee</option>
+                <option value="COMPETITION_ALL">All Competition Participants</option>
+                <option value="COMPETITION">Specific Competition</option>
               </select>
               {audience === "TRACK" && (
                 <select name="trackSlug" required className="rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold">
                   {tracks.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                </select>
+              )}
+              {audience === "COMPETITION" && (
+                <select name="competitionId" required className="rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold">
+                  {competitions.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
                 </select>
               )}
             </div>
