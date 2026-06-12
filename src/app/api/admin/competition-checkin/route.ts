@@ -4,31 +4,43 @@ import { currentAdmin, audit } from "@/lib/adminSession";
 
 export const runtime = "nodejs";
 
-export async function GET(req: NextRequest) {
-  const q = req.nextUrl.searchParams.get("q")?.trim() || "";
+function normaliseCompetitionScan(raw: string): string {
+  let refId = raw.trim();
 
-  const results = q
-    ? await prisma.competitionRegistration.findMany({
-        where: {
-          status: "PAID",
-          OR: [
-            { refId: q },
-            { email: { contains: q, mode: "insensitive" } },
-          ],
-        },
-        select: {
-          id: true,
-          refId: true,
-          leaderName: true,
-          competitionTitle: true,
-          checkedIn: true,
-          checkedInAt: true,
-        },
-        take: 10,
-      })
-    : [];
+  // Handle verify URLs
+  try {
+    const url = new URL(refId);
 
-  return NextResponse.json({ results });
+    if (url.pathname.includes("/verify/")) {
+      refId = decodeURIComponent(
+        url.pathname.split("/verify/").pop() || ""
+      );
+    }
+  } catch {
+    // Not a URL, continue
+  }
+
+  // Handle plain verify URLs without URL parsing
+  if (refId.includes("/verify/")) {
+    refId = decodeURIComponent(
+      refId.split("/verify/").pop() || ""
+    );
+  }
+
+  // Remove QR signature
+  // NDGYS-C-2026-26N3.542c5e5ba6425159
+  // becomes
+  // NDGYS-C-2026-26N3
+  const dot = refId.lastIndexOf(".");
+
+  if (
+    refId.startsWith("NDGYS-C-") &&
+    dot > 0
+  ) {
+    refId = refId.substring(0, dot);
+  }
+
+  return refId;
 }
 
 export async function POST(req: NextRequest) {
@@ -43,48 +55,57 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => null);
 
-  const q = body?.q?.trim();
+  const q =
+    typeof body?.q === "string"
+      ? normaliseCompetitionScan(body.q)
+      : "";
 
   if (!q) {
     return NextResponse.json(
-      { error: "Scan value required" },
+      { error: "Invalid QR code." },
       { status: 422 }
     );
   }
 
-  const registration = await prisma.competitionRegistration.findFirst({
-    where: {
-      status: "PAID",
-      OR: [
-        { refId: q },
-        { email: { contains: q, mode: "insensitive" } },
-      ],
-    },
-  });
+  console.log("Competition scan:", q);
 
-  if (!registration) {
+  const participant =
+    await prisma.competitionRegistration.findFirst({
+      where: {
+        refId: q,
+        status: "PAID",
+      },
+    });
+
+  if (!participant) {
     return NextResponse.json(
-      { error: "No paid competition participant found." },
+      {
+        error:
+          "No paid competition participant found.",
+      },
       { status: 404 }
     );
   }
 
-  if (registration.checkedIn) {
+  // Already checked in
+  if (participant.checkedIn) {
     return NextResponse.json({
       ok: true,
       alreadyCheckedIn: true,
-      checkedInAt: registration.checkedInAt,
-      registration,
+      participant,
     });
   }
 
-  const updated = await prisma.competitionRegistration.update({
-    where: { id: registration.id },
-    data: {
-      checkedIn: true,
-      checkedInAt: new Date(),
-    },
-  });
+  const updated =
+    await prisma.competitionRegistration.update({
+      where: {
+        id: participant.id,
+      },
+      data: {
+        checkedIn: true,
+        checkedInAt: new Date(),
+      },
+    });
 
   await audit(
     admin.email,
@@ -96,6 +117,6 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     ok: true,
-    registration: updated,
+    participant: updated,
   });
 }
