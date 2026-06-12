@@ -49,7 +49,7 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
 
   const fee = useMemo(() => feeForParticipation(c, participation) ?? 0, [c, participation]);
 
-  const IPL_TEAMS = [
+  const IPL_TEAMS_STATIC = [
     "Chennai Super Kings",
     "Deccan Chargers",
     "Delhi Capitals",
@@ -64,6 +64,15 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
     "Royal Challengers Bengaluru",
     "Sunrisers Hyderabad"
   ];
+  const [IPL_TEAMS, setIplTeams] = useState<string[]>(IPL_TEAMS_STATIC);
+
+  // Load teams dynamically from the API so admin can update them
+  useState(() => {
+    if (!isIplAuction) return;
+    fetch('/api/ipl/teams').then((r) => r.json()).then((d) => {
+      if (d && Array.isArray(d.teams) && d.teams.length > 0) setIplTeams(d.teams);
+    }).catch(() => {});
+  });
   const isIplAuction = slug === "ipl-auction";
   const [teamChoice, setTeamChoice] = useState("");
 
