@@ -311,6 +311,7 @@ model CompetitionRegistration {
   pastExperience    String?
   answers           String?  // JSON array of { q, a } for the competition's custom questions
   consentAccepted   Boolean  @default(false)
+  teamChoice       String?
   guardianName      String?
   guardianPhone     String?
   guardianConsent   Boolean  @default(false)
