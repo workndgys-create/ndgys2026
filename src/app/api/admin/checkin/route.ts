@@ -92,10 +92,40 @@ export async function POST(req: NextRequest) {
 let target: any = null;
 let competitionTarget: any = null;
 
+
+
+    // If not found, try competitions
+    if (!target) {
+
 if (!id && scanQ) {
   const sigDot = scanQ.lastIndexOf(".");
 
-  if (sigDot > 0) {
+  // Competition QR
+  if (scanQ.startsWith("NDGYS-C-")) {
+    let competitionRef = scanQ;
+
+    if (sigDot > 0) {
+      competitionRef = scanQ.substring(0, sigDot);
+    }
+
+    competitionTarget =
+      await prisma.competitionRegistration.findFirst({
+        where: {
+          status: "PAID",
+          OR: [
+            { refId: competitionRef },
+            {
+              email: {
+                contains: competitionRef,
+                mode: "insensitive",
+              },
+            },
+          ],
+        },
+      });
+
+  // MUN signed QR
+  } else if (sigDot > 0) {
     const dId = scanQ.slice(0, sigDot);
     const sig = scanQ.slice(sigDot + 1);
 
@@ -112,8 +142,9 @@ if (!id && scanQ) {
         delegateId: dId,
       },
     });
+
+  // Manual MUN lookup
   } else {
-    // First try MUN registrations
     target = await prisma.registration.findFirst({
       where: {
         status: "PAID",
@@ -128,38 +159,13 @@ if (!id && scanQ) {
         ],
       },
     });
-
-    // If not found, try competitions
-    if (!target) {
-      let competitionRef = scanQ;
-
-const dot = scanQ.lastIndexOf(".");
-
-if (
-  scanQ.startsWith("NDGYS-C-") &&
-  dot > 0
-) {
-  competitionRef = scanQ.substring(0, dot);
-}
-
-competitionTarget =
-  await prisma.competitionRegistration.findFirst({
-    where: {
-      status: "PAID",
-      OR: [
-        { refId: competitionRef },
-        {
-          email: {
-            contains: competitionRef,
-            mode: "insensitive",
-          },
-        },
-      ],
-    },
-  });
-    }
   }
-} else if (id) {
+}
+    
+    
+    
+    
+    else if (id) {
   target = await prisma.registration.findUnique({
     where: { id },
   });
