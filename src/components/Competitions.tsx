@@ -33,6 +33,7 @@ export default async function Competitions() {
             const imageSrc = c.imageUrl || COMPETITION_IMAGES[c.slug];
             return (
             <Reveal key={c.id} delay={(i % 3) * 90}>
+              <>
               <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-ink/10 bg-cream shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
                 {imageSrc ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -55,7 +56,6 @@ export default async function Competitions() {
                             : ""}
                     </p>
                   )}
-                  <p className="mt-2 text-xs font-600 text-ink/70">Participation certificate will be provided by the organising venue.</p>
                   <div className="mt-4 flex items-center justify-between">
                     <span />
                     {c.registrationOpen && (c.feeSolo || c.feeGroup)
@@ -66,6 +66,20 @@ export default async function Competitions() {
                   </div>
                 </div>
               </article>
+              {c.slug === "dispatch-02" && (
+                <div className="mt-4 rounded-lg border border-ink/10 bg-white/50 p-4">
+                  <h4 className="font-display text-lg font-700 text-ink">dispatch-02 — Pick your track</h4>
+                  <p className="mt-2 text-sm text-ink/70">Choose one of the tracks below to participate. Click any track to learn more or register.</p>
+                  <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                    {items.map((t: any) => (
+                      <li key={`track-${t.slug}`}>
+                        <Link href={`/competitions/${t.slug}`} className="text-sm text-gold hover:underline">{t.title}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              </>
             </Reveal>
             );
           })}
