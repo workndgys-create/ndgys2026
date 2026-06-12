@@ -14,7 +14,7 @@ function normaliseScanQuery(raw: string): string {
       if (id) return id;
     }
   } catch {
-    // plain text scan, keep original handling below
+    // plain text scan, keep original hand
   }
   if (q.includes("/verify/")) {
     const id = decodeURIComponent(q.split("/verify/").pop() || "").trim();
