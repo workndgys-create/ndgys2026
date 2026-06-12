@@ -214,7 +214,6 @@ export default function DelegationRegisterPage() {
                       <div className="flex gap-2">
                         <input value={committeeSearch} onChange={(e) => setCommitteeSearch(e.target.value)} placeholder="Search" className="w-20 rounded-lg border border-ink/15 bg-paper px-2 py-1 text-xs outline-none focus:border-gold" />
                         <select
-                          size={6}
                           value={`${m.track}::${m.experience ?? "beginner"}`}
                           onChange={(e) => {
                             const val = e.target.value || "";
@@ -224,7 +223,7 @@ export default function DelegationRegisterPage() {
                             setM(i, "track", slug);
                             setM(i, "experience", level);
                           }}
-                          className="flex-1 rounded-lg border border-ink/15 bg-paper px-2 py-2 text-xs outline-none focus:border-gold h-40 overflow-auto"
+                          className="flex-1 rounded-lg border border-ink/15 bg-paper px-2 py-2 text-xs outline-none focus:border-gold"
                         >
                           {tracks.filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase())).flatMap((t) => [
                             <option key={`${t.value}::beginner`} value={`${t.value}::beginner`}>{`${t.label} – Beginner`}</option>,
