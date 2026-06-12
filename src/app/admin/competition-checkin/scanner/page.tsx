@@ -22,7 +22,7 @@ export default function CompetitionScannerPage() {
     let mounted = true;
 
     async function checkAuth() {
-      const r = await fetch("/api/admin/competition-scanner");
+     const r = await fetch("/api/admin/competition-checkin/scanner");
       if (r.status === 401) return router.push("/admin/login");
       await r.json().catch(() => ({}));
       if (!mounted) return;
@@ -57,7 +57,7 @@ export default function CompetitionScannerPage() {
     setScanMessage(null);
 
     // Search
-    const r = await fetch(`/api/admin/competition-scanner?q=${encodeURIComponent(qtrim)}`);
+    const r = await fetch(`/api/admin/competition-checkin/scanner?q=${encodeURIComponent(qtrim)}`);
     if (r.status === 401) return router.push("/admin/login");
 
     const data = await r.json().catch(() => ({}));
@@ -90,7 +90,7 @@ export default function CompetitionScannerPage() {
     }
 
     // Auto check-in
-    const markRes = await fetch("/api/admin/competition-scanner", {
+    const markRes = await fetch("/api/admin/competition-checkin/scanner", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ q: qtrim }),
