@@ -131,21 +131,32 @@ if (!id && scanQ) {
 
     // If not found, try competitions
     if (!target) {
-      competitionTarget =
-        await prisma.competitionRegistration.findFirst({
-          where: {
-            status: "PAID",
-            OR: [
-              { refId: scanQ },
-              {
-                email: {
-                  contains: scanQ,
-                  mode: "insensitive",
-                },
-              },
-            ],
+      let competitionRef = scanQ;
+
+const dot = scanQ.lastIndexOf(".");
+
+if (
+  scanQ.startsWith("NDGYS-C-") &&
+  dot > 0
+) {
+  competitionRef = scanQ.substring(0, dot);
+}
+
+competitionTarget =
+  await prisma.competitionRegistration.findFirst({
+    where: {
+      status: "PAID",
+      OR: [
+        { refId: competitionRef },
+        {
+          email: {
+            contains: competitionRef,
+            mode: "insensitive",
           },
-        });
+        },
+      ],
+    },
+  });
     }
   }
 } else if (id) {
