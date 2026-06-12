@@ -9,9 +9,12 @@ export async function PATCH(req: NextRequest) {
   const parsed = profileSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Validation failed", issues: parsed.error.flatten().fieldErrors }, { status: 422 });
   const d = parsed.data;
+  if (reg.isCompetition) {
+    return NextResponse.json({ ok: true });
+  }
   await prisma.registration.update({
     where: { id: reg.id },
-    data: { fullName: d.fullName, phone: d.phone, institution: d.institution || null, dietary: d.dietary || null, accessibility: d.accessibility || null }
+    data: { dietary: d.dietary || null, accessibility: d.accessibility || null }
   });
   return NextResponse.json({ ok: true });
 }

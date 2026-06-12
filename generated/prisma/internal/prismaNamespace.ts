@@ -2770,11 +2770,14 @@ export const CompetitionRegistrationScalarFieldEnum = {
   pastExperience: 'pastExperience',
   answers: 'answers',
   consentAccepted: 'consentAccepted',
+  teamChoice: 'teamChoice',
   guardianName: 'guardianName',
   guardianPhone: 'guardianPhone',
   guardianConsent: 'guardianConsent',
   gatewayOrderId: 'gatewayOrderId',
   gatewayPaymentId: 'gatewayPaymentId',
+  checkedIn: 'checkedIn',
+  checkedInAt: 'checkedInAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

@@ -28,9 +28,15 @@ export default function ProfilePage() {
       <form onSubmit={onSubmit} className="mt-6 space-y-4 rounded-2xl border border-ink/10 bg-paper p-6">
         <div><label className="text-sm font-500 text-ink/80">Email (locked)</label>
           <input value={data.email} disabled className="mt-1 w-full rounded-lg border border-ink/10 bg-cream/60 px-3 py-2.5 text-slatey" /></div>
-        <F name="fullName" label="Full Name" def={data.fullName} />
-        <F name="phone" label="Phone" def={data.phone} />
-        <F name="institution" label="School / College" def={data.institution ?? ""} />
+        <div><label className="text-sm font-500 text-ink/80">Full Name (locked)</label>
+          <input value={data.fullName} disabled className="mt-1 w-full rounded-lg border border-ink/10 bg-cream/60 px-3 py-2.5 text-slatey" />
+          <input type="hidden" name="fullName" value={data.fullName} /></div>
+        <div><label className="text-sm font-500 text-ink/80">Phone (locked)</label>
+          <input value={data.phone} disabled className="mt-1 w-full rounded-lg border border-ink/10 bg-cream/60 px-3 py-2.5 text-slatey" />
+          <input type="hidden" name="phone" value={data.phone} /></div>
+        <div><label className="text-sm font-500 text-ink/80">School / College (locked)</label>
+          <input value={data.institution ?? ""} disabled className="mt-1 w-full rounded-lg border border-ink/10 bg-cream/60 px-3 py-2.5 text-slatey" />
+          <input type="hidden" name="institution" value={data.institution ?? ""} /></div>
         <F name="dietary" label="Dietary requirements" def={data.dietary ?? ""} />
         <F name="accessibility" label="Accessibility needs" def={data.accessibility ?? ""} />
         <button disabled={state === "saving"} className="rounded-full bg-midnight px-6 py-2.5 font-600 text-cream hover:bg-royal disabled:opacity-60">{state === "saving" ? "Saving…" : "Save changes"}</button>
