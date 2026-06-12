@@ -55,7 +55,7 @@ export default function DelegationRegisterPage() {
   function importBulk() {
     const lines = bulkText.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
     const parsed: Member[] = [];
-    for (const line of lines) {
+      for (const line of lines) {
       const cols = line.split(/[\t,;]+/).map((c) => c.trim()).filter(Boolean);
       if (!cols.length) continue;
       const emailCol = cols.find((c) => c.includes("@")) || "";
@@ -63,7 +63,7 @@ export default function DelegationRegisterPage() {
       const name = cols[0];
       // committee = last column that is neither the name, email nor phone
       const committeeCol = [...cols].reverse().find((c) => c !== name && c !== emailCol && c !== phoneCol) || "";
-      parsed.push({ fullName: name, email: emailCol, phone: phoneCol, track: committeeCol ? matchTrack(committeeCol) : (tracks[0]?.value || ""), photoData: "", photoMime: "" });
+      parsed.push({ fullName: name, email: emailCol, phone: phoneCol, track: committeeCol ? matchTrack(committeeCol) : (tracks[0]?.value || ""), age: "", photoData: "", photoMime: "" });
     }
     if (!parsed.length) { setBulkMsg("Could not read any rows."); return; }
     setMembers(parsed.slice(0, 40));
