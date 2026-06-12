@@ -95,57 +95,70 @@ async function main() {
   }
   console.log("OK Seeded settings (hold = 10 min)");
 
-  for (const t of TRACKS) {
-    await prisma.track.upsert({
-      where: { slug: t.slug },
-      update: { name: t.name, fee: t.fee, capacity: t.capacity, agenda: t.agenda, difficulty: t.difficulty },
-      create: { slug: t.slug, name: t.name, fee: t.fee, capacity: t.capacity, agenda: t.agenda, difficulty: t.difficulty }
-    });
-  }
-  console.log(`OK Seeded ${TRACKS.length} tracks`);
+  
 
-  if (process.env.UPSERT_ONLY) {
-    for (const t of TRACKS) {
-      const portfolios = portfoliosFor(t.slug);
-      await prisma.portfolio.createMany({
-        data: portfolios.map((name, i) => ({ name, trackSlug: t.slug, order: i, status: "AVAILABLE" as const })),
-        skipDuplicates: true
-      });
-    }
-    console.log("UPSERT_ONLY set — tracks upserted and missing default portfolios created (non-destructive).");
-    return;
-  }
-
-  // Clean up existing portfolios and ensure only the seeded tracks exist.
-  await prisma.portfolio.deleteMany({});
   const slugs = TRACKS.map((t) => t.slug);
-  await prisma.track.deleteMany({ where: { slug: { notIn: slugs } } });
-  for (const t of TRACKS) {
-    await prisma.track.upsert({
-      where: { slug: t.slug },
-      update: { archived: false, name: t.name, fee: t.fee, capacity: t.capacity, agenda: t.agenda, difficulty: t.difficulty },
-      create: { slug: t.slug, name: t.name, fee: t.fee, capacity: t.capacity, agenda: t.agenda, difficulty: t.difficulty }
-    });
-  }
-  console.log(`OK Tracks reset to ${TRACKS.length} committees and portfolios cleared`);
 
-  // Seed portfolios for each active track
-  for (const t of TRACKS) {
-    const portfolios = portfoliosFor(t.slug);
-    for (let i = 0; i < portfolios.length; i++) {
-      const name = portfolios[i];
-      await prisma.portfolio.create({
-        data: {
-          name,
-          trackSlug: t.slug,
-          order: i,
-          status: "AVAILABLE"
-        }
-      });
+// Archive removed tracks instead of deleting them
+await prisma.track.updateMany({
+  where: {
+    slug: {
+      notIn: slugs
     }
+  },
+  data: {
+    archived: true
   }
-  console.log("OK Seeded portfolios for all tracks");
+});
 
+// Upsert active tracks
+for (const t of TRACKS) {
+  await prisma.track.upsert({
+    where: {
+      slug: t.slug
+    },
+    update: {
+      archived: false,
+      name: t.name,
+      fee: t.fee,
+      capacity: t.capacity,
+      agenda: t.agenda,
+      difficulty: t.difficulty
+    },
+    create: {
+      slug: t.slug,
+      name: t.name,
+      fee: t.fee,
+      capacity: t.capacity,
+      agenda: t.agenda,
+      difficulty: t.difficulty
+    }
+  });
+}
+
+console.log(`OK Synced ${TRACKS.length} tracks`);
+
+// Add only missing portfolios
+for (const t of TRACKS) {
+  const portfolios = portfoliosFor(t.slug);
+
+  await prisma.portfolio.createMany({
+    data: portfolios.map((name, i) => ({
+      name,
+      trackSlug: t.slug,
+      order: i,
+      status: "AVAILABLE"
+    })),
+    skipDuplicates: true
+  });
+}
+
+console.log("OK Portfolios synced safely");
+
+  
+
+
+  
   const speakers = [
     { slug: "amb-rao", name: "Amb. Nirupama Rao", title: "Former Foreign Secretary", bio: "A career diplomat sharing insights on multilateral negotiation.", order: 0 },
     { slug: "dr-mehta", name: "Dr. Arjun Mehta", title: "Climate Policy Lead", bio: "Advises on energy transition and climate finance across South Asia.", order: 1 }
@@ -198,9 +211,12 @@ async function main() {
     { day: 2, startTime: "09:30", endTime: "12:30", title: "Committee Session III", order: 3, published: true },
     { day: 2, startTime: "16:00", endTime: "17:30", title: "Closing & Awards", room: "Main Hall", order: 4, published: true }
   ];
-  await prisma.scheduleItem.deleteMany({});
+  
   for (const s of schedule) {
-    await prisma.scheduleItem.create({ data: s });
+  await prisma.scheduleItem.createMany({
+    data: [s],
+    skipDuplicates: true
+  });
   }
   console.log("OK Seeded event flow");
 }
