@@ -29,6 +29,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
           <p className="mt-8 rounded-2xl border border-ink/10 bg-paper p-6 text-center text-ink/70">Registration for this competition is currently closed.</p>
         ) : (
           <CompetitionRegisterForm
+            slug={params.slug}
             competition={{
               id: c.id, title: c.title, format: c.format as "SOLO" | "GROUP" | "BOTH",
               minTeam: c.minTeam, maxTeam: c.maxTeam, feeSolo: c.feeSolo, feeGroup: c.feeGroup,
