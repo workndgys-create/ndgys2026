@@ -16,7 +16,15 @@ const FALLBACK_TRACKS = [
 
 export async function GET(req: NextRequest) {
   try {
-    const tracks = await prisma.track.findMany({ where: { archived: false }, select: { slug: true, name: true, fee: true, difficulty: true } });
+    const tracksRaw = await prisma.track.findMany({ where: { archived: false }, select: { slug: true, name: true, fee: true, difficulty: true } });
+    // Exclude any track that is actually the IPL competition (slug 'ipl' or name contains 'Indian Premier League')
+    const tracks = tracksRaw.filter((t) => {
+      const s = String(t.slug || "").toLowerCase();
+      const n = String(t.name || "").toLowerCase();
+      if (s === "ipl") return false;
+      if (n.includes("indian premier league") || n.includes("ipl")) return false;
+      return true;
+    });
     // derive capacity from actual portfolios
     const counts = await prisma.portfolio.groupBy({ by: ["trackSlug"], _count: true });
     const capMap = new Map((counts as unknown as { trackSlug: string; _count: number }[]).map((c) => [c.trackSlug, c._count]));
