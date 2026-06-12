@@ -124,7 +124,7 @@ if (!alreadyChecked) {
   )
 );
 
-setScanMessage("Participant checked in successfully.");      }
+setScanMessage("Participant checked in successfully.");     
     }
   }
 
@@ -256,5 +256,4 @@ setScanMessage("Participant checked in successfully.");      }
   );
 }
 
-}
-            
+
