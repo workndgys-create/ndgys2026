@@ -67,12 +67,21 @@ export default function AllocationsLive({ initialData }: { initialData?: Payload
     );
   }
 
-  const committees = (data?.committees ?? []).filter((c) => filter === "all" || c.slug === filter);
+  // Defensive: exclude any committee that represents IPL so it never appears in the Allocations UI
+  const rawCommittees = (data?.committees ?? []).filter((c) => {
+    const slug = String(c.slug || "").trim().toLowerCase();
+    const name = String(c.name || "").trim().toLowerCase();
+    if (!slug) return true;
+    if (slug === "ipl" || slug.includes("ipl")) return false;
+    if (name.includes("indian premier league") || name === "ipl") return false;
+    return true;
+  });
+  const committees = rawCommittees.filter((c) => filter === "all" || c.slug === filter);
   const q = search.trim().toLowerCase();
   const filtered = committees
     .map((c) => ({ ...c, allocations: q ? c.allocations.filter((a) => a.portfolio.toLowerCase().includes(q) || a.delegateName.toLowerCase().includes(q)) : c.allocations }))
     .filter((c) => !q || c.allocations.length > 0);
-  const totalAllocated = (data?.committees ?? []).reduce((s, c) => s + c.allocatedCount, 0);
+  const totalAllocated = rawCommittees.reduce((s, c) => s + c.allocatedCount, 0);
 
   return (
     <div>
@@ -88,8 +97,8 @@ export default function AllocationsLive({ initialData }: { initialData?: Payload
       </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
-        <Chip active={filter === "all"} onClick={() => setFilter("all")}>All committees</Chip>
-        {(data?.committees ?? []).map((c) => <Chip key={c.slug} active={filter === c.slug} onClick={() => setFilter(c.slug)}>{c.name}</Chip>)}
+      <Chip active={filter === "all"} onClick={() => setFilter("all")}>All committees</Chip>
+      {rawCommittees.map((c) => <Chip key={c.slug} active={filter === c.slug} onClick={() => setFilter(c.slug)}>{c.name}</Chip>)}
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
