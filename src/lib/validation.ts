@@ -155,7 +155,7 @@ export const delegationMemberSchema = z.object({
   phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/).optional().or(z.literal("")),
   track: z.string().min(1, "Choose a committee"),
   portfolioId: z.string().optional().or(z.literal("")),
-  age: z.coerce.number().int().min(8).max(99).optional(),
+  age: z.coerce.number().int().min(8).max(99),
   photoData: z.string().optional(),
   photoMime: z.string().optional()
 });

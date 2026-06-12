@@ -16,7 +16,7 @@ function loadCashfree(): Promise<boolean> {
   });
 }
 
-type Member = { fullName: string; email: string; phone: string; track: string; age?: string; experience?: string; photoData?: string; photoMime?: string };
+type Member = { fullName: string; email: string; phone: string; track: string; age: string; experience?: string; photoData?: string; photoMime?: string };
 
 export default function DelegationRegisterPage() {
   const [members, setMembers] = useState<Member[]>([ 
@@ -94,7 +94,7 @@ export default function DelegationRegisterPage() {
       return;
     }
 
-    const payload: Record<string, unknown> = {
+      const payload: Record<string, unknown> = {
       schoolName: fd.get("schoolName"), headName: fd.get("headName"), email: fd.get("email"),
       phone: fd.get("phone"), institution: fd.get("institution") || "",
       promoCode: promo.trim() || "", consentAccepted: consent, company: fd.get("company") || "",
@@ -103,7 +103,7 @@ export default function DelegationRegisterPage() {
         email: m.email.trim(),
         phone: m.phone.trim(),
         track: m.track,
-        age: m.age ? Number(m.age) : undefined,
+        age: Number(m.age),
         photoData: m.photoData,
         photoMime: m.photoMime
       }))
@@ -205,10 +205,10 @@ export default function DelegationRegisterPage() {
                       <label className="text-xs font-500 text-ink/80 block mb-1">Phone Number *</label>
                       <input value={m.phone} onChange={(e) => setM(i, "phone", e.target.value)} placeholder="Number" required className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
                     </div>
-                    <div>
-                      <label className="text-xs font-500 text-ink/80 block mb-1">Age (optional)</label>
-                      <input value={m.age || ""} onChange={(e) => setM(i, "age", e.target.value)} placeholder="Age" inputMode="numeric" className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
-                    </div>
+                                    <div>
+                                      <label className="text-xs font-500 text-ink/80 block mb-1">Age *</label>
+                                      <input value={m.age} onChange={(e) => setM(i, "age", e.target.value)} placeholder="Age" inputMode="numeric" type="number" min={8} max={99} required className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                                    </div>
                     <div>
                       <label className="text-xs font-500 text-ink/80 block mb-1">MUN Committee *</label>
                       <div className="flex gap-2">
