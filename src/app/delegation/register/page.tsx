@@ -227,27 +227,27 @@ export default function DelegationRegisterPage() {
                       <label className="text-xs font-500 text-ink/80 block mb-1">MUN Committee *</label>
                       <div className="flex gap-2">
                         <input value={committeeSearch} onChange={(e) => setCommitteeSearch(e.target.value)} placeholder="Search" className="w-20 rounded-lg border border-ink/15 bg-paper px-2 py-1 text-xs outline-none focus:border-gold" />
-                        <select
-                          value={`${m.track}::${m.experience ?? "beginner"}`}
-                          onChange={(e) => {
-                            const val = e.target.value || "";
-                            const parts = val.split("::");
-                            const slug = parts[0] || "";
-                            const level = parts[1] || "beginner";
-                            setM(i, "track", slug);
-                            setM(i, "experience", level);
-                          }}
-                          className="flex-1 rounded-lg border border-ink/15 bg-paper px-2 py-2 text-xs outline-none focus:border-gold"
-                        >
-                          {tracks.filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase())).flatMap((t) => {
-                            const note = (t.value === "unep" || t.value === "aippm" || t.label.includes("Environment Programme") || t.label.includes("All India Political Parties Meet")) ? " (Beginner, age 12-16)" : "";
-                            return [
-                              <option key={`${t.value}::beginner`} value={`${t.value}::beginner`}>{`${t.label}${note}`}</option>,
-                              <option key={`${t.value}::intermediate`} value={`${t.value}::intermediate`}>{`${t.label} – Intermediate`}</option>,
-                              <option key={`${t.value}::advanced`} value={`${t.value}::advanced`}>{`${t.label} – Advanced`}</option>
-                            ];
-                          })}
-                        </select>
+                        <div className="flex-1">
+                          <div className="rounded-t-md bg-ink/60 text-cream px-3 py-2 text-sm font-600 border border-ink/15 border-b-0">{tracks.find((t) => t.value === m.track)?.label || "Select committee"}</div>
+                          <div className="border border-ink/15 bg-cream h-40 overflow-auto text-sm">
+                            {tracks
+                              .filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase()))
+                              .map((t) => {
+                                const note = (t.value === "unep" || t.value === "aippm" || t.label.includes("Environment Programme") || t.label.includes("All India Political Parties Meet")) ? " (Beginner, age 12-16)" : "";
+                                const selected = m.track === t.value;
+                                return (
+                                  <button
+                                    key={t.value}
+                                    type="button"
+                                    onClick={() => { setM(i, "track", t.value); setM(i, "experience", "beginner"); }}
+                                    className={`w-full text-left px-3 py-2 ${selected ? "bg-ink/60 text-cream" : "text-ink hover:bg-goldlite"}`}
+                                  >
+                                    {t.label}{note}
+                                  </button>
+                                );
+                              })}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
