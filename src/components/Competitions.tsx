@@ -14,7 +14,27 @@ const COMPETITION_IMAGES: Record<string, string> = {
   "nazarana": "/NAZARANA.jpeg",
   "beat-breakout": "/BEATBREAKOUT.jpeg",
   "battle-of-bands": "/BATTLEOFBANDS.jpeg",
+  "shaame-mehfil": "/SHAAMEMEHFIL.png",
+  "shaamemehfil": "/SHAAMEMEHFIL.png",
+  "shaame-e-mehfil": "/SHAAMEMEHFIL.png",
 };
+
+/** Title-based fallback — catches any slug variant for known competitions */
+function getImageByTitle(title: string): string | undefined {
+  const t = title.toLowerCase();
+  if (t.includes("shaame") || t.includes("mehfil")) return "/SHAAMEMEHFIL.png";
+  if (t.includes("stock") && t.includes("sense")) return "/STOCKSENSE.jpeg";
+  if (t.includes("spark") && t.includes("tank")) return "/SPARKTANK.jpeg";
+  if (t.includes("greenovation")) return "/GREENOVATIONSHOWDOWN.jpeg";
+  if (t.includes("film")) return "/FILMMAKING.jpeg";
+  if (t.includes("ipl") && t.includes("auction")) return "/IPLAUCTION.jpeg";
+  if (t.includes("marketing") && t.includes("mayhem")) return "/MARKETINGMAYHEM.jpeg";
+  if (t.includes("sur") && t.includes("taal")) return "/SURAURTAAL.jpeg";
+  if (t.includes("nazarana")) return "/NAZARANA.jpeg";
+  if (t.includes("beat") && t.includes("breakout")) return "/BEATBREAKOUT.jpeg";
+  if (t.includes("battle") && t.includes("band")) return "/BATTLEOFBANDS.jpeg";
+  return undefined;
+}
 
 export default async function Competitions() {
   const items = await getPublicCompetitions();
@@ -28,7 +48,7 @@ export default async function Competitions() {
         </Reveal>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((c: any, i: number) => {
-            const imageSrc = c.imageUrl || COMPETITION_IMAGES[c.slug];
+            const imageSrc = (c.imageUrl && String(c.imageUrl).trim()) || COMPETITION_IMAGES[c.slug] || getImageByTitle(c.title || "");
             return (
             <Reveal key={c.id} delay={(i % 3) * 90}>
               <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-ink/10 bg-cream shadow-sm transition hover:-translate-y-1 hover:shadow-xl">

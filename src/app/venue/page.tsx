@@ -11,7 +11,7 @@ export default function VenuePage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-cream grain pt-28 text-ink">
+      <main className="min-h-screen bg-cream grain pt-36 text-ink">
         <section className="relative h-[55vh] overflow-hidden bg-[#1F0A02]">
           <img
             src="/IMG_7820.JPG.jpeg"

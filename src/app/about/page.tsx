@@ -12,7 +12,7 @@ export default function AboutPage() {
   return (
     <>
       <Navbar />
-      <main className="bg-cream grain pt-28">
+      <main className="bg-cream grain pt-36">
         <section className="mx-auto max-w-3xl px-5 pb-20">
           <p className="kicker text-xs uppercase text-gold">COMMUNIQUÉ — About</p>
           <h1 className="mt-4 font-display text-5xl font-700 leading-tight text-ink sm:text-7xl">
@@ -26,7 +26,7 @@ export default function AboutPage() {
               delegates debate live agendas, draft resolutions and pitch ideas — learning by doing.
             </p>
             <p>
-              Our inaugural edition runs on 22nd–23rd August 2026 at IIT Delhi. Every committee is chaired by experienced
+              The summit runs on 22nd–23rd August 2026 at IIT Delhi. Every committee is chaired by experienced
               facilitators, and the programme balances rigorous debate with mentorship from practitioners in policy,
               climate, technology and enterprise.
             </p>

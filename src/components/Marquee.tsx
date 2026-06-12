@@ -1,4 +1,4 @@
-const ITEM = "NEW DELHI GLOBAL YOUTH SUMMIT 4.0 · INAUGURAL EDITION · NEW DELHI, INDIA · REGISTRATIONS OPEN ·";
+const ITEM = "NEW DELHI GLOBAL YOUTH SUMMIT 4.0 · NEW DELHI, INDIA · REGISTRATIONS OPEN ·";
 export default function Marquee() {
   return (
     <div className="fixed top-0 left-0 right-0 z-[60] h-8 bg-[#3B1A0A] text-[#F59E0B] overflow-hidden border-b border-[#D97706]/30">

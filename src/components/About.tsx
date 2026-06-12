@@ -33,7 +33,7 @@ export default function About() {
               {/* Premium Vertical gold gradient border */}
               <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-gold via-goldlite to-transparent rounded-full" />
               <blockquote className="font-display text-2xl leading-snug text-royal italic">
-                “New Delhi's inaugural global youth gathering — built by young leaders, for young leaders.”
+                “New Delhi's first-of-its-kind global youth gathering — built by young leaders, for young leaders.”
               </blockquote>
             </div>
           </Reveal>
@@ -47,8 +47,8 @@ export default function About() {
             <p>
               Whether you are stepping into your first committee room or arriving as a seasoned
               delegate hungry for a rigorous challenge on live global agendas, the Summit is built
-              for you. Two high-intensity days.More than Eight meticulously crafted tracks. A landmark
-              inaugural edition — and a founding cohort who will always have been there first.
+              for you. Two high-intensity days. More than eight meticulously crafted tracks. A landmark
+              summit — and a founding cohort who will always have been there first.
             </p>
           </Reveal>
         </div>

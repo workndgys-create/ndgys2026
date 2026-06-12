@@ -4,7 +4,7 @@ import SectionKicker from "./SectionKicker";
 
 const ALL = "All";
 const faqs = [
-  { cat: "About", q: "What is the New Delhi Global Youth Summit?", a: "It is a national-level youth diplomacy and leadership summit where students simulate global committees, debate policy, and build skills in research, public speaking and negotiation. 2026 is the inaugural edition." },
+  { cat: "About", q: "What is the New Delhi Global Youth Summit?", a: "It is a national-level youth diplomacy and leadership summit where students simulate global committees, debate policy, and build skills in research, public speaking and negotiation. NDGYS 4.0 takes place on 22–23 August 2026 at IIT Delhi." },
   { cat: "About", q: "When and where is it taking place?", a: "22–23 August 2026 at IIT Delhi, New Delhi." },
   { cat: "Registration", q: "Who can participate?", a: "Open to school and college students across India. There is a track suited to every level, from first-timers to seasoned delegates." },
   { cat: "Registration", q: "How do I register and pay?", a: "Click Register, choose your track, fill in your details and pay securely online. You'll receive an instant email confirmation once payment succeeds." },

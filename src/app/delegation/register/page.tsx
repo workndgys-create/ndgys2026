@@ -121,7 +121,7 @@ export default function DelegationRegisterPage() {
 
   if (status === "paid") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-cream grain px-5 py-16">
+      <main className="flex min-h-screen items-center justify-center bg-cream grain px-5 py-16 pt-36">
         <div className="text-center">
           <p className="font-display text-5xl">&#127881;</p>
           <h1 className="mt-4 font-display text-4xl font-700 text-ink">Delegation confirmed!</h1>
@@ -133,7 +133,7 @@ export default function DelegationRegisterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-cream grain px-5 py-16">
+    <main className="min-h-screen bg-cream grain px-5 py-16 pt-36">
       <div className="mx-auto w-full max-w-2xl">
         <Link href="/register" className="text-sm text-gold hover:underline">&larr; Individual registration</Link>
         <h1 className="mt-3 font-display text-4xl font-700 text-ink">School / Delegation Registration</h1>

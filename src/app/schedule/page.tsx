@@ -32,7 +32,7 @@ export default async function SchedulePage() {
   return (
     <>
       <Navbar />
-      <main className="bg-cream grain pt-28">
+      <main className="bg-cream grain pt-36">
         <section className="mx-auto max-w-3xl px-5 pb-20">
           <p className="kicker text-xs uppercase text-gold">DISPATCH — Programme</p>
           <h1 className="mt-4 font-display text-5xl font-700 text-ink sm:text-7xl">Schedule.</h1>

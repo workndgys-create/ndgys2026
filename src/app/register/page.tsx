@@ -569,7 +569,7 @@ function Field({ name, label, type = "text", errors, required = false }: { name:
   );
 }
 function Centered({ children }: { children: React.ReactNode }) {
-  return <main className="flex min-h-screen items-center justify-center bg-cream grain px-5 py-16">{children}</main>;
+  return <main className="flex min-h-screen items-center justify-center bg-cream grain px-5 py-16 pt-36">{children}</main>;
 }
 
 export default function RegisterPage() {

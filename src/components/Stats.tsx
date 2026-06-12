@@ -6,7 +6,7 @@ const stats = [
   { value: 8, suffix: "+", label: "Tracks" },
   { value: 20, suffix: "+", label: "Speakers & Mentors" },
   { value: 5000, suffix: "+", label: "Expected Delegates" },
-  { value: 1, suffix: "", label: "Inaugural Edition" }
+  { value: 4, suffix: ".0", label: "Edition" }
 ];
 
 function useCountUp(target: number, run: boolean, ms = 1400) {
