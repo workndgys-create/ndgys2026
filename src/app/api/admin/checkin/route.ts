@@ -86,6 +86,8 @@ export async function POST(req: NextRequest) {
   let id = typeof b?.id === "string" ? b.id : "";
   const scanQ = typeof b?.q === "string" ? normaliseScanQuery(b.q) : "";
 
+  console.log("SCAN VALUE:", scanQ);
+
   if (!id && !scanQ) return NextResponse.json({ error: "Bad request" }, { status: 422 });
 
 // If scanQ looks like delegateId.sig (ie from QR), verify signature before proceeding
@@ -108,21 +110,16 @@ if (!id && scanQ) {
       competitionRef = scanQ.substring(0, sigDot);
     }
 
-    competitionTarget =
-      await prisma.competitionRegistration.findFirst({
-        where: {
-          status: "PAID",
-          OR: [
-            { refId: competitionRef },
-            {
-              email: {
-                contains: competitionRef,
-                mode: "insensitive",
-              },
-            },
-          ],
-        },
-      });
+    console.log("LOOKING FOR:", competitionRef);
+
+competitionTarget =
+  await prisma.competitionRegistration.findFirst({
+    where: {
+      refId: competitionRef,
+    },
+  });
+
+console.log("FOUND:", competitionTarget);
 
   // MUN signed QR
   } else if (sigDot > 0) {
