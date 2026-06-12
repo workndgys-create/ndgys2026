@@ -88,24 +88,117 @@ export async function POST(req: NextRequest) {
 
   if (!id && !scanQ) return NextResponse.json({ error: "Bad request" }, { status: 422 });
 
-  // If scanQ looks like delegateId.sig (ie from QR), verify signature before proceeding
-  let target: any = null;
-  if (!id && scanQ) {
-    const sigDot = scanQ.lastIndexOf(".");
-    if (sigDot > 0) {
-      const dId = scanQ.slice(0, sigDot);
-      const sig = scanQ.slice(sigDot + 1);
-      if (!verifySignature(dId, sig)) return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
-      target = await prisma.registration.findFirst({ where: { status: "PAID", delegateId: dId } });
-    } else {
-      target = await prisma.registration.findFirst({ where: { status: "PAID", OR: [{ delegateId: scanQ }, { email: { contains: scanQ, mode: "insensitive" } }] } });
+// If scanQ looks like delegateId.sig (ie from QR), verify signature before proceeding
+let target: any = null;
+let competitionTarget: any = null;
+
+if (!id && scanQ) {
+  const sigDot = scanQ.lastIndexOf(".");
+
+  if (sigDot > 0) {
+    const dId = scanQ.slice(0, sigDot);
+    const sig = scanQ.slice(sigDot + 1);
+
+    if (!verifySignature(dId, sig)) {
+      return NextResponse.json(
+        { error: "Invalid signature" },
+        { status: 403 }
+      );
     }
-  } else if (id) {
-    target = await prisma.registration.findUnique({ where: { id } });
+
+    target = await prisma.registration.findFirst({
+      where: {
+        status: "PAID",
+        delegateId: dId,
+      },
+    });
+  } else {
+    // First try MUN registrations
+    target = await prisma.registration.findFirst({
+      where: {
+        status: "PAID",
+        OR: [
+          { delegateId: scanQ },
+          {
+            email: {
+              contains: scanQ,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+    });
+
+    // If not found, try competitions
+    if (!target) {
+      competitionTarget =
+        await prisma.competitionRegistration.findFirst({
+          where: {
+            status: "PAID",
+            OR: [
+              { refId: scanQ },
+              {
+                email: {
+                  contains: scanQ,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          },
+        });
+    }
   }
+} else if (id) {
+  target = await prisma.registration.findUnique({
+    where: { id },
+  });
+}
 
-  if (!target || target.status !== "PAID") return NextResponse.json({ error: "No paid participant found for this scan." }, { status: 404 });
+if (
+  (!target || target.status !== "PAID") &&
+  (!competitionTarget ||
+    competitionTarget.status !== "PAID")
+) {
+  return NextResponse.json(
+    {
+      error: "No paid participant found for this scan.",
+    },
+    { status: 404 }
+  );
+}
 
+// Competition auto check-in
+if (competitionTarget) {
+  const updated =
+    await prisma.competitionRegistration.update({
+      where: {
+        id: competitionTarget.id,
+      },
+      data: {
+        checkedIn: true,
+        checkedInAt: new Date(),
+      },
+    });
+
+  await audit(
+    admin.email,
+    "competition.checkin.scan",
+    "CompetitionRegistration",
+    updated.id,
+    `refId=${updated.refId}`
+  );
+
+  return NextResponse.json({
+    ok: true,
+    competition: true,
+    registration: updated,
+  });
+}
+  
+  
+  
+  
+  
   id = target.id;
   const value = b?.value === undefined ? true : !!b.value;
 
