@@ -294,6 +294,56 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
       <Field name="institution" label="School / College" errors={errors} required />
 
       <div>
+        <label className="text-sm font-500 text-ink/80">How did you hear about us?</label>
+        <select
+          name="howHeard"
+          value={heardFrom}
+          onChange={(e) => {
+            const next = e.target.value;
+            setHeardFrom(next);
+            if (next !== "Friend / Word of mouth" && next !== "Other") setHeardDetail("");
+          }}
+          className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+        >
+          {HEARD.map((h) => <option key={h} value={h}>{h}</option>)}
+        </select>
+        {(heardFrom === "Friend / Word of mouth" || heardFrom === "Other") && (
+          <textarea
+            name="howHeardDetail"
+            value={heardDetail}
+            onChange={(e) => setHeardDetail(e.target.value)}
+            rows={2}
+            required
+            placeholder="Please tell us a little more"
+            className="mt-2 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-gold"
+          />
+        )}
+        {errors.howHeardDetail && <p className="mt-1 text-xs text-red-600">{errors.howHeardDetail[0]}</p>}
+      </div>
+
+      <div>
+        <label className="text-sm font-500 text-ink/80">MUN COMMITTIEES AND COMPETITONS</label>
+        <select
+          name="competitionSelect"
+          value={slug || ""}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (v === "mun") {
+              window.location.href = "/register";
+            } else if (v && v !== slug) {
+              window.location.href = `/competitions/${v}/register`;
+            }
+          }}
+          className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+        >
+          <option value="mun">MUN — Committees (Model UN)</option>
+          {competitions.map((comp) => (
+            <option key={comp.slug} value={comp.slug}>{comp.title}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
         <label className="text-sm font-500 text-ink/80 block">
           Passport Size Photo (JPEG/PNG, Max 2MB) <span className="text-red-500">*</span>
         </label>
@@ -429,55 +479,7 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
         </div>
       )}
 
-      <div>
-        <label className="text-sm font-500 text-ink/80">How did you hear about us?</label>
-        <select
-          name="howHeard"
-          value={heardFrom}
-          onChange={(e) => {
-            const next = e.target.value;
-            setHeardFrom(next);
-            if (next !== "Friend / Word of mouth" && next !== "Other") setHeardDetail("");
-          }}
-          className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
-        >
-          {HEARD.map((h) => <option key={h} value={h}>{h}</option>)}
-        </select>
-        {(heardFrom === "Friend / Word of mouth" || heardFrom === "Other") && (
-          <textarea
-            name="howHeardDetail"
-            value={heardDetail}
-            onChange={(e) => setHeardDetail(e.target.value)}
-            rows={2}
-            required
-            placeholder="Please tell us a little more"
-            className="mt-2 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-gold"
-          />
-        )}
-        {errors.howHeardDetail && <p className="mt-1 text-xs text-red-600">{errors.howHeardDetail[0]}</p>}
-      </div>
 
-      <div>
-        <label className="text-sm font-500 text-ink/80">MUN COMMITTIEES AND COMPETITONS</label>
-        <select
-          name="competitionSelect"
-          value={slug || ""}
-          onChange={(e) => {
-            const v = e.target.value;
-            if (v === "mun") {
-              window.location.href = "/register";
-            } else if (v && v !== slug) {
-              window.location.href = `/competitions/${v}/register`;
-            }
-          }}
-          className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
-        >
-          <option value="mun">MUN — Committees (Model UN)</option>
-          {competitions.map((comp) => (
-            <option key={comp.slug} value={comp.slug}>{comp.title}</option>
-          ))}
-        </select>
-      </div>
 
       <div>
         <label className="text-sm font-500 text-ink/80">Anything you'd like us to know? (optional)</label>
