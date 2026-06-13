@@ -1,12 +1,11 @@
 import PDFDocument from "pdfkit";
-import { qrPngBuffer } from "./qr";
 import fs from "fs";
 import path from "path";
 
 const DARK_BROWN = "#3B1A0A";
-const SAFFRON   = "#D97706";
-const INK       = "#2C0F04";
-const SLATE     = "#8B6914";
+const SAFFRON = "#D97706";
+const INK = "#2C0F04";
+const SLATE = "#8B6914";
 const GOLD_LIGHT = "#FFF3D6";
 
 export interface InvoiceData {
@@ -19,6 +18,7 @@ export interface InvoiceData {
   amount: number; // rupees
   gstAmount?: number; // rupees
   itemTitle?: string;
+  portfolio?: string;
 }
 
 const inr = (amount: number) => `INR ${amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
@@ -34,12 +34,11 @@ function loadLogo(filename: string): Buffer | null {
 
 /** Renders a branded A4 invoice to a Buffer. Uses pdfkit's built-in Helvetica (no font files needed). */
 export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
-  const qr = await qrPngBuffer(data.delegateId).catch(() => null);
-
   // Pre-load logos
   const shlLogo = loadLogo("SHLLogo.png");
   const ndgysLogo = loadLogo("NDGYS26.png");
   const gysLogo = loadLogo("GYS.png");
+
 
   return new Promise<Buffer>((resolve, reject) => {
     const doc = new PDFDocument({ size: "A4", margin: 50 });
@@ -54,38 +53,34 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
     const contentW = right - left;
 
     // ── Header band with logos ──────────────────────────────────────
-    const headerH = 140;
+    const headerH = 160;
     doc.rect(0, 0, pageW, headerH).fill(DARK_BROWN);
 
     // Thin saffron accent line at bottom of header
     doc.rect(0, headerH, pageW, 3).fill(SAFFRON);
 
-    // Logo sizing – all logos are vertically centred within the header
-    const logoPad = 12; // vertical padding from top/bottom of header band
-    const logoMaxH = headerH - logoPad * 2; // max height for any logo
+    const logoPad = 12.5;
+    const sideBoxDim = 135; // 135x135 bounding box for side logos
 
-    // Side logo dimensions — SHL and GYS share the same bounding box
-    const sideLogoW = 150;
-    const sideLogoH = logoMaxH;
-
-    // Left: SHL Logo
+    // Left: SHL Logo (square, 1:1)
     if (shlLogo) {
-      const shlY = logoPad + (logoMaxH - sideLogoH) / 2;
-      doc.image(shlLogo, left, shlY, { fit: [sideLogoW, sideLogoH], align: "center", valign: "center" });
+      doc.image(shlLogo, left, logoPad, { width: sideBoxDim, height: sideBoxDim });
     }
 
-    // Centre: NDGYS26 logo (the main event logo)
+    // Centre: NDGYS26 logo (landscape, 2.26:1)
     if (ndgysLogo) {
-      const ndgysW = 220;
-      const ndgysH = logoMaxH;
+      const ndgysW = 210;
+      const ndgysH = ndgysW / 2.26; // ~93
       const ndgysX = (pageW - ndgysW) / 2;
-      doc.image(ndgysLogo, ndgysX, logoPad, { fit: [ndgysW, ndgysH], align: "center", valign: "center" });
+      const ndgysY = logoPad + (sideBoxDim - ndgysH) / 2;
+      doc.image(ndgysLogo, ndgysX, ndgysY, { width: ndgysW, height: ndgysH });
     }
 
-    // Right: GYS logo
+    // Right: GYS logo (portrait, 0.8:1)
     if (gysLogo) {
-      const gysY = logoPad + (logoMaxH - sideLogoH) / 2;
-      doc.image(gysLogo, right - sideLogoW, gysY, { fit: [sideLogoW, sideLogoH], align: "center", valign: "center" });
+      const gysW = sideBoxDim * 0.8; // 108
+      const gysX = right - sideBoxDim + (sideBoxDim - gysW) / 2; // center GYS within the 135px bounding box
+      doc.image(gysLogo, gysX, logoPad, { width: gysW, height: sideBoxDim });
     }
 
     // ── "INVOICE" title bar ─────────────────────────────────────────
@@ -106,6 +101,13 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
     doc.font("Helvetica-Bold").fillColor(INK).text("Delegate ID", left, y + 32);
     doc.font("Helvetica").fillColor(SLATE).text(data.delegateId, left + 80, y + 32);
 
+    let metaHeight = 48;
+    if (data.portfolio) {
+      doc.font("Helvetica-Bold").fillColor(INK).text("Portfolio", left, y + 48);
+      doc.font("Helvetica").fillColor(SLATE).text(data.portfolio, left + 80, y + 48, { width: 250 });
+      metaHeight = 64;
+    }
+
     // Bill to
     doc.font("Helvetica-Bold").fillColor(INK).fontSize(11).text("Billed to", right - 220, y, { width: 220, align: "right" });
     doc.font("Helvetica").fillColor(SLATE).fontSize(10)
@@ -113,7 +115,7 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
       .text(data.email, right - 220, y + 30, { width: 220, align: "right" });
 
     // ── Table header ────────────────────────────────────────────────
-    y += 60;
+    y += metaHeight + 20;
     doc.rect(left, y, contentW, 26).fill(GOLD_LIGHT);
     doc.fillColor(INK).font("Helvetica-Bold").fontSize(10)
       .text("Description", left + 12, y + 8)
@@ -141,11 +143,7 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
       .text("Total Paid", right - 252, y, { width: 120, align: "right" })
       .fillColor(SAFFRON).text(inr(total), right - 132, y, { width: 120, align: "right" });
 
-    // ── QR + footer ─────────────────────────────────────────────────
-    if (qr) {
-      doc.image(qr, left, y + 40, { width: 96 });
-      doc.fillColor(SLATE).fontSize(8).text("Scan at check-in", left, y + 140, { width: 96, align: "center" });
-    }
+    // ── Footer ──────────────────────────────────────────────────────
     doc.fillColor(SLATE).fontSize(9).font("Helvetica")
       .text("This is a system-generated invoice and does not require a signature.", left, doc.page.height - 80, {
         width: contentW,

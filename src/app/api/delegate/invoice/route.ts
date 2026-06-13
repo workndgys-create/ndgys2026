@@ -40,7 +40,8 @@ export async function GET() {
     trackName: reg.trackName,
     amount,
     gstAmount,
-    itemTitle
+    itemTitle,
+    portfolio: isComp ? undefined : (reg.portfolio || "To be announced")
   });
 
   return new NextResponse(new Uint8Array(pdf), {
