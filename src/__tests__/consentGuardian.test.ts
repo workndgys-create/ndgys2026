@@ -22,7 +22,7 @@ describe("guardian consent for minors", () => {
     expect(competitionRegistrationSchema.safeParse({ ...base, guardianName: "P", guardianPhone: "9811111111", guardianConsent: true }).success).toBe(true);
   });
   it("delegation accepts coordinator consent flag", () => {
-    const d = delegationSchema.safeParse({ schoolName: "DPS", headName: "Head", email: "h@s.edu", phone: "9876543210", members: [{ fullName: "Ravi K", track: "climate" }], consentAccepted: true });
+    const d = delegationSchema.safeParse({ schoolName: "DPS", headName: "Head", email: "h@s.edu", phone: "9876543210", members: [{ fullName: "Ravi K", email: "ravi@k.com", age: 20, track: "climate" }], consentAccepted: true });
     expect(d.success).toBe(true);
   });
 });

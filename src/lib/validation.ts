@@ -3,17 +3,105 @@ import { z } from "zod";
 // Seed catalogue — mirrored into the DB `Track` table by prisma/seed.ts.
 // At runtime, routes read fees/capacity from the DB so admin edits take effect.
 export const TRACKS = [
-  { slug: "unsc", name: "United Nations Security Council", fee: 2500, capacity: 15, difficulty: "Advanced", agenda: "Security and peacekeeping issues." },
-  { slug: "unga", name: "United Nations General Assembly", fee: 2000, capacity: 60, difficulty: "Intermediate", agenda: "General multilateral discussions and global policy." },
-  { slug: "unhrc", name: "United Nations Human Rights Council", fee: 2000, capacity: 50, difficulty: "Intermediate", agenda: "Human rights protections and policy." },
-  { slug: "csw", name: "United Nations Commission on the Status of Women", fee: 2000, capacity: 40, difficulty: "Intermediate", agenda: "Gender equality and women's rights." },
-  { slug: "unicef", name: "United Nations International Children's Emergency Fund", fee: 2000, capacity: 40, difficulty: "Intermediate", agenda: "Child welfare and emergency response." },
-  { slug: "unep", name: "United Nations Environment Programme", fee: 2000, capacity: 50, difficulty: "Intermediate", agenda: "Environmental policy and sustainability." },
-  { slug: "wto", name: "World Trade Organization", fee: 2500, capacity: 50, difficulty: "Intermediate", agenda: "Global trade rules and disputes." },
-  { slug: "international-press", name: "International Press", fee: 2000, capacity: 130, difficulty: "Intermediate", agenda: "Real-time summit journalism through reporting, caricature and photography." },
-  { slug: "aippm", name: "All India Political Parties Meet", fee: 1500, capacity: 60, difficulty: "Beginner", agenda: "National multiparty dialogue and consensus building." },
-  { slug: "lok-sabha", name: "Lok Sabha", fee: 1500, capacity: 60, difficulty: "Beginner", agenda: "Parliamentary debate and lawmaking." },
-  { slug: "war-cabinet", name: "Indian War Cabinet", fee: 1500, capacity: 30, difficulty: "Advanced", agenda: "Crisis governance and strategic decision-making." }
+  { 
+    slug: "unsc", 
+    name: "United Nations Security Council", 
+    fee: 2500, 
+    capacity: 15, 
+    difficulty: "Advanced", 
+    agenda: "Security and peacekeeping issues.",
+    description: "The United Nations Security Council is the premier international body charged with maintaining global peace and security. Delegates will engage in intense deliberations, crisis management, and diplomatic negotiations to address pressing threats to peace, resolve conflicts, and draft resolutions that shape the future of international relations."
+  },
+  { 
+    slug: "unga", 
+    name: "United Nations General Assembly", 
+    fee: 2000, 
+    capacity: 60, 
+    difficulty: "Intermediate", 
+    agenda: "General multilateral discussions and global policy.",
+    description: "The United Nations General Assembly serves as the main deliberative, policymaking, and representative organ of the UN. In this committee, delegates will represent their nations in multilateral discussions, addressing a wide array of global challenges including development, disarmament, international law, and human rights to reach consensus-driven solutions."
+  },
+  { 
+    slug: "unhrc", 
+    name: "United Nations Human Rights Council", 
+    fee: 2000, 
+    capacity: 50, 
+    difficulty: "Intermediate", 
+    agenda: "Human rights protections and policy.",
+    description: "The United Nations Human Rights Council is dedicated to promoting and protecting human rights around the globe. Delegates will debate critical issues concerning human rights violations, structural inequalities, and policy frameworks to ensure dignity, freedom, and justice for all individuals worldwide."
+  },
+  { 
+    slug: "csw", 
+    name: "United Nations Commission on the Status of Women", 
+    fee: 2000, 
+    capacity: 40, 
+    difficulty: "Intermediate", 
+    agenda: "Gender equality and women's rights.",
+    description: "The Commission on the Status of Women is the principal global intergovernmental body exclusively dedicated to the promotion of gender equality and the empowerment of women. Delegates will analyze progress, identify challenges, and formulate policies to advance women's political, economic, and social rights globally."
+  },
+  { 
+    slug: "unicef", 
+    name: "United Nations International Children's Emergency Fund", 
+    fee: 2000, 
+    capacity: 40, 
+    difficulty: "Intermediate", 
+    agenda: "Child welfare and emergency response.",
+    description: "UNICEF is dedicated to safeguarding the rights and well-being of children worldwide. In this committee, delegates will address issues ranging from child healthcare and education to emergency humanitarian assistance in conflict zones, working to ensure a brighter and safer future for every child."
+  },
+  { 
+    slug: "unep", 
+    name: "United Nations Environment Programme", 
+    fee: 2000, 
+    capacity: 50, 
+    difficulty: "Intermediate", 
+    agenda: "Environmental policy and sustainability.",
+    description: "The United Nations Environment Programme is the leading global environmental authority. Delegates will tackle critical ecological challenges, including climate change, biodiversity loss, and pollution, developing sustainable policy frameworks that promote green development and protect our planet's ecosystems."
+  },
+  { 
+    slug: "wto", 
+    name: "World Trade Organization", 
+    fee: 2500, 
+    capacity: 50, 
+    difficulty: "Intermediate", 
+    agenda: "Global trade rules and disputes.",
+    description: "The World Trade Organization is the only global international organization dealing with the rules of trade between nations. Delegates will simulate trade negotiations, resolve complex commercial disputes, and draft agreements aimed at fostering open, fair, and sustainable international trade."
+  },
+  { 
+    slug: "international-press", 
+    name: "International Press", 
+    fee: 2000, 
+    capacity: 130, 
+    difficulty: "Intermediate", 
+    agenda: "Real-time summit journalism through reporting, caricature and photography.",
+    description: "The International Press offers a unique, hands-on experience in journalism and media. Participants will act as reporters, caricature artists, and photographers, documenting committee sessions in real time, interviewing delegates, and publishing newsletters that capture the dynamic spirit of the summit."
+  },
+  { 
+    slug: "aippm", 
+    name: "All India Political Parties Meet", 
+    fee: 1500, 
+    capacity: 60, 
+    difficulty: "Beginner", 
+    agenda: "National multiparty dialogue and consensus building.",
+    description: "The All India Political Parties Meet is a simulation of national political dialogue, bringing together diverse political ideologies. Delegates will represent prominent Indian leaders and discuss crucial socio-economic and political challenges facing the nation, seeking to build national consensus through debate and negotiation."
+  },
+  { 
+    slug: "lok-sabha", 
+    name: "Lok Sabha", 
+    fee: 1500, 
+    capacity: 60, 
+    difficulty: "Beginner", 
+    agenda: "Parliamentary debate and lawmaking.",
+    description: "The Lok Sabha is the lower house of India's Parliament, where legislation is debated and passed. Representatives will engage in parliamentary debates, raise questions on national policy, and draft bills, simulating the democratic process of lawmaking in India."
+  },
+  { 
+    slug: "war-cabinet", 
+    name: "Indian War Cabinet", 
+    fee: 1500, 
+    capacity: 30, 
+    difficulty: "Advanced", 
+    agenda: "Crisis governance and strategic decision-making.",
+    description: "The Indian War Cabinet is an elite, fast-paced crisis simulation focused on high-stakes national security and strategic decision-making. Members will navigate complex geopolitical crises, coordinate defense strategies, and make critical decisions under extreme time pressure to safeguard national interests."
+  }
 ] as const;
 
 export const seedTrackBySlug = (slug: string) => TRACKS.find((t) => t.slug === slug);

@@ -151,6 +151,7 @@ model Track {
   fee        Int
   capacity   Int      @default(40)
   agenda     String
+  description String  @default("")
   difficulty String   @default("Intermediate")
   isOpen     Boolean  @default(true)
   archived   Boolean  @default(false)

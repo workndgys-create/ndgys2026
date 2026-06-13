@@ -6,7 +6,7 @@ export { maskName } from "./names";
 
 export type PublicTrack = {
   slug: string; name: string; fee: number; capacity: number;
-  agenda: string; difficulty: string; isOpen: boolean; seatsRemaining: number; full: boolean;
+  agenda: string; description: string; difficulty: string; isOpen: boolean; seatsRemaining: number; full: boolean;
 };
 
 function logPublicDataError(scope: string, error: unknown) {
@@ -37,13 +37,13 @@ export async function getPublicTracks(): Promise<PublicTrack[]> {
     // `paid` here represents count of allocations (PAID + portfolio set)
     const paidMap = new Map((paid as unknown as { trackSlug: string; _count: number }[]).map((p) => [p.trackSlug, p._count]));
     const portfolioMap = new Map((portfolioCounts as unknown as { trackSlug: string; _count: number }[]).map((p) => [p.trackSlug, p._count]));
-    return tracks.map((t: { slug: string; name: string; fee: number; capacity?: number; agenda: string; difficulty: string; isOpen: boolean }) => {
+    return tracks.map((t: { slug: string; name: string; fee: number; capacity?: number; agenda: string; description: string; difficulty: string; isOpen: boolean }) => {
       const allocated = paidMap.get(t.slug) ?? 0;
       // Special-case: International Press has a fixed committee-level capacity of 130
       const isInternationalPress = String(t.name).trim().toLowerCase() === "international press";
       const capacity = isInternationalPress ? 130 : (portfolioMap.get(t.slug) ?? Math.max(0, (t as any).capacity ?? 0));
       const seatsRemaining = Math.max(0, capacity - allocated);
-      return { slug: t.slug, name: t.name, fee: t.fee, capacity, agenda: t.agenda, difficulty: t.difficulty, isOpen: t.isOpen, seatsRemaining, full: seatsRemaining === 0 || !t.isOpen };
+      return { slug: t.slug, name: t.name, fee: t.fee, capacity, agenda: t.agenda, description: t.description || "", difficulty: t.difficulty, isOpen: t.isOpen, seatsRemaining, full: seatsRemaining === 0 || !t.isOpen };
     });
   } catch (error) {
     logPublicDataError("getPublicTracks", error);

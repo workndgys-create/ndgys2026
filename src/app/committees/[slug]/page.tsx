@@ -61,6 +61,11 @@ export default async function CommitteeDetail({ params }: { params: { slug: stri
             </div>
           </div>
 
+          <div className="mt-8 rounded-2xl border border-ink/10 bg-paper p-6">
+            <h2 className="font-display text-lg font-700 text-ink">Description</h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink/80 whitespace-pre-line">{t.description || t.agenda}</p>
+          </div>
+
           {!t.full ? (
             <Link href={`/register?track=${t.slug}`} className="mt-8 inline-block rounded-full bg-gold px-8 py-3.5 font-600 text-midnight transition hover:bg-goldlite">
               Register for this committee →
