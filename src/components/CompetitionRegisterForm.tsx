@@ -26,6 +26,7 @@ type CompetitionRegisterFormProps = { competition: Comp; slug?: string };
 
 export default function CompetitionRegisterForm(props: CompetitionRegisterFormProps) {
   const { competition: c, slug } = props;
+  const isShaam = (slug === "shaam-e-mehfil") || (c.title && c.title.toLowerCase().includes("shaam e mehfil"));
   const initialPart: "SOLO" | "GROUP" = c.format === "GROUP" ? "GROUP" : "SOLO";
   const [participation, setParticipation] = useState<"SOLO" | "GROUP">(initialPart);
   const min = c.minTeam ?? 2;
@@ -106,10 +107,12 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
     if (isIplAuction && !teamChoice) { setMessage("Please choose an IPL team for the IPL Auction."); setStatus("error"); return; }
 
     // Validate required competition questions (make "What is your performance form?" mandatory)
-    for (let i = 0; i < questions.length; i++) {
-      const q = (questions[i] || "").trim();
-      if (q.toLowerCase() === "what is your performance form?" && !(answers[i] || "").trim()) {
-        setMessage("Please answer: What is your performance form?"); setStatus("error"); return;
+    if (isShaam) {
+      for (let i = 0; i < questions.length; i++) {
+        const q = (questions[i] || "").trim();
+        if (q.toLowerCase() === "what is your performance form?" && !(answers[i] || "").trim()) {
+          setMessage("Please answer: What is your performance form?"); setStatus("error"); return;
+        }
       }
     }
 
@@ -347,10 +350,10 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
       {questions.length > 0 && (
         <div className="space-y-3 rounded-xl border border-gold/30 bg-goldlite/10 p-4">
           {questions.map((q, i) => (
-            <div key={i}>
+                <div key={i}>
               <label className="text-sm font-600 text-ink">{q}</label>
               <textarea value={answers[i] || ""} onChange={(e) => setAnswers((a) => a.map((v, idx) => (idx === i ? e.target.value : v)))} rows={2}
-                required={((q || "").trim().toLowerCase() === "what is your performance form?")}
+                required={isShaam && ((q || "").trim().toLowerCase() === "what is your performance form?")}
                 className="mt-1 w-full rounded-lg border border-ink/15 bg-paper px-3 py-2.5 text-sm outline-none focus:border-gold" />
             </div>
           ))}

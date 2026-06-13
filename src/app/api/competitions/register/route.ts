@@ -82,6 +82,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Server-side validation for Shaam e Mehfil: require performance form answer
+  if (c.slug === "shaam-e-mehfil") {
+    const answers = Array.isArray(d.answers) ? d.answers as any[] : [];
+    const found = answers.find((x: any) => typeof x.q === "string" && x.q.trim().toLowerCase() === "what is your performance form?");
+    if (!found || !found.a || !String(found.a).trim()) {
+      return NextResponse.json({ error: "Please answer: What is your performance form?", issues: { answers: ["required"] } }, { status: 422 });
+    }
+  }
+
   if (!c.registrationOpen) {
     return NextResponse.json(
       {
