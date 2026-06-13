@@ -94,6 +94,16 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
   function setMember(i: number, key: keyof Member, val: string) { setMembers((m) => m.map((mm, idx) => (idx === i ? { ...mm, [key]: val } : mm))); }
   const [memberAgeErrors, setMemberAgeErrors] = useState<string[]>([]);
 
+  const [competitions, setCompetitions] = useState<{ id: string; title: string; slug: string }[]>([]);
+  useEffect(() => {
+    void (async () => {
+      try {
+        const r = await fetch("/api/public/competitions");
+        if (r.ok) setCompetitions(await r.json());
+      } catch (_) { }
+    })();
+  }, []);
+
   useEffect(() => {
     setMemberAgeErrors(members.map(() => ""));
   }, [members.length]);
@@ -446,6 +456,29 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
         )}
         {errors.howHeardDetail && <p className="mt-1 text-xs text-red-600">{errors.howHeardDetail[0]}</p>}
       </div>
+
+      <div>
+        <label className="text-sm font-500 text-ink/80">MUN COMMITTIEES AND COMPETITONS</label>
+        <select
+          name="competitionSelect"
+          value={slug || ""}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (v === "mun") {
+              window.location.href = "/register";
+            } else if (v && v !== slug) {
+              window.location.href = `/competitions/${v}/register`;
+            }
+          }}
+          className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+        >
+          <option value="mun">MUN — Committees (Model UN)</option>
+          {competitions.map((comp) => (
+            <option key={comp.slug} value={comp.slug}>{comp.title}</option>
+          ))}
+        </select>
+      </div>
+
       <div>
         <label className="text-sm font-500 text-ink/80">Anything you'd like us to know? (optional)</label>
         <textarea name="notes" rows={2} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-gold" />
