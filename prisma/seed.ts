@@ -37,8 +37,10 @@ const INDIAN_PARTIES = [
 ];
 
 const LOK_SABHA_SEATS = [
-  "Mumbai (South)", "Delhi Central", "Bangalore South", "Chennai South", "Hyderabad",
-  "Kolkata South", "Chandigarh", "Lucknow", "Pune", "Ahmedabad", "Jaipur", "Indore"
+  "Bharatiya Janata Party", "Indian National Congress", "All India Majlis-e-Ittehaad-ul-Muslimeen",
+  "Biju Janata Dal", "Trinamool Congress", "Dravida Munnetra Kazhagam", "Samajwadi Party",
+  "Shivsena", "Telugu Desam Party", "Jharkhand Mukti Morcha", "Nationalist Congress Party",
+  "Communist Party of India", "Aam Aadmi Party", "Yadav Samaj", "Regional Alliance"
 ];
 
 const WAR_CABINET_POSTS = [

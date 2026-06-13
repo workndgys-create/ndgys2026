@@ -52,8 +52,10 @@ async function updatePortfolios() {
       "Communist Party of India", "Aam Aadmi Party", "Yadav Samaj", "Regional Alliance"
     ],
     "lok-sabha": [
-      "Mumbai (South)", "Delhi Central", "Bangalore South", "Chennai South", "Hyderabad",
-      "Kolkata South", "Chandigarh", "Lucknow", "Pune", "Ahmedabad", "Jaipur", "Indore"
+      "Bharatiya Janata Party", "Indian National Congress", "All India Majlis-e-Ittehaad-ul-Muslimeen",
+      "Biju Janata Dal", "Trinamool Congress", "Dravida Munnetra Kazhagam", "Samajwadi Party",
+      "Shivsena", "Telugu Desam Party", "Jharkhand Mukti Morcha", "Nationalist Congress Party",
+      "Communist Party of India", "Aam Aadmi Party", "Yadav Samaj", "Regional Alliance"
     ],
     "war-cabinet": [
       "Prime Minister", "Defence Minister", "Foreign Minister", "Finance Minister", "Home Minister",
