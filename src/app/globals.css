@@ -115,3 +115,13 @@ body {
     repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 27deg, rgba(217,119,6,0.04) 27deg, rgba(217,119,6,0.04) 30deg),
     radial-gradient(circle at 50% 0%, rgba(217,119,6,0.06) 0%, transparent 60%);
 }
+
+/* Utility to hide number input spinner arrows where not desired */
+input[type="number"].no-spinner::-webkit-outer-spin-button,
+input[type="number"].no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"].no-spinner {
+  -moz-appearance: textfield;
+}

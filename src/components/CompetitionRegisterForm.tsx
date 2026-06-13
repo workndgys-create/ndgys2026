@@ -135,14 +135,14 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
     // Leader age validation (must be provided and in 10-30 inclusive)
     const leaderNum = Number(age || fd.get("age") || "");
     if (!Number.isFinite(leaderNum) || leaderNum < 10) { setMessage("Participants must be at least 10 years old to register."); setStatus("error"); return; }
-    if (leaderNum > 30) { setMessage("Participants must be 30 years old or younger to register."); setStatus("error"); return; }
+    if (leaderNum > 27) { setMessage("Participants must be 27 years old or younger to register."); setStatus("error"); return; }
 
     // Members age validation (for group entries)
     if (participation === "GROUP") {
       for (const m of cleanMembers) {
         const ma = typeof m.age === "number" ? m.age : Number(m.age);
         if (!Number.isFinite(ma) || ma < 10) { setMessage("Participants must be at least 10 years old to register."); setStatus("error"); return; }
-        if (ma > 30) { setMessage("Participants must be 30 years old or younger to register."); setStatus("error"); return; }
+        if (ma > 27) { setMessage("Participants must be 27 years old or younger to register."); setStatus("error"); return; }
       }
     }
 
@@ -251,12 +251,13 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
             const n = Number(v);
             if (v === "" || !Number.isFinite(n) || n < 10) {
               setLeaderAgeError("Participants must be at least 10 years old to register.");
-            } else if (n > 30) {
-              setLeaderAgeError("Participants must be 30 years old or younger to register.");
+            } else if (n > 27) {
+              setLeaderAgeError("Participants must be 27 years old or younger to register.");
             } else {
               setLeaderAgeError("");
             }
-          }} min={10} max={30} required className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+          }} min={10} max={27} required className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold no-spinner" />
+          
           {leaderAgeError && <p className="mt-1 text-xs text-red-600">{leaderAgeError}</p>}
           {errors.age && <p className="mt-1 text-xs text-red-600">{errors.age[0]}</p>}
         </div>
@@ -348,11 +349,12 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
                     setMemberAgeErrors((arr) => {
                       const copy = [...(arr || [])];
                       if (v === "" || !Number.isFinite(n) || n < 10) copy[i] = "Participants must be at least 10 years old to register.";
-                      else if (n > 30) copy[i] = "Participants must be 30 years old or younger to register.";
+                      else if (n > 27) copy[i] = "Participants must be 27 years old or younger to register.";
                       else copy[i] = "";
                       return copy;
                     });
-                  }} placeholder="Age" inputMode="numeric" required min={10} max={30} className="w-20 rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                   }} placeholder="Age" inputMode="numeric" required min={10} max={27} className="w-20 rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold no-spinner" />
+                  
                   {memberAgeErrors[i] && <p className="mt-1 text-xs text-red-600">{memberAgeErrors[i]}</p>}
                 </div>
                 <div>
