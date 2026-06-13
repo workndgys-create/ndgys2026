@@ -16,7 +16,7 @@ describe("competitionRegistrationSchema", () => {
     expect(r.success).toBe(false);
   });
   it("accepts a valid group entry", () => {
-    const r = competitionRegistrationSchema.safeParse({ ...base, participation: "GROUP", teamName: "Phoenix", members: [{ name: "Ravi", age: 17 }, { name: "Sara" }] });
+    const r = competitionRegistrationSchema.safeParse({ ...base, participation: "GROUP", teamName: "Phoenix", members: [{ name: "Ravi", age: 17 }, { name: "Sara", age: 18 }] });
     expect(r.success).toBe(true);
   });
 });

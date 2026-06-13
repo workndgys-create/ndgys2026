@@ -2584,6 +2584,7 @@ export const TrackScalarFieldEnum = {
   fee: 'fee',
   capacity: 'capacity',
   agenda: 'agenda',
+  description: 'description',
   difficulty: 'difficulty',
   isOpen: 'isOpen',
   archived: 'archived',

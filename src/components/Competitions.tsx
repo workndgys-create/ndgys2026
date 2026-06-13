@@ -54,7 +54,7 @@ export default async function Competitions() {
             return (
             <Reveal key={c.id} delay={(i % 3) * 90}>
               <>
-              <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-ink/10 bg-cream shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+              <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-ink/10 bg-cream shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
                 {imageSrc ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={imageSrc} alt={c.title} className="h-40 w-full object-cover" />
@@ -76,13 +76,25 @@ export default async function Competitions() {
                             : ""}
                     </p>
                   )}
-                  <div className="mt-4 flex items-center justify-between">
-                    <span />
-                    {c.registrationOpen && (c.feeSolo || c.feeGroup)
-                      ? <Link href={`/competitions/${c.slug}/register`} className="text-sm font-600 text-gold hover:underline">Register →</Link>
-                      : c.ctaUrl
-                        ? <a href={c.ctaUrl} className="text-sm font-600 text-gold hover:underline">Learn more →</a>
-                        : <span />}
+                  <div className="mt-5 flex gap-2">
+                    <Link href={`/competitions/${c.slug}`} className="rounded-full border border-ink/15 px-4 py-2 text-sm font-500 text-ink hover:border-gold">
+                      Details
+                    </Link>
+                    {c.registrationOpen && (c.feeSolo || c.feeGroup) ? (
+                      <Link
+                        href={`/competitions/${c.slug}/register`}
+                        className="inline-flex items-center gap-2 rounded-full bg-midnight px-5 py-2 text-sm font-600 text-cream transition group-hover:bg-gold group-hover:text-midnight"
+                      >
+                        Register →
+                      </Link>
+                    ) : c.ctaUrl ? (
+                      <a
+                        href={c.ctaUrl}
+                        className="inline-flex items-center gap-2 rounded-full bg-midnight px-5 py-2 text-sm font-600 text-cream transition group-hover:bg-gold group-hover:text-midnight"
+                      >
+                        Learn more →
+                      </a>
+                    ) : null}
                   </div>
                 </div>
               </article>

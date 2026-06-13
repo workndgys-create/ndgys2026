@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { registrationSchema, contactSchema, seedTrackBySlug, TRACKS } from "@/lib/validation";
 
 describe("registrationSchema", () => {
-  const base = { fullName: "Aanya Rao", email: "a@b.com", phone: "+91 9876543210", track: TRACKS[0].slug, institution: "Delhi Public School" };
+  const base = { fullName: "Aanya Rao", email: "a@b.com", phone: "+91 9876543210", track: TRACKS[0].slug, institution: "Delhi Public School", age: 20 };
   it("accepts a valid registration", () => expect(registrationSchema.safeParse(base).success).toBe(true));
   it("accepts a registration with optional photo fields", () => {
     const withPhoto = { ...base, photoData: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=", photoMime: "image/png" };
