@@ -105,6 +105,14 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
 
     if (isIplAuction && !teamChoice) { setMessage("Please choose an IPL team for the IPL Auction."); setStatus("error"); return; }
 
+    // Validate required competition questions (make "What is your performance form?" mandatory)
+    for (let i = 0; i < questions.length; i++) {
+      const q = (questions[i] || "").trim();
+      if (q.toLowerCase() === "what is your performance form?" && !(answers[i] || "").trim()) {
+        setMessage("Please answer: What is your performance form?"); setStatus("error"); return;
+      }
+    }
+
     if (!photoData || !photoMime) {
       setMessage("Please upload a passport size photo for the leader/participant.");
       setStatus("error");
@@ -341,7 +349,9 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
           {questions.map((q, i) => (
             <div key={i}>
               <label className="text-sm font-600 text-ink">{q}</label>
-              <textarea value={answers[i] || ""} onChange={(e) => setAnswers((a) => a.map((v, idx) => (idx === i ? e.target.value : v)))} rows={2} className="mt-1 w-full rounded-lg border border-ink/15 bg-paper px-3 py-2.5 text-sm outline-none focus:border-gold" />
+              <textarea value={answers[i] || ""} onChange={(e) => setAnswers((a) => a.map((v, idx) => (idx === i ? e.target.value : v)))} rows={2}
+                required={((q || "").trim().toLowerCase() === "what is your performance form?")}
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-paper px-3 py-2.5 text-sm outline-none focus:border-gold" />
             </div>
           ))}
         </div>
