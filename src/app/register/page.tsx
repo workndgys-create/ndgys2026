@@ -37,6 +37,8 @@ function RegisterInner() {
 
   const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number; difficulty?: string }[]>([]);
   const [track, setTrack] = useState(preTrack);
+  const [competitions, setCompetitions] = useState<{ id: string; title: string; slug: string }[]>([]);
+  const [selectedCompetition, setSelectedCompetition] = useState<string>("mun");
   const [status, setStatus] = useState<"idle" | "processing" | "paid" | "error" | "full">("idle");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
@@ -160,6 +162,13 @@ function RegisterInner() {
   useEffect(() => {
     fetch("/api/registration-questions", { cache: "no-store" })
       .then((r) => r.json()).then((d) => setQuestions(d.questions || [])).catch(() => { });
+    // load public competitions for quick selection
+    void (async () => {
+      try {
+        const r = await fetch("/api/public/competitions");
+        if (r.ok) setCompetitions(await r.json());
+      } catch (_) { }
+    })();
   }, []);
   function setAnswer(id: string, value: string | string[]) { setAnswers((a) => ({ ...a, [id]: value })); }
   function toggleMulti(id: string, opt: string) {
@@ -508,7 +517,30 @@ function RegisterInner() {
           <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
           <div>
-            <label className="text-sm font-500 text-ink/80">Committee</label>
+            <label className="text-sm font-500 text-ink/80">Register for</label>
+            <select
+              name="competitionSelect"
+              value={selectedCompetition}
+              onChange={(e) => {
+                const v = e.target.value;
+                setSelectedCompetition(v);
+                // if user picks a competition (non-MUN), redirect to that competition's register page
+                if (v && v !== "mun") {
+                  window.location.href = `/competitions/${v}/register`;
+                }
+              }}
+              className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold"
+            >
+              <option value="mun">MUN — Committees (Model UN)</option>
+              {competitions.map((c) => (
+                <option key={c.slug} value={c.slug}>{c.title}</option>
+              ))}
+            </select>
+          </div>
+
+          {selectedCompetition === "mun" && (
+            <div>
+              <label className="text-sm font-500 text-ink/80">Committee</label>
               <select
                 name="track"
                 value={track}
@@ -523,7 +555,8 @@ function RegisterInner() {
                   </option>
                 ))}
               </select>
-          </div>
+            </div>
+          )}
 
           <div>
             <div className="flex items-center justify-between">
