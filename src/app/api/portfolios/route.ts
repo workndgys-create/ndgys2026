@@ -63,9 +63,28 @@ export async function GET(req: NextRequest) {
     const samplePhotographer = remainingPhotographer > 0 ? await findAvailableSample("photographer") : null;
 
     const out = [
-      { id: sampleJournalist ? sampleJournalist.id : `none-journalist`, name: "Journalist", state: remainingJournalist > 0 ? "available" : "taken", remaining: remainingJournalist, capacity: capJournalist },
-      { id: sampleCaricature ? sampleCaricature.id : `none-caricature`, name: "Caricature", state: remainingCaricature > 0 ? "available" : "taken", remaining: remainingCaricature, capacity: capCaricature },
-      { id: samplePhotographer ? samplePhotographer.id : `none-photographer`, name: "Photographer", state: remainingPhotographer > 0 ? "available" : "taken", remaining: remainingPhotographer, capacity: capPhotographer }
+      {
+        id: sampleJournalist ? sampleJournalist.id : `none-journalist`,
+        name: "Journalist",
+        // Only mark available if there is both remaining capacity AND an actual portfolio row to hold
+        state: remainingJournalist > 0 && sampleJournalist ? "available" : "taken",
+        remaining: remainingJournalist,
+        capacity: capJournalist,
+      },
+      {
+        id: sampleCaricature ? sampleCaricature.id : `none-caricature`,
+        name: "Caricature",
+        state: remainingCaricature > 0 && sampleCaricature ? "available" : "taken",
+        remaining: remainingCaricature,
+        capacity: capCaricature,
+      },
+      {
+        id: samplePhotographer ? samplePhotographer.id : `none-photographer`,
+        name: "Photographer",
+        state: remainingPhotographer > 0 && samplePhotographer ? "available" : "taken",
+        remaining: remainingPhotographer,
+        capacity: capPhotographer,
+      },
     ];
 
     return NextResponse.json({ ok: true, count: out.length, portfolios: out });
