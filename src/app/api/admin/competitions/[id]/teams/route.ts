@@ -36,7 +36,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
   if (Array.isArray(body.teams)) {
     await saveTeams(id, body.teams.map(String));
-    await audit(perm.email, "team.replace", "competition", id, null);
+    await audit(perm.email, "team.replace", "competition", id, undefined);
     return NextResponse.json({ teams: body.teams });
   }
   return NextResponse.json({ error: "Invalid request" }, { status: 400 });

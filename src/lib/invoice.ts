@@ -15,6 +15,7 @@ export interface InvoiceData {
   trackName: string;
   amount: number; // rupees
   gstAmount?: number; // rupees
+  itemTitle?: string;
 }
 
 const inr = (amount: number) => `INR ${amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
@@ -64,8 +65,9 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
 
     // Line item
     y += 26;
+    const itemTitle = data.itemTitle ?? `Delegate Registration — ${data.trackName}`;
     doc.fillColor(INK).font("Helvetica").fontSize(10)
-      .text(`Delegate Registration — ${data.trackName}`, left + 12, y + 9, { width: right - left - 160 })
+      .text(itemTitle, left + 12, y + 9, { width: right - left - 160 })
       .text(inr(data.amount), right - 132, y + 9, { width: 120, align: "right" });
     doc.moveTo(left, y + 30).lineTo(right, y + 30).strokeColor("#D97706").stroke();
 

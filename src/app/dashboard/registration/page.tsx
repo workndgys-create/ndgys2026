@@ -8,7 +8,23 @@ export default async function RegistrationPage() {
   const reg = await currentDelegate();
   if (!reg) return null;
   const isComp = !!(reg as any).isCompetition;
-  const invoice = isComp ? null : await prisma.invoice.findUnique({ where: { registrationId: reg.id } });
+
+  let invoiceNumber = "—";
+  let hasInvoice = false;
+
+  if (isComp) {
+    if (reg.status === "PAID" && reg.delegateId) {
+      const suffix = reg.delegateId.split("-").pop() || "COMP";
+      invoiceNumber = `NDGYS/2026/C-${suffix}`;
+      hasInvoice = true;
+    }
+  } else {
+    const invoice = await prisma.invoice.findUnique({ where: { registrationId: reg.id } });
+    if (invoice) {
+      invoiceNumber = invoice.number;
+      hasInvoice = true;
+    }
+  }
 
   const Row = ({ k, v }: { k: string; v: string }) => (
     <div className="flex justify-between border-b border-ink/5 py-3 text-sm"><span className="text-slatey">{k}</span><span className="font-500 text-ink">{v}</span></div>
@@ -27,14 +43,18 @@ export default async function RegistrationPage() {
         )}
         <Row k="Amount" v={`₹${reg.amount.toLocaleString("en-IN")}`} />
         <Row k="Status" v={reg.status} />
-        {!isComp && <Row k="Invoice No." v={invoice?.number ?? "—"} />}
+        <Row k="Invoice No." v={invoiceNumber} />
       </div>
 
-      {invoice ? (
-        <a href="/api/delegate/invoice" className="mt-5 inline-block rounded-full bg-gold px-6 py-3 font-600 text-midnight hover:bg-goldlite">Download Invoice (PDF)</a>
-      ) : isComp ? (
+      {hasInvoice && (
+        <div className="mt-5">
+          <a href="/api/delegate/invoice" className="inline-block rounded-full bg-gold px-6 py-3 font-600 text-midnight hover:bg-goldlite">Download Invoice (PDF)</a>
+        </div>
+      )}
+      {isComp && (
         <p className="mt-5 text-sm text-slatey">Registration receipt and confirmation details have been sent to your email.</p>
-      ) : (
+      )}
+      {!hasInvoice && !isComp && (
         <div className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
           Invoice is generated after payment. <Link href="/register" className="font-600 underline">Complete payment</Link>
         </div>
