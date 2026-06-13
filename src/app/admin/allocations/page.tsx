@@ -69,7 +69,16 @@ export default function AllocationsAdmin() {
           {isInternationalPress && committeeTotal != null && committeeRemaining != null && (
             <>
               <br />
-              <span className="mt-2 inline-block text-sm text-ink">Total Seats: <b>{committeeTotal}</b> · Seats Remaining: <b>{committeeRemaining}</b></span>
+              <div className="mt-2 text-sm text-ink">
+                <div>Total Seats: <b>{committeeTotal}</b> · Seats Remaining: <b>{committeeRemaining}</b></div>
+                <div className="mt-2">
+                  {selectedCommittee?.portfolios.map((p: any) => (
+                    <div key={p.name} className="text-sm">
+                      <span className="font-600">{p.name}:</span> Total <b>{p.capacity ?? "—"}</b> · Filled <b>{p.takenCount ?? (p.taken ? 1 : 0)}</b> · Remaining <b>{p.remaining ?? (p.taken ? 0 : p.capacity ?? 0)}</b>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </>
           )}
         </p>
