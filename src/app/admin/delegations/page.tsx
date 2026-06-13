@@ -8,7 +8,7 @@ export default function Page() {
   const [rows, setRows] = useState<D[] | null>(null);
   useEffect(() => { fetch("/api/admin/delegations").then(async (r) => { if (r.ok) setRows((await r.json()).delegations); }); }, []);
   return (
-    <AdminShell title="Delegations">
+    <AdminShell title="School/Group Registration">
       <Panel title="School / group registrations">
         {!rows ? <p className="text-slatey">Loading…</p> : rows.length === 0 ? <p className="py-8 text-center text-slatey">No delegations yet.</p> : (
           <div className="overflow-x-auto">

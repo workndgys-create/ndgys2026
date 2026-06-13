@@ -28,10 +28,14 @@ export async function fulfilPaidRegistration(orderId: string, paymentId: string)
     data: { status: "PAID", gatewayPaymentId: paymentId, delegateId }
   });
 
+  let portfolioLabel = reg.portfolio || undefined;
   // Auto-assign the portfolio the delegate selected at registration (idempotent).
   if (reg.portfolioId) {
     const label = await assignPortfolioForRegistration(reg.id, reg.portfolioId);
-    if (label) await prisma.registration.update({ where: { id: reg.id }, data: { portfolio: label } });
+    if (label) {
+      await prisma.registration.update({ where: { id: reg.id }, data: { portfolio: label } });
+      portfolioLabel = label;
+    }
   }
   if (reg.promoCode) await consumePromo(reg.promoCode);
 
@@ -53,7 +57,8 @@ export async function fulfilPaidRegistration(orderId: string, paymentId: string)
         fullName: reg.fullName,
         email: reg.email,
         trackName: reg.trackName,
-        amount: reg.amount
+        amount: reg.amount,
+        portfolio: portfolioLabel
       }),
       qrDataUrl(delegateId)
     ]);
@@ -127,13 +132,26 @@ export async function fulfilPaidDelegation(orderId: string, paymentId: string): 
     if (reg.status === "PAID") continue;
     const delegateId = reg.delegateId ?? (await generateDelegateId());
     await prisma.registration.update({ where: { id: reg.id }, data: { status: "PAID", delegateId, gatewayPaymentId: paymentId } });
+    let portfolioLabel = reg.portfolio || undefined;
     if (reg.portfolioId) {
       const label = await assignPortfolioForRegistration(reg.id, reg.portfolioId);
-      if (label) await prisma.registration.update({ where: { id: reg.id }, data: { portfolio: label } });
+      if (label) {
+        await prisma.registration.update({ where: { id: reg.id }, data: { portfolio: label } });
+        portfolioLabel = label;
+      }
     }
     try {
       const [pdf, qr] = await Promise.all([
-        generateInvoicePdf({ number: await nextInvoiceNumber(), issuedAt: new Date(), delegateId, fullName: reg.fullName, email: reg.email, trackName: reg.trackName, amount: reg.amount }),
+        generateInvoicePdf({
+          number: await nextInvoiceNumber(),
+          issuedAt: new Date(),
+          delegateId,
+          fullName: reg.fullName,
+          email: reg.email,
+          trackName: reg.trackName,
+          amount: reg.amount,
+          portfolio: portfolioLabel
+        }),
         qrDataUrl(delegateId)
       ]);
       const inv = await prisma.invoice.findUnique({ where: { registrationId: reg.id } });
