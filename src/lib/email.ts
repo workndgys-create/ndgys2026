@@ -56,10 +56,33 @@ const attachmentsPayload = attachments?.length
       body: JSON.stringify(payload)
     });
 
-    const result = await response.json();
+    const result = await response.json().catch(() => ({}));
 
     if (!response.ok) {
       console.error("[email:error] Resend returned error:", to, result);
+      if (template && html) {
+        console.warn("[email:warn] Template send failed, retrying with HTML fallback for", to);
+        delete payload.template;
+        delete payload.subject;
+        payload.html = html;
+        if (subject) payload.subject = subject;
+
+        const retryResponse = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+        const retryResult = await retryResponse.json().catch(() => ({}));
+        if (!retryResponse.ok) {
+          console.error("[email:error] HTML fallback also failed:", to, retryResult);
+          return { sent: false };
+        }
+        console.log("[email:sent] to", to, "(HTML fallback)");
+        return { sent: true };
+      }
       return { sent: false };
     }
 
@@ -70,6 +93,94 @@ const attachmentsPayload = attachments?.length
     return { sent: false };
   }
 }
+
+const PAYMENTS_RECEIPT_TEMPLATE_ID = "7f3595e7-3ada-453f-a13a-0d3cae799da8";
+const REGISTRATION_CONFIRMED_TEMPLATE_ID = "908f81fe-100b-43f5-bb99-97c85a9158b1";
+
+const supportEmailFromSender = (from: string) => {
+  const match = from.match(/<([^>]+)>/);
+  return match ? match[1] : from;
+};
+
+export function receiptTemplateData(options: {
+  fullName: string;
+  receiptNo: string;
+  date: string;
+  item: string;
+  paymentId: string;
+  amount: string;
+  supportEmail: string;
+  venue: string;
+  invoiceUrl: string;
+  ctaUrl?: string;
+  ctaLabel?: string;
+  ctaText?: string;
+}) {
+  return {
+    FULL_NAME: options.fullName,
+    RECEIPT_NO: options.receiptNo,
+    DATE: options.date,
+    ITEM: options.item,
+    PAYMENT_ID: options.paymentId,
+    AMOUNT: options.amount,
+    SUPPORT_EMAIL: options.supportEmail,
+    VENUE: options.venue,
+    INVOICE_URL: options.invoiceUrl,
+    CTA_URL: options.ctaUrl,
+    CTA_LABEL: options.ctaLabel,
+    CTA_TEXT: options.ctaText,
+    CTA_BUTTON_LABEL: options.ctaLabel,
+    CTA_BUTTON_TEXT: options.ctaText,
+    BUTTON_LABEL: options.ctaLabel,
+    BUTTON_TEXT: options.ctaText
+  };
+}
+
+export function registrationConfirmedTemplateData(options: {
+  firstName: string;
+  delegateId: string;
+  eventDates: string;
+  committee: string;
+  portfolio: string;
+  amount: string;
+  venue: string;
+  invoiceUrl: string;
+  ticketUrl?: string;
+  supportEmail?: string;
+  dashboardUrl?: string;
+  qrUrl?: string;
+  ctaUrl?: string;
+  ctaLabel?: string;
+  ctaText?: string;
+}) {
+  return {
+    FIRST_NAME: options.firstName,
+    DELEGATE_ID: options.delegateId,
+    EVENT_DATES: options.eventDates,
+    COMMITTEE: options.committee,
+    PORTFOLIO: options.portfolio,
+    AMOUNT: options.amount,
+    VENUE: options.venue,
+    INVOICE_URL: options.invoiceUrl,
+    TICKET_URL: options.ticketUrl,
+    SUPPORT_EMAIL: options.supportEmail,
+    DASHBOARD_URL: options.dashboardUrl,
+    QR_URL: options.qrUrl,
+    CTA_URL: options.ctaUrl,
+    CTA_LABEL: options.ctaLabel,
+    CTA_TEXT: options.ctaText,
+    CTA_BUTTON_LABEL: options.ctaLabel,
+    CTA_BUTTON_TEXT: options.ctaText,
+    BUTTON_LABEL: options.ctaLabel,
+    BUTTON_TEXT: options.ctaText
+  };
+}
+
+export const resendTemplates = {
+  receiptTemplateId: PAYMENTS_RECEIPT_TEMPLATE_ID,
+  registrationConfirmedTemplateId: REGISTRATION_CONFIRMED_TEMPLATE_ID,
+  supportEmail: supportEmailFromSender(env.MAIL_FROM)
+};
 
 const shell = (inner: string) => `
   <div style="font-family:Georgia,'Times New Roman',serif;background:#FFE8C8;padding:32px">
@@ -104,6 +215,20 @@ export const templates = {
         : `<p style="color:#8B6914;font-size:13px">Access your delegate dashboard anytime at ${env.NEXT_PUBLIC_BASE_URL}/dashboard</p>`}
       `
      ),
+  paymentReceipt: (name: string, receiptNo: string, date: string, item: string, paymentId: string, amount: string, supportEmail: string) =>
+    shell(
+      `<h2 style="margin:0 0 12px;color:#4A2008">Payment receipt</h2>
+       <p>Thank you, <strong>${name}</strong>. We have received your payment.</p>
+       <table style="margin:14px 0;font-size:14px;width:100%">
+         <tr><td style="color:#8B6914;padding:6px 12px 6px 0;width:120px">Receipt no.</td><td>${receiptNo}</td></tr>
+         <tr><td style="color:#8B6914;padding:6px 12px 6px 0">Date</td><td>${date}</td></tr>
+         <tr><td style="color:#8B6914;padding:6px 12px 6px 0">Item</td><td>${item}</td></tr>
+         <tr><td style="color:#8B6914;padding:6px 12px 6px 0">Payment ID</td><td>${paymentId}</td></tr>
+         <tr><td style="color:#8B6914;padding:6px 12px 6px 0">Total paid</td><td><strong>${amount}</strong></td></tr>
+       </table>
+       <p>If you have questions, write to <a href="mailto:${supportEmail}" style="color:#4A2008">${supportEmail}</a>.</p>
+      `
+    ),
   magicLink: (link: string, otp: string) =>
     shell(
       `<h2 style="margin:0 0 12px;color:#4A2008">Sign in to your delegate dashboard</h2>

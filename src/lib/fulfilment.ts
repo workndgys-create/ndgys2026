@@ -1,13 +1,14 @@
 import { prisma } from "./prisma";
 import { generateDelegateId, nextInvoiceNumber } from "./ids";
 import { generateInvoicePdf } from "./invoice";
-import { qrDataUrl } from "./qr";
-import { sendMail, templates } from "./email";
+import { qrDataUrl, qrPayload } from "./qr";
+import { sendMail, templates, receiptTemplateData, registrationConfirmedTemplateData, resendTemplates } from "./email";
 import { env } from "./env";
 import { assignPortfolioForRegistration } from "./portfolios";
 import { generateCompetitionRefId } from "./ids";
 import { consumePromo } from "./promoDb";
 import { summitIcs } from "./eventIcs";
+import { getSetting } from "./settings";
 
 /**
  * Idempotently fulfils a paid registration:
@@ -64,15 +65,57 @@ export async function fulfilPaidRegistration(orderId: string, paymentId: string)
     ]);
 
     const cal = await summitIcs(delegateId);
+    const venue = await getSetting("event.venue");
+    const receiptData = receiptTemplateData({
+      fullName: reg.fullName,
+      receiptNo: invoice.number,
+      date: invoice.issuedAt.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }),
+      item: reg.trackName,
+      paymentId,
+      amount: reg.amount.toLocaleString("en-IN"),
+      supportEmail: resendTemplates.supportEmail,
+      venue,
+      invoiceUrl: `${env.NEXT_PUBLIC_BASE_URL}/api/delegate/invoice`,
+      ctaUrl: `${env.NEXT_PUBLIC_BASE_URL}/dashboard/login`,
+      ctaLabel: "Delegate login",
+      ctaText: "Delegate login"
+    });
+
+    const registrationConfirmedData = registrationConfirmedTemplateData({
+      firstName: reg.fullName.split(" ")[0] || reg.fullName,
+      delegateId,
+      eventDates: "22–23 August 2026",
+      committee: reg.trackName,
+      portfolio: reg.portfolio ?? "Pending",
+      amount: reg.amount.toLocaleString("en-IN"),
+      venue,
+      invoiceUrl: `${env.NEXT_PUBLIC_BASE_URL}/api/delegate/invoice`,
+      ticketUrl: `${env.NEXT_PUBLIC_BASE_URL}/dashboard/ticket`,
+      dashboardUrl: `${env.NEXT_PUBLIC_BASE_URL}/dashboard`,
+      supportEmail: resendTemplates.supportEmail,
+      qrUrl: qrPayload(delegateId),
+      ctaUrl: `${env.NEXT_PUBLIC_BASE_URL}/dashboard/login`,
+      ctaLabel: "Delegate login",
+      ctaText: "Delegate login"
+    });
+
     await Promise.allSettled([
       sendMail({
         to: reg.email,
-        subject: "Your Summit registration is confirmed 🎉",
-        html: templates.registrationPaid(reg.fullName, reg.trackName, delegateId, reg.amount, qr),
+        subject: "Your Summit payment receipt",
+        template: resendTemplates.receiptTemplateId,
+        templateData: receiptData,
+        html: templates.paymentReceipt(reg.fullName, invoice.number, invoice.issuedAt.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }), reg.trackName, paymentId, `₹${reg.amount.toLocaleString("en-IN")}`, resendTemplates.supportEmail),
         attachments: [
           { filename: `${invoice.number.replace(/\//g, "-")}.pdf`, content: pdf },
           { filename: cal.filename, content: Buffer.from(cal.ics, "utf8") }
         ]
+      }),
+      sendMail({
+        to: reg.email,
+        subject: "Your Summit registration is confirmed 🎉",
+        template: resendTemplates.registrationConfirmedTemplateId,
+        templateData: registrationConfirmedData
       }),
       env.MAIL_ADMIN_TO
         ? sendMail({
