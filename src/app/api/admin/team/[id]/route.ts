@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireRole, audit } from "@/lib/adminSession";
+import { requirePermission, audit } from "@/lib/adminSession";
 
 export const runtime = "nodejs";
 
@@ -18,7 +18,7 @@ const VALID_ROLES = [
 ];
 
 export async function PATCH(req: NextRequest, ctx: { params: { id: string } }) {
-  const s = await requireRole("SUPER_ADMIN");
+  const s = await requirePermission("team.manage");
   if (!s) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const params = ctx.params;
   try {
@@ -49,7 +49,7 @@ export async function PATCH(req: NextRequest, ctx: { params: { id: string } }) {
 }
 
 export async function DELETE(req: NextRequest, ctx: { params: { id: string } }) {
-  const s = await requireRole("SUPER_ADMIN");
+  const s = await requirePermission("team.delete");
   if (!s) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const params = ctx.params;
   try {

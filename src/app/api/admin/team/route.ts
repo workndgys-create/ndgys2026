@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { requireRole, audit } from "@/lib/adminSession";
+import { requirePermission, audit } from "@/lib/adminSession";
 import { z } from "zod";
 
 export const runtime = "nodejs";
@@ -40,7 +40,7 @@ const createSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const s = await requireRole("SUPER_ADMIN");
+  const s = await requirePermission("team.add");
   if (!s) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   try {
     const parsed = createSchema.safeParse(await req.json().catch(() => null));

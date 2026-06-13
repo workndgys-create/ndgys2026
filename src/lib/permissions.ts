@@ -39,6 +39,8 @@ export const ACTIONS = [
   "volunteers.manage",
 
   "team.manage",
+  "team.add",
+  "team.delete",
   "settings.manage",
   "system.manage"
 ] as const;
