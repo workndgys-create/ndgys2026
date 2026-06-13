@@ -32,9 +32,28 @@ export async function GET(req: NextRequest) {
     const capCaricature = Number(capCaricatureRow?.value ?? "50");
     const capPhotographer = Number(capPhotographerRow?.value ?? "30");
 
-    const journalistCount = await prisma.registration.count({ where: { status: "PAID", trackSlug: trackSlug, portfolio: { contains: "journalist", mode: "insensitive" } } });
-    const caricatureCount = await prisma.registration.count({ where: { status: "PAID", trackSlug: trackSlug, portfolio: { contains: "caricature", mode: "insensitive" } } });
-    const photographerCount = await prisma.registration.count({ where: { status: "PAID", trackSlug: trackSlug, portfolio: { contains: "photographer", mode: "insensitive" } } });
+    // Some DB rows use slightly different labels (e.g. "Caricaturist 01").
+    // Use keyword lists so counting and sample lookups match real portfolio names.
+    const KEYWORDS: Record<string, string[]> = {
+      journalist: ["journalist"],
+      caricature: ["caricature", "caricaturist"],
+      photographer: ["photograph", "photographer"]
+    };
+
+    async function countFor(keywords: string[]) {
+      // Build an OR over portfolio contains clauses
+      return prisma.registration.count({
+        where: {
+          status: "PAID",
+          trackSlug: trackSlug,
+          OR: keywords.map((k) => ({ portfolio: { contains: k, mode: "insensitive" } }))
+        }
+      });
+    }
+
+    const journalistCount = await countFor(KEYWORDS.journalist);
+    const caricatureCount = await countFor(KEYWORDS.caricature);
+    const photographerCount = await countFor(KEYWORDS.photographer);
 
     const remainingJournalist = Math.max(0, capJournalist - journalistCount);
     const remainingCaricature = Math.max(0, capCaricature - caricatureCount);
@@ -44,13 +63,18 @@ export async function GET(req: NextRequest) {
 
     // For each category, attempt to find one representative AVAILABLE portfolio row to use for holds.
     async function findAvailableSample(category: string) {
+      const keywords = KEYWORDS[category as keyof typeof KEYWORDS] || [category];
       const r = await prisma.portfolio.findFirst({
         where: {
           trackSlug: trackSlug,
-          name: { contains: category, mode: "insensitive" },
-          OR: [
-            { status: "AVAILABLE" },
-            { status: "HELD", heldUntil: { lt: now } }
+          OR: keywords.map((k) => ({ name: { contains: k, mode: "insensitive" } })),
+          AND: [
+            {
+              OR: [
+                { status: "AVAILABLE" },
+                { status: "HELD", heldUntil: { lt: now } }
+              ]
+            }
           ]
         },
         orderBy: [{ order: "asc" }, { name: "asc" }]
