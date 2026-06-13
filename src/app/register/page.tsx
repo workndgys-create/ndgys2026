@@ -517,7 +517,7 @@ function RegisterInner() {
           <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
           <div>
-            <label className="text-sm font-500 text-ink/80">Register for</label>
+            <label className="text-sm font-500 text-ink/80">Competitions</label>
             <select
               name="competitionSelect"
               value={selectedCompetition}
