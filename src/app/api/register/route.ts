@@ -35,6 +35,42 @@ export async function POST(req: NextRequest) {
   if (!portfolioId) return NextResponse.json({ error: "Please select a portfolio.", needPortfolio: true }, { status: 422 });
   if (!data.consentAccepted) return NextResponse.json({ error: "Please accept the Terms and Code of Conduct to continue.", needConsent: true }, { status: 422 });
 
+  // Support category-style selections for International Press: if frontend sent a
+  // category name (e.g., "Journalist") or the selected id is not a real portfolio
+  // row, attempt to resolve it to an available underlying portfolio row.
+  let resolvedPortfolioId: string | undefined = portfolioId;
+  const ipCategories = new Set(["journalist", "caricature", "photographer"]);
+  try {
+    const maybe = await prisma.portfolio.findUnique({ where: { id: portfolioId } });
+    if (!maybe) {
+      // If the selection is a category label, try to find an available matching row.
+      const label = String(portfolioId || "").trim().toLowerCase();
+      if (ipCategories.has(label)) {
+        const now = new Date();
+        const sample = await prisma.portfolio.findFirst({
+          where: {
+            trackSlug: data.track,
+            name: { contains: label, mode: "insensitive" },
+            OR: [
+              { status: "AVAILABLE" },
+              { status: "HELD", heldUntil: { lt: now } }
+            ]
+          },
+          orderBy: [{ order: "asc" }, { name: "asc" }]
+        });
+        if (sample) resolvedPortfolioId = sample.id;
+        else resolvedPortfolioId = undefined;
+      } else {
+        // not found and not a category — mark as unresolved
+        resolvedPortfolioId = undefined;
+      }
+    }
+  } catch (err) {
+    resolvedPortfolioId = undefined;
+  }
+
+  if (!resolvedPortfolioId) return NextResponse.json({ error: "Invalid portfolio for this committee." }, { status: 422 });
+
   // Validate answers to admin-defined custom questions (required ones must be answered)
   const answers = Array.isArray((body as any)?.customAnswers) ? (body as any).customAnswers as { questionId: string; label: string; value: string | string[] }[] : [];
   type RQ = { id: string; label: string; required: boolean };
@@ -65,8 +101,8 @@ export async function POST(req: NextRequest) {
   const portfolioCount = await prisma.portfolio.count({ where: { trackSlug: track.slug } });
   if (paidCount >= portfolioCount) return NextResponse.json({ error: "Track is full", full: true }, { status: 409 });
 
-  // Validate the portfolio belongs to this committee
-  const portfolio = await prisma.portfolio.findUnique({ where: { id: portfolioId } });
+  // Validate the (resolved) portfolio belongs to this committee
+  const portfolio = await prisma.portfolio.findUnique({ where: { id: resolvedPortfolioId } });
   if (!portfolio || portfolio.trackSlug !== track.slug) return NextResponse.json({ error: "Invalid portfolio for this committee." }, { status: 422 });
 
   // Apply an optional promo code to the committee fee
@@ -89,7 +125,7 @@ export async function POST(req: NextRequest) {
   const createPayload: any = {
     fullName: data.fullName, email: data.email, phone: data.phone,
     institution: data.institution || null, trackSlug: track.slug, trackName: track.name,
-    amount, status: "PENDING", portfolioId, promoCode: appliedCode,
+    amount, status: "PENDING", portfolioId: resolvedPortfolioId, promoCode: appliedCode,
     age: data.age ?? null, city: data.city || null, gender: data.gender ?? null,
     emergencyContact: data.emergencyContact ?? null, howHeard: howHeard || null, notes: data.notes || null,
     consentAccepted: true, guardianName: data.guardianName || null, guardianPhone: data.guardianPhone || null, guardianConsent: !!data.guardianConsent,
@@ -99,7 +135,7 @@ export async function POST(req: NextRequest) {
   const reg = await prisma.registration.create({ data: createPayload });
 
   // Atomically hold the portfolio for the configured window
-  const hold = await holdPortfolio(portfolioId, reg.id);
+  const hold = await holdPortfolio(resolvedPortfolioId as string, reg.id);
   if (!hold.ok) {
     await prisma.registration.delete({ where: { id: reg.id } }).catch(() => {});
     return NextResponse.json({ error: "That portfolio was just taken — please choose another.", portfolioUnavailable: true }, { status: 409 });

@@ -3,9 +3,9 @@ import fs from "fs";
 import path from "path";
 
 const DARK_BROWN = "#3B1A0A";
-const SAFFRON   = "#D97706";
-const INK       = "#2C0F04";
-const SLATE     = "#8B6914";
+const SAFFRON = "#D97706";
+const INK = "#2C0F04";
+const SLATE = "#8B6914";
 const GOLD_LIGHT = "#FFF3D6";
 
 export interface InvoiceData {
@@ -38,6 +38,7 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
   const shlLogo = loadLogo("SHLLogo.png");
   const ndgysLogo = loadLogo("NDGYS26.png");
   const gysLogo = loadLogo("GYS.png");
+
 
   return new Promise<Buffer>((resolve, reject) => {
     const doc = new PDFDocument({ size: "A4", margin: 50 });
