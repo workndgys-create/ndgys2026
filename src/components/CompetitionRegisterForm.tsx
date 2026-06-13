@@ -43,6 +43,7 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
   const [age, setAge] = useState("");
   const [consent, setConsent] = useState(false);
   const [guardianConsent, setGuardianConsent] = useState(false);
+  const [leaderAgeError, setLeaderAgeError] = useState("");
   const isMinor = age !== "" && Number(age) > 0 && Number(age) < 18;
 
   const [photoData, setPhotoData] = useState("");
@@ -91,6 +92,11 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
   function addMember() { if (members.length < max) setMembers((m) => [...m, { name: "", age: "", photoData: "", photoMime: "" }]); }
   function removeMember(i: number) { if (members.length > 1) setMembers((m) => m.filter((_, idx) => idx !== i)); }
   function setMember(i: number, key: keyof Member, val: string) { setMembers((m) => m.map((mm, idx) => (idx === i ? { ...mm, [key]: val } : mm))); }
+  const [memberAgeErrors, setMemberAgeErrors] = useState<string[]>([]);
+
+  useEffect(() => {
+    setMemberAgeErrors(members.map(() => ""));
+  }, [members.length]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -123,6 +129,20 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
         if (q.toLowerCase() === "what is your pitch?" && !(answers[i] || "").trim()) {
           setMessage("Please answer: What is your pitch?"); setStatus("error"); return;
         }
+      }
+    }
+
+    // Leader age validation (must be provided and in 10-30 inclusive)
+    const leaderNum = Number(age || fd.get("age") || "");
+    if (!Number.isFinite(leaderNum) || leaderNum < 10) { setMessage("Participants must be at least 10 years old to register."); setStatus("error"); return; }
+    if (leaderNum > 30) { setMessage("Participants must be 30 years old or younger to register."); setStatus("error"); return; }
+
+    // Members age validation (for group entries)
+    if (participation === "GROUP") {
+      for (const m of cleanMembers) {
+        const ma = typeof m.age === "number" ? m.age : Number(m.age);
+        if (!Number.isFinite(ma) || ma < 10) { setMessage("Participants must be at least 10 years old to register."); setStatus("error"); return; }
+        if (ma > 30) { setMessage("Participants must be 30 years old or younger to register."); setStatus("error"); return; }
       }
     }
 
@@ -225,7 +245,19 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="text-sm font-500 text-ink/80">Age</label>
-          <input name="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+          <input name="age" type="number" value={age} onChange={(e) => {
+            const v = e.target.value;
+            setAge(v);
+            const n = Number(v);
+            if (v === "" || !Number.isFinite(n) || n < 10) {
+              setLeaderAgeError("Participants must be at least 10 years old to register.");
+            } else if (n > 30) {
+              setLeaderAgeError("Participants must be 30 years old or younger to register.");
+            } else {
+              setLeaderAgeError("");
+            }
+          }} min={10} max={30} required className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+          {leaderAgeError && <p className="mt-1 text-xs text-red-600">{leaderAgeError}</p>}
           {errors.age && <p className="mt-1 text-xs text-red-600">{errors.age[0]}</p>}
         </div>
         <div>
@@ -309,7 +341,19 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
                 </div>
                 <div className="flex gap-2">
                   <input value={m.name} onChange={(e) => setMember(i, "name", e.target.value)} placeholder={`Member ${i + 1} name`} required className="flex-1 rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
-                  <input value={m.age} onChange={(e) => setMember(i, "age", e.target.value)} placeholder="Age" inputMode="numeric" required className="w-20 rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                  <input value={m.age} onChange={(e) => {
+                    const v = e.target.value;
+                    setMember(i, "age", v);
+                    const n = Number(v);
+                    setMemberAgeErrors((arr) => {
+                      const copy = [...(arr || [])];
+                      if (v === "" || !Number.isFinite(n) || n < 10) copy[i] = "Participants must be at least 10 years old to register.";
+                      else if (n > 30) copy[i] = "Participants must be 30 years old or younger to register.";
+                      else copy[i] = "";
+                      return copy;
+                    });
+                  }} placeholder="Age" inputMode="numeric" required min={10} max={30} className="w-20 rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold" />
+                  {memberAgeErrors[i] && <p className="mt-1 text-xs text-red-600">{memberAgeErrors[i]}</p>}
                 </div>
                 <div>
                   <label className="text-[11px] font-500 text-ink/75 block mb-1">Passport Photo (JPEG/PNG, Max 2MB) *</label>

@@ -27,7 +27,7 @@ export const registrationSchema = z.object({
   fullName: z.string().trim().min(2, "Please enter your full name").max(120),
   email: z.string().trim().email("Enter a valid email"),
   phone: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid phone number"),
-  age: z.coerce.number().int().min(8).max(99).optional(),
+  age: z.coerce.number().int().min(10).max(30),
   city: z.string().trim().max(120).optional().or(z.literal("")),
   gender: z.enum(GENDERS).optional(),
   emergencyContact: z.string().trim().regex(/^[+]?[0-9\s-]{8,15}$/, "Enter a valid contact number").optional().or(z.literal("")),
@@ -108,7 +108,7 @@ export const profileSchema = z.object({
 
 export const competitionMemberSchema = z.object({
   name: z.string().trim().min(2, "Member name is too short").max(120),
-  age: z.coerce.number().int().min(5).max(99).optional(),
+  age: z.coerce.number().int().min(10).max(30),
   photoData: z.string().optional(),
   photoMime: z.string().optional()
 });
