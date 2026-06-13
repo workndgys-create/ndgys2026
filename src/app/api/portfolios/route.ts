@@ -15,11 +15,12 @@ export async function GET(req: NextRequest) {
     }
 
     // Special-case International Press: return three aggregated portfolio categories
-    const trackRow = await prisma.track.findUnique({ where: { slug: track } });
+    const trackSlug = track as string;
+    const trackRow = await prisma.track.findUnique({ where: { slug: trackSlug } });
     const isInternationalPress = trackRow && String(trackRow.name).trim().toLowerCase() === "international press";
 
     if (!isInternationalPress) {
-      const portfolios = await listPortfolios(track, reg);
+      const portfolios = await listPortfolios(trackSlug, reg);
       return NextResponse.json({ ok: true, count: portfolios.length, portfolios });
     }
 
@@ -31,9 +32,9 @@ export async function GET(req: NextRequest) {
     const capCaricature = Number(capCaricatureRow?.value ?? "50");
     const capPhotographer = Number(capPhotographerRow?.value ?? "30");
 
-    const journalistCount = await prisma.registration.count({ where: { status: "PAID", trackSlug: track, portfolio: { contains: "journalist", mode: "insensitive" } } });
-    const caricatureCount = await prisma.registration.count({ where: { status: "PAID", trackSlug: track, portfolio: { contains: "caricature", mode: "insensitive" } } });
-    const photographerCount = await prisma.registration.count({ where: { status: "PAID", trackSlug: track, portfolio: { contains: "photographer", mode: "insensitive" } } });
+    const journalistCount = await prisma.registration.count({ where: { status: "PAID", trackSlug: trackSlug, portfolio: { contains: "journalist", mode: "insensitive" } } });
+    const caricatureCount = await prisma.registration.count({ where: { status: "PAID", trackSlug: trackSlug, portfolio: { contains: "caricature", mode: "insensitive" } } });
+    const photographerCount = await prisma.registration.count({ where: { status: "PAID", trackSlug: trackSlug, portfolio: { contains: "photographer", mode: "insensitive" } } });
 
     const remainingJournalist = Math.max(0, capJournalist - journalistCount);
     const remainingCaricature = Math.max(0, capCaricature - caricatureCount);
@@ -45,7 +46,7 @@ export async function GET(req: NextRequest) {
     async function findAvailableSample(category: string) {
       const r = await prisma.portfolio.findFirst({
         where: {
-          trackSlug: track,
+          trackSlug: trackSlug,
           name: { contains: category, mode: "insensitive" },
           OR: [
             { status: "AVAILABLE" },
