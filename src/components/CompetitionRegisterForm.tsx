@@ -353,7 +353,7 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
                 <div key={i}>
               <label className="text-sm font-600 text-ink">{q}</label>
               <textarea value={answers[i] || ""} onChange={(e) => setAnswers((a) => a.map((v, idx) => (idx === i ? e.target.value : v)))} rows={2}
-                required={isShaam && ((q || "").trim().toLowerCase() === "what is your performance form?")}
+                required={!!(isShaam && ((q || "").trim().toLowerCase() === "what is your performance form?"))}
                 className="mt-1 w-full rounded-lg border border-ink/15 bg-paper px-3 py-2.5 text-sm outline-none focus:border-gold" />
             </div>
           ))}
