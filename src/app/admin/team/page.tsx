@@ -49,6 +49,7 @@ const ROLE_HELP: Record<string, string> = {
 export default function TeamPage() {
   const [admins, setAdmins] = useState<Admin[] | null>(null);
   const [forbidden, setForbidden] = useState(false);
+  const [isSuper, setIsSuper] = useState(false);
   const [open, setOpen] = useState(false);
   const [err, setErr] = useState("");
 
@@ -72,6 +73,14 @@ export default function TeamPage() {
   }
   
   useEffect(load, []);
+
+  useEffect(() => {
+    fetch("/api/admin/me").then(async (r) => {
+      if (!r.ok) return;
+      const d = await r.json().catch(() => ({}));
+      setIsSuper(d.role === "SUPER_ADMIN");
+    }).catch(() => {});
+  }, []);
 
   async function update(id: string, patch: Record<string, unknown>) {
     const res = await fetch(`/api/admin/team/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) });
@@ -101,7 +110,13 @@ export default function TeamPage() {
             {err && <p className="mb-3 text-sm text-red-600">{err}</p>}
             <table className="w-full text-sm">
               <thead className="text-left text-xs uppercase tracking-wider text-slatey">
-                <tr><th className="px-3 py-2">Admin</th><th className="px-3 py-2">Role (level)</th><th className="px-3 py-2">Active</th><th className="px-3 py-2">Last login</th></tr>
+                <tr>
+                  <th className="px-3 py-2">Admin</th>
+                  <th className="px-3 py-2">Role (level)</th>
+                  <th className="px-3 py-2">Active</th>
+                  <th className="px-3 py-2">Last login</th>
+                  {isSuper && <th className="px-3 py-2">Actions</th>}
+                </tr>
               </thead>
               <tbody className="divide-y divide-ink/5">
                 {admins.map((a) => (
@@ -118,7 +133,16 @@ export default function TeamPage() {
                         {a.active ? "Active" : "Disabled"}
                       </button>
                     </td>
-                    <td className="px-3 py-3 text-slatey">{a.lastLoginAt ? new Date(a.lastLoginAt).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—"}</td>
+                      <td className="px-3 py-3 text-slatey">{a.lastLoginAt ? new Date(a.lastLoginAt).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—"}</td>
+                      {isSuper && (
+                        <td className="px-3 py-3">
+                          <button onClick={async () => {
+                            if (!confirm(`Delete admin ${a.email}? This cannot be undone.`)) return;
+                            const res = await fetch(`/api/admin/team/${a.id}`, { method: "DELETE" });
+                            if (res.ok) load(); else alert((await res.json().catch(() => ({}))).error || "Delete failed");
+                          }} className="rounded-full bg-red-50 px-3 py-1 text-xs font-600 text-red-700 hover:bg-red-100">Delete</button>
+                        </td>
+                      )}
                   </tr>
                 ))}
               </tbody>
