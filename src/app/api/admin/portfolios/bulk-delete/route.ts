@@ -21,8 +21,12 @@ export async function POST(req: NextRequest) {
     if (names.length > 0 && trackSlug) {
       const normalized = Array.from(new Set(names.map((n) => n.toString().trim()).filter(Boolean)));
       if (normalized.length === 0) return NextResponse.json({ error: "No names provided" }, { status: 422 });
-      // case-insensitive match: build OR clauses for Prisma
-      const orClauses = normalized.map((n) => ({ name: { equals: n, mode: "insensitive" as const } }));
+      // case-insensitive match: build OR clauses for Prisma.
+      // Try exact equals first, then widen to contains so inputs like "Caricature" match "Caricature 01" rows.
+      const orClauses = normalized.flatMap((n) => [
+        { name: { equals: n, mode: "insensitive" as const } },
+        { name: { contains: n, mode: "insensitive" as const } }
+      ]);
       // find matching portfolios
       const matched = await prisma.portfolio.findMany({ where: { trackSlug, archived: false, OR: orClauses }, select: { id: true, name: true } });
       const matchedNames = matched.map((m) => m.name.toLowerCase());
