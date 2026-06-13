@@ -20,8 +20,8 @@ const VALID_ROLES = [
 export async function PATCH(req: NextRequest, ctx: { params: { id: string } }) {
   const s = await requireRole("SUPER_ADMIN");
   if (!s) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const params = ctx.params;
   try {
-    const params = ctx.params;
     const target = await prisma.adminUser.findUnique({ where: { id: params.id } });
     if (!target) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
@@ -51,8 +51,8 @@ export async function PATCH(req: NextRequest, ctx: { params: { id: string } }) {
 export async function DELETE(req: NextRequest, ctx: { params: { id: string } }) {
   const s = await requireRole("SUPER_ADMIN");
   if (!s) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const params = ctx.params;
   try {
-    const params = ctx.params;
     const target = await prisma.adminUser.findUnique({ where: { id: params.id } });
     if (!target) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
