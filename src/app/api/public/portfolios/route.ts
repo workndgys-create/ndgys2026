@@ -13,7 +13,14 @@ export async function GET() {
     const nameBySlug = new Map<string, string>(TRACKS.map((t) => [t.slug as string, t.name]));
 
     const byTrack = new Map<string, { name: string; taken: boolean; archived: boolean }[]>();
+    // Exclude Lok Sabha city portfolios from public listing
+    const LOK_SABHA_EXCLUDE = new Set([
+      "Mumbai (South)", "Delhi Central", "Bangalore South", "Chennai South", "Hyderabad",
+      "Kolkata South", "Chandigarh", "Lucknow", "Pune", "Ahmedabad", "Jaipur", "Indore"
+    ]);
+
     for (const r of rows) {
+      if (String(r.trackSlug).toLowerCase() === "lok-sabha" && LOK_SABHA_EXCLUDE.has(r.name)) continue;
       const list = byTrack.get(r.trackSlug) ?? [];
       list.push({ name: r.name, taken: r.status === "ASSIGNED", archived: !!r.archived });
       byTrack.set(r.trackSlug, list);

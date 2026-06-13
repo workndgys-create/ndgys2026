@@ -28,11 +28,19 @@ export interface PublicPortfolio {
 export async function listPortfolios(trackSlug: string, viewerRegistrationId: string | null): Promise<PublicPortfolio[]> {
   await releaseExpiredHolds();
   const rows = await prisma.portfolio.findMany({ where: { trackSlug }, orderBy: [{ order: "asc" }, { name: "asc" }] });
+  // Remove city-named portfolios from Lok Sabha (we don't expose them on registration/home)
+  const LOK_SABHA_EXCLUDE = new Set([
+    "Mumbai (South)", "Delhi Central", "Bangalore South", "Chennai South", "Hyderabad",
+    "Kolkata South", "Chandigarh", "Lucknow", "Pune", "Ahmedabad", "Jaipur", "Indore"
+  ]);
   // If this is the International Press committee, only expose these three portfolio names
   const track = await prisma.track.findUnique({ where: { slug: trackSlug } });
   const isInternationalPress = track && String(track.name).trim().toLowerCase() === "international press";
   const allowed = new Set(["journalist", "caricature", "photographer"]);
-  const filteredRows = isInternationalPress ? rows.filter((r) => allowed.has(String(r.name).toLowerCase())) : rows;
+  let filteredRows = isInternationalPress ? rows.filter((r) => allowed.has(String(r.name).toLowerCase())) : rows;
+  if (String(trackSlug).toLowerCase() === "lok-sabha") {
+    filteredRows = filteredRows.filter((r) => !LOK_SABHA_EXCLUDE.has(r.name));
+  }
   const now = new Date();
   return (filteredRows as unknown as (PortfolioRow & { id: string; name: string; order: number })[]).map((p) => {
     const state = deriveState(p, viewerRegistrationId, now);
