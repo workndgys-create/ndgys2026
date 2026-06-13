@@ -410,43 +410,37 @@ function RegisterInner() {
         <p className="mt-2 text-ink/70">Pick your committee, choose an available portfolio, and pay to lock it in.</p>
 
         <form onSubmit={onSubmit} className="mt-8 space-y-4 rounded-2xl border border-ink/10 bg-paper p-7 shadow-sm">
-          {selected ? (
-            <>
-              <Field name="fullName" label="Full Name" errors={errors} />
-              <Field name="email" type="email" label="Email" errors={errors} />
-              <Field name="phone" label="Phone Number" errors={errors} />
-              <Field name="institution" label="School / College" errors={errors} required />
-              <div>
-                <label className="text-sm font-500 text-ink/80">Passport Size Photo (JPEG/PNG, Max 2MB) <span className="text-red-500">*</span></label>
-                <input
-                  type="file"
-                  accept="image/jpeg, image/png"
-                  required
-                  onChange={handlePhotoChange}
-                  className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gold file:text-midnight hover:file:bg-goldlite"
-                />
-                {photoError && <p className="mt-1 text-xs text-red-600">{photoError}</p>}
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm font-500 text-ink/80">Age</label>
-                  <input name="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} min={isBeginnerTrack ? 12 : undefined} max={isBeginnerTrack ? 16 : undefined} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
-                  {isBeginnerTrack && <p className="mt-1 text-xs text-amber-700">For beginner committees, only ages 12-16 are eligible.</p>}
-                  {errors.age && <p className="mt-1 text-xs text-red-600">{errors.age[0]}</p>}
-                </div>
-                <div>
-                  <label className="text-sm font-500 text-ink/80">Gender</label>
-                  <select name="gender" className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
-                    <option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
-                  </select>
-                </div>
-              </div>
-              <Field name="city" label="Place / City" errors={errors} />
-              <Field name="emergencyContact" label="Emergency contact number" errors={errors} />
-            </>
-          ) : (
-            <div className="rounded-lg border border-ink/10 bg-paper p-4 text-sm text-slatey">Please select a portfolio first — participant details will appear after selection.</div>
-          )}
+          <Field name="fullName" label="Full Name" errors={errors} />
+          <Field name="email" type="email" label="Email" errors={errors} />
+          <Field name="phone" label="Phone Number" errors={errors} />
+          <Field name="institution" label="School / College" errors={errors} required />
+          <div>
+            <label className="text-sm font-500 text-ink/80">Passport Size Photo (JPEG/PNG, Max 2MB) <span className="text-red-500">*</span></label>
+            <input
+              type="file"
+              accept="image/jpeg, image/png"
+              required
+              onChange={handlePhotoChange}
+              className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gold file:text-midnight hover:file:bg-goldlite"
+            />
+            {photoError && <p className="mt-1 text-xs text-red-600">{photoError}</p>}
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-sm font-500 text-ink/80">Age</label>
+              <input name="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} min={isBeginnerTrack ? 12 : undefined} max={isBeginnerTrack ? 16 : undefined} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold" />
+              {isBeginnerTrack && <p className="mt-1 text-xs text-amber-700">For beginner committees, only ages 12-16 are eligible.</p>}
+              {errors.age && <p className="mt-1 text-xs text-red-600">{errors.age[0]}</p>}
+            </div>
+            <div>
+              <label className="text-sm font-500 text-ink/80">Gender</label>
+              <select name="gender" className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 outline-none focus:border-gold">
+                <option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <Field name="city" label="Place / City" errors={errors} />
+          <Field name="emergencyContact" label="Emergency contact number" errors={errors} />
           {track === "unsc" && (
             <div className="space-y-3 rounded-xl border border-ink/10 bg-paper p-4">
               <h3 className="text-ink font-600">Delegate 2 Details</h3>
