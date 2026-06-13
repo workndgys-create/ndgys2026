@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { requirePermission, audit } from "@/lib/adminSession";
+import { requirePermission, requireRole, audit } from "@/lib/adminSession";
 import { z } from "zod";
 
 export const runtime = "nodejs";

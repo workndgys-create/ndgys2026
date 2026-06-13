@@ -16,16 +16,15 @@ function loadCashfree(): Promise<boolean> {
   });
 }
 
-type Member = { fullName: string; email: string; phone: string; track: string; age: string; experience?: string; photoData?: string; photoMime?: string; guardianName?: string; guardianPhone?: string; guardianConsent?: boolean };
+type Member = { fullName: string; email: string; phone: string; track: string; portfolioId?: string; age: string; experience?: string; photoData?: string; photoMime?: string; guardianName?: string; guardianPhone?: string; guardianConsent?: boolean };
 
 export default function DelegationRegisterPage() {
   const BEGINNER_CLIENT = new Set<string>(["unep", "aippm"]);
   const [members, setMembers] = useState<Member[]>([ 
-    { fullName: "", email: "", phone: "", track: "", age: "", experience: "beginner", photoData: "", photoMime: "", guardianName: "", guardianPhone: "", guardianConsent: false },
-    { fullName: "", email: "", phone: "", track: "", age: "", experience: "beginner", photoData: "", photoMime: "", guardianName: "", guardianPhone: "", guardianConsent: false }
+    { fullName: "", email: "", phone: "", track: "", portfolioId: "", age: "", experience: "beginner", photoData: "", photoMime: "", guardianName: "", guardianPhone: "", guardianConsent: false },
+    { fullName: "", email: "", phone: "", track: "", portfolioId: "", age: "", experience: "beginner", photoData: "", photoMime: "", guardianName: "", guardianPhone: "", guardianConsent: false }
   ]);
   const [tracks, setTracks] = useState<{ value: string; label: string; fee?: number }[]>([]);
-  const [committeeSearch, setCommitteeSearch] = useState("");
   const [bulkOpen, setBulkOpen] = useState(false);
   const [bulkText, setBulkText] = useState("");
   const [bulkMsg, setBulkMsg] = useState("");
@@ -37,11 +36,56 @@ export default function DelegationRegisterPage() {
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
 
+  const [portfoliosByTrack, setPortfoliosByTrack] = useState<Record<string, any[]>>({});
+  const [loadingPortfolios, setLoadingPortfolios] = useState<Record<string, boolean>>({});
+  const [portfolioQueries, setPortfolioQueries] = useState<Record<number, string>>({});
+
+  const loadPortfoliosForTrack = async (trackSlug: string) => {
+    if (!trackSlug) return;
+    setLoadingPortfolios((prev) => ({ ...prev, [trackSlug]: true }));
+    try {
+      const res = await fetch(`/api/portfolios?track=${trackSlug}`, { cache: "no-store" });
+      const d = await res.json();
+      const data = d.portfolios || [];
+      setPortfoliosByTrack((prev) => ({ ...prev, [trackSlug]: data }));
+    } catch (err) {
+      console.error(`Failed to load portfolios for track ${trackSlug}:`, err);
+    } finally {
+      setLoadingPortfolios((prev) => ({ ...prev, [trackSlug]: false }));
+    }
+  };
+
+  const uniqueTracks = useMemo(() => {
+    return Array.from(new Set(members.map((m) => m.track).filter(Boolean)));
+  }, [members]);
+
+  useEffect(() => {
+    uniqueTracks.forEach((trackSlug) => {
+      if (!portfoliosByTrack[trackSlug] && !loadingPortfolios[trackSlug]) {
+        void loadPortfoliosForTrack(trackSlug);
+      }
+    });
+  }, [uniqueTracks, portfoliosByTrack, loadingPortfolios]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (document.hidden) return;
+      uniqueTracks.forEach((trackSlug) => {
+        void loadPortfoliosForTrack(trackSlug);
+      });
+    }, 12000);
+    return () => clearInterval(interval);
+  }, [uniqueTracks]);
+
+  const selectedPortfolioIds = useMemo(() => {
+    return new Set(members.map((m) => m.portfolioId).filter(Boolean));
+  }, [members]);
+
   const feeOf = (slug: string) => tracks.find((t) => t.value === slug)?.fee ?? 0;
   const subtotal = useMemo(() => members.reduce((s, m) => s + feeOf(m.track), 0), [members]);
   const total = Math.max(0, subtotal - discount);
 
-  function addMember() { if (members.length < 40) setMembers((m) => [...m, { fullName: "", email: "", phone: "", track: tracks[0]?.value || "", age: "", experience: "beginner", photoData: "", photoMime: "" }]); }
+  function addMember() { if (members.length < 40) setMembers((m) => [...m, { fullName: "", email: "", phone: "", track: tracks[0]?.value || "", portfolioId: "", age: "", experience: "beginner", photoData: "", photoMime: "" }]); }
   function removeMember(i: number) { if (members.length > 1) setMembers((m) => m.filter((_, idx) => idx !== i)); }
   function setM(i: number, k: keyof Member, v: any) { setMembers((m) => m.map((mm, idx) => (idx === i ? { ...mm, [k]: v } : mm))); }
 
@@ -64,7 +108,7 @@ export default function DelegationRegisterPage() {
       const name = cols[0];
       // committee = last column that is neither the name, email nor phone
       const committeeCol = [...cols].reverse().find((c) => c !== name && c !== emailCol && c !== phoneCol) || "";
-      parsed.push({ fullName: name, email: emailCol, phone: phoneCol, track: committeeCol ? matchTrack(committeeCol) : (tracks[0]?.value || ""), age: "", photoData: "", photoMime: "" });
+      parsed.push({ fullName: name, email: emailCol, phone: phoneCol, track: committeeCol ? matchTrack(committeeCol) : (tracks[0]?.value || ""), portfolioId: "", age: "", photoData: "", photoMime: "" });
     }
     if (!parsed.length) { setBulkMsg("Could not read any rows."); return; }
     setMembers(parsed.slice(0, 40));
@@ -95,7 +139,15 @@ export default function DelegationRegisterPage() {
       return;
     }
 
-      const payload: Record<string, unknown> = {
+    // Check if any member has missing portfolio
+    const missingPortfolio = members.some((m) => !m.portfolioId);
+    if (missingPortfolio) {
+      setMessage("Please select a portfolio for all delegates.");
+      setStatus("error");
+      return;
+    }
+
+    const payload: Record<string, unknown> = {
       schoolName: fd.get("schoolName"), headName: fd.get("headName"), email: fd.get("email"),
       phone: fd.get("phone"), institution: fd.get("institution") || "",
       promoCode: promo.trim() || "", consentAccepted: consent, company: fd.get("company") || "",
@@ -104,6 +156,7 @@ export default function DelegationRegisterPage() {
         email: m.email.trim(),
         phone: m.phone.trim(),
         track: m.track,
+        portfolioId: m.portfolioId || "",
         age: Number(m.age),
         photoData: m.photoData,
         photoMime: m.photoMime,
@@ -228,33 +281,79 @@ export default function DelegationRegisterPage() {
                                     </div>
                     <div>
                       <label className="text-xs font-500 text-ink/80 block mb-1">MUN Committee *</label>
-                      <div className="flex gap-2">
-                        <input value={committeeSearch} onChange={(e) => setCommitteeSearch(e.target.value)} placeholder="Search" className="w-20 rounded-lg border border-ink/15 bg-paper px-2 py-1 text-xs outline-none focus:border-gold" />
-                        <div className="flex-1">
-                          <div className="rounded-t-md bg-ink/60 text-cream px-3 py-1 text-sm font-600 border border-ink/15 border-b-0 truncate whitespace-nowrap">{tracks.find((t) => t.value === m.track)?.label || "Select committee"}</div>
-                          <div className="border border-ink/15 bg-cream max-h-32 h-32 overflow-auto text-sm">
-                            {tracks
-                              .filter((t) => t.label.toLowerCase().includes(committeeSearch.toLowerCase()) || t.value.toLowerCase().includes(committeeSearch.toLowerCase()))
-                              .map((t) => {
-                                const note = (t.value === "unep" || t.value === "aippm" || t.label.includes("Environment Programme") || t.label.includes("All India Political Parties Meet")) ? " (Beginner, age 12-16)" : "";
-                                const selected = m.track === t.value;
-                                return (
-                                  <button
-                                    key={t.value}
-                                    type="button"
-                                    onClick={() => { setM(i, "track", t.value); setM(i, "experience", "beginner"); }}
-                                    className={`w-full text-left px-3 py-1.5 ${selected ? "bg-ink/60 text-cream" : "text-ink hover:bg-goldlite"} truncate whitespace-nowrap leading-tight`}
-                                  >
-                                    {t.label}{note}
-                                  </button>
-                                );
-                              })}
-                          </div>
+                      <select
+                        value={m.track}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setM(i, "track", val);
+                          setM(i, "portfolioId", ""); // clear portfolio when committee changes
+                        }}
+                        className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-2 text-sm outline-none focus:border-gold"
+                      >
+                        <option value="">Select committee</option>
+                        {tracks.map((t) => {
+                          const note = (t.value === "unep" || t.value === "aippm") ? " (Beginner, age 12-16)" : "";
+                          return (
+                            <option key={t.value} value={t.value}>
+                              {t.label}{note}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+
+                    {m.track && (
+                      <div className="mt-1 col-span-full">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-500 text-ink/80 block mb-1">Portfolio *</label>
+                          {loadingPortfolios[m.track] && <span className="text-[10px] text-slatey">loading...</span>}
+                        </div>
+                        
+                        <input
+                          value={portfolioQueries[i] || ""}
+                          onChange={(e) => setPortfolioQueries(prev => ({ ...prev, [i]: e.target.value }))}
+                          placeholder="Search portfolio..."
+                          className="w-full rounded-lg border border-ink/15 bg-paper px-3 py-1.5 text-xs outline-none focus:border-gold"
+                        />
+
+                        <div className="mt-2 grid max-h-36 grid-cols-2 gap-1.5 overflow-y-auto rounded-lg border border-ink/10 bg-cream/50 p-2 sm:grid-cols-3">
+                          {!portfoliosByTrack[m.track] ? (
+                            <p className="col-span-full py-4 text-center text-xs text-slatey">Loading portfolios...</p>
+                          ) : (() => {
+                            const trackPortfolios = portfoliosByTrack[m.track] || [];
+                            const query = (portfolioQueries[i] || "").trim().toLowerCase();
+                            const filtered = trackPortfolios.filter((p) => p.name.toLowerCase().includes(query));
+
+                            if (filtered.length === 0) {
+                              return <p className="col-span-full py-4 text-center text-xs text-slatey">No matching portfolios found.</p>;
+                            }
+
+                            return filtered.map((p) => {
+                              const selectedByOther = selectedPortfolioIds.has(p.id) && m.portfolioId !== p.id;
+                              const disabled = p.state === "held" || p.state === "taken" || selectedByOther;
+                              const isSel = m.portfolioId === p.id;
+
+                              return (
+                                <button
+                                  type="button"
+                                  key={p.id}
+                                  disabled={disabled}
+                                  onClick={() => setM(i, "portfolioId", p.id)}
+                                  className={`rounded-lg px-2 py-1.5 text-left text-[11px] font-500 transition ${isSel ? "bg-midnight text-cream ring-1 ring-gold" : disabled ? "cursor-not-allowed bg-ink/5 text-slatey line-through" : "bg-paper text-ink hover:ring-1 hover:ring-gold"}`}
+                                >
+                                  {p.name}
+                                  {p.state === "held" && <span className="ml-0.5 text-[9px] text-amber-600">held</span>}
+                                  {p.state === "taken" && <span className="ml-0.5 text-[9px]">taken</span>}
+                                  {selectedByOther && <span className="ml-0.5 text-[9px] text-amber-600">selected</span>}
+                                </button>
+                              );
+                            });
+                          })()}
                         </div>
                       </div>
-                    </div>
+                    )}
                     {/* guardian block shown when member is under 18 */}
-                    {Number(m.age) && Number(m.age) < 18 && (
+                    {!!Number(m.age) && Number(m.age) < 18 && (
                       <div className="rounded-lg border border-ink/10 bg-cream/60 p-3">
                         <p className="text-sm font-600 text-ink mb-2">You're under 18 — a parent/guardian must consent.</p>
                         <div className="grid gap-3 sm:grid-cols-2">
