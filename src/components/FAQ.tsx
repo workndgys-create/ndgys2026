@@ -15,7 +15,20 @@ const faqs = [
   { cat: "Tracks", q: "Can I change my track later?", a: "Yes — email the team before allotments are finalised and we'll do our best to accommodate the switch." },
   { cat: "General", q: "Is there a fee?", a: "Standard tracks are ₹2,500; flagship and crisis tracks are higher. The fee is shown on each track card before payment." },
   { cat: "General", q: "Is this an educational event, and will certificates be provided?", a: "Yes. This is an educational summit focused on learning, leadership and diplomacy. Participation certificates will be provided to attendees by the organising venue." }
-  ,{ cat: "About", q: "Why should I be a part of NDGYS 2026?", a: "Trophies for All Winners: Take home stunning champion trophies to concrete your victory.\n\n• Exclusive Merchandise (20% Off): Access limited-edition summit gear at a rare, participant-only discount.\n• Premium Delegate Kit: Receive a curated, high-value toolkit reserved strictly for attending delegates.\n• Certificate of Merit: Earn a prestigious, high-tier credential that sets your resume apart globally.\n• Memorable Socials: Build lifelong connections and network with the brightest young minds at exclusive events.\n• Highly Experienced Judges: Get your ideas evaluated and mentored by industry titans and global experts.\n• Gourmet Food & Beverages: Stay fueled with premium meals and refreshments provided throughout the entire summit.\n• Certificate of Participation: Secure official, globally recognized proof of your presence at this elite conference." }
+  ,{ cat: "About", q: "Why should I be a part of NDGYS 2026?", a: (
+    <div>
+      <ul className="list-disc pl-6">
+        <li>Trophies for All Winners: Take home stunning champion trophies to concrete your victory.</li>
+        <li>Exclusive Merchandise (20% Off): Access limited-edition summit gear at a rare, participant-only discount.</li>
+        <li>Premium Delegate Kit: Receive a curated, high-value toolkit reserved strictly for attending delegates.</li>
+        <li>Certificate of Merit: Earn a prestigious, high-tier credential that sets your resume apart globally.</li>
+        <li>Memorable Socials: Build lifelong connections and network with the brightest young minds at exclusive events.</li>
+        <li>Highly Experienced Judges: Get your ideas evaluated and mentored by industry titans and global experts.</li>
+        <li>Gourmet Food & Beverages: Stay fueled with premium meals and refreshments provided throughout the entire summit.</li>
+        <li>Certificate of Participation: Secure official, globally recognized proof of your presence at this elite conference.</li>
+      </ul>
+    </div>
+  ) }
 ];
 
 export default function FAQ() {
@@ -83,9 +96,15 @@ export default function FAQ() {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <p className={`px-6 pb-6 text-[15px] leading-relaxed transition-colors duration-300 ${isOpen ? "text-cream/75" : "text-ink/70"}`}>
+                    {typeof f.a === "string" ? (
+                      <p className={`px-6 pb-6 text-[15px] leading-relaxed transition-colors duration-300 ${isOpen ? "text-cream/75" : "text-ink/70"}`}>
                       {f.a}
-                    </p>
+                      </p>
+                    ) : (
+                      <div className={`px-6 pb-6 text-[15px] leading-relaxed transition-colors duration-300 ${isOpen ? "text-cream/75" : "text-ink/70"}`}>
+                        {f.a}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
