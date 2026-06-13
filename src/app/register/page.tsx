@@ -584,7 +584,6 @@ function RegisterInner() {
                     className={`rounded-lg px-2.5 py-2 text-left text-xs font-500 transition ${isSel ? "bg-midnight text-cream ring-2 ring-gold" : disabled ? "cursor-not-allowed bg-ink/5 text-slatey line-through" : "bg-paper text-ink hover:ring-1 hover:ring-gold"}`}
                   >
                     {p.name}
-                    {p.state === "held" && <span className="ml-1 text-[10px] text-amber-600">held</span>}
                   </button>
                 );
               })}
