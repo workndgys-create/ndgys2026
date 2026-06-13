@@ -18,14 +18,14 @@ const faqs = [
   ,{ cat: "About", q: "Why should I be a part of NDGYS 2026?", a: (
     <div>
       <ul className="list-disc pl-6">
-        <li>Trophies for All Winners: Take home stunning champion trophies to concrete your victory.</li>
-        <li>Exclusive Merchandise (20% Off): Access limited-edition summit gear at a rare, participant-only discount.</li>
-        <li>Premium Delegate Kit: Receive a curated, high-value toolkit reserved strictly for attending delegates.</li>
-        <li>Certificate of Merit: Earn a prestigious, high-tier credential that sets your resume apart globally.</li>
-        <li>Memorable Socials: Build lifelong connections and network with the brightest young minds at exclusive events.</li>
-        <li>Highly Experienced Judges: Get your ideas evaluated and mentored by industry titans and global experts.</li>
-        <li>Gourmet Food & Beverages: Stay fueled with premium meals and refreshments provided throughout the entire summit.</li>
-        <li>Certificate of Participation: Secure official, globally recognized proof of your presence at this elite conference.</li>
+        <li><span className="font-semibold">Trophies for All Winners:</span> Take home stunning champion trophies to concrete your victory.</li>
+        <li><span className="font-semibold">Exclusive Merchandise (20% Off):</span> Access limited-edition summit gear at a rare, participant-only discount.</li>
+        <li><span className="font-semibold">Premium Delegate Kit:</span> Receive a curated, high-value toolkit reserved strictly for attending delegates.</li>
+        <li><span className="font-semibold">Certificate of Merit:</span> Earn a prestigious, high-tier credential that sets your resume apart globally.</li>
+        <li><span className="font-semibold">Memorable Socials:</span> Build lifelong connections and network with the brightest young minds at exclusive events.</li>
+        <li><span className="font-semibold">Highly Experienced Judges:</span> Get your ideas evaluated and mentored by industry titans and global experts.</li>
+        <li><span className="font-semibold">Gourmet Food & Beverages:</span> Stay fueled with premium meals and refreshments provided throughout the entire summit.</li>
+        <li><span className="font-semibold">Certificate of Participation:</span> Secure official, globally recognized proof of your presence at this elite conference.</li>
       </ul>
     </div>
   ) }
