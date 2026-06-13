@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import TeamsEditor from "./TeamsEditor";
 import { Panel } from "./Shell";
 
 export type Field = {
@@ -193,11 +194,16 @@ function Modal({ fields, initial, hasPublished, err, onClose, onSave }: { fields
             </label>
           )}
           {err && <p className="text-sm text-red-600">{err}</p>}
+          {/* Teams editor for competitions (has 'format' field) */}
+          {initial?.id && fields.some((f) => f.name === "format") && (
+            <TeamsEditor competitionId={initial.id} />
+          )}
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={onClose} className="rounded-full border border-ink/15 px-4 py-2 text-sm">Cancel</button>
             <button disabled={saving} className="rounded-full bg-midnight px-4 py-2 text-sm font-600 text-cream hover:bg-royal disabled:opacity-60">{saving ? "Saving…" : "Save"}</button>
           </div>
         </form>
+        {/* TeamsEditor is rendered inside the form area above; nothing additional to mount here. */}
       </div>
     </div>
   );

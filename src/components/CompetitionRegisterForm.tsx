@@ -66,13 +66,23 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
   ];
   const [IPL_TEAMS, setIplTeams] = useState<string[]>(IPL_TEAMS_STATIC);
 
-  const isIplAuction = slug === "ipl-auction";
+  const isIplAuction = !!(slug && slug.startsWith("ipl-auction"));
   // Load teams dynamically from the API so admin can update them
   useEffect(() => {
     if (!isIplAuction) return;
-    fetch('/api/ipl/teams').then((r) => r.json()).then((d) => {
-      if (d && Array.isArray(d.teams) && d.teams.length > 0) setIplTeams(d.teams);
-    }).catch(() => {});
+    let mounted = true;
+    async function load() {
+      try {
+        const qslug = encodeURIComponent(slug ?? "ipl-auction");
+        const r = await fetch(`/api/ipl/teams?slug=${qslug}`);
+        const d = await r.json().catch(() => ({}));
+        if (!mounted) return;
+        if (d && Array.isArray(d.teams) && d.teams.length > 0) setIplTeams(d.teams);
+      } catch {}
+    }
+    load();
+    const id = setInterval(load, 5000);
+    return () => { mounted = false; clearInterval(id); };
   }, [isIplAuction]);
   const [teamChoice, setTeamChoice] = useState("");
 
