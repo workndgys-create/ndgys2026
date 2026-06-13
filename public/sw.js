@@ -51,7 +51,7 @@ self.addEventListener("fetch", (e) => {
             }
             return res;
           })
-          .catch(() => hit);
+          .catch(() => Promise.resolve(hit || new Response('Offline', { status: 504 })));
       })
     );
     return;
@@ -67,6 +67,6 @@ self.addEventListener("fetch", (e) => {
         }
         return res;
       })
-      .catch(() => caches.match(req))
+      .catch(() => caches.match(req).then((hit) => hit || new Response('Offline', { status: 504 })))
   );
 });
