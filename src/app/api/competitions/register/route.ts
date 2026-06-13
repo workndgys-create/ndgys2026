@@ -91,6 +91,15 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Server-side validation for Spark Tank & Greenovation: require pitch
+  if (c.slug === "spark-tank" || c.slug === "greenovation-showdown") {
+    const answers = Array.isArray(d.answers) ? d.answers as any[] : [];
+    const found = answers.find((x: any) => typeof x.q === "string" && x.q.trim().toLowerCase() === "what is your pitch?");
+    if (!found || !found.a || !String(found.a).trim()) {
+      return NextResponse.json({ error: "Please answer: What is your pitch?", issues: { answers: ["required"] } }, { status: 422 });
+    }
+  }
+
   if (!c.registrationOpen) {
     return NextResponse.json(
       {

@@ -27,6 +27,7 @@ type CompetitionRegisterFormProps = { competition: Comp; slug?: string };
 export default function CompetitionRegisterForm(props: CompetitionRegisterFormProps) {
   const { competition: c, slug } = props;
   const isShaam = (slug === "shaam-e-mehfil") || (c.title && c.title.toLowerCase().includes("shaam e mehfil"));
+  const isPitchRequired = (slug === "spark-tank" || slug === "greenovation-showdown") || (c.title && (c.title.toLowerCase().includes("spark tank") || c.title.toLowerCase().includes("greenovation")));
   const initialPart: "SOLO" | "GROUP" = c.format === "GROUP" ? "GROUP" : "SOLO";
   const [participation, setParticipation] = useState<"SOLO" | "GROUP">(initialPart);
   const min = c.minTeam ?? 2;
@@ -112,6 +113,15 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
         const q = (questions[i] || "").trim();
         if (q.toLowerCase() === "what is your performance form?" && !(answers[i] || "").trim()) {
           setMessage("Please answer: What is your performance form?"); setStatus("error"); return;
+        }
+      }
+    }
+
+    if (isPitchRequired) {
+      for (let i = 0; i < questions.length; i++) {
+        const q = (questions[i] || "").trim();
+        if (q.toLowerCase() === "what is your pitch?" && !(answers[i] || "").trim()) {
+          setMessage("Please answer: What is your pitch?"); setStatus("error"); return;
         }
       }
     }
@@ -353,7 +363,10 @@ export default function CompetitionRegisterForm(props: CompetitionRegisterFormPr
                 <div key={i}>
               <label className="text-sm font-600 text-ink">{q}</label>
               <textarea value={answers[i] || ""} onChange={(e) => setAnswers((a) => a.map((v, idx) => (idx === i ? e.target.value : v)))} rows={2}
-                required={!!(isShaam && ((q || "").trim().toLowerCase() === "what is your performance form?"))}
+                required={!!(
+                  (isShaam && ((q || "").trim().toLowerCase() === "what is your performance form?")) ||
+                  (isPitchRequired && ((q || "").trim().toLowerCase() === "what is your pitch?"))
+                )}
                 className="mt-1 w-full rounded-lg border border-ink/15 bg-paper px-3 py-2.5 text-sm outline-none focus:border-gold" />
             </div>
           ))}
