@@ -43,6 +43,7 @@ function RegisterInner() {
   const [form, setForm] = useState<Record<string, string>>({});
 
   const [portfolios, setPortfolios] = useState<Portfolio[] | null>(null);
+  const [availableCountOverride, setAvailableCountOverride] = useState<number | null>(null);
   const [selected, setSelected] = useState<string>("");
   const [regId, setRegId] = useState<string>("");
   const [deadline, setDeadline] = useState<number | null>(null);
@@ -192,7 +193,15 @@ function RegisterInner() {
       if (data.length === 0) {
         const portfolios = mockData[track] || [];
         setPortfolios(portfolios.map((name, idx) => ({ id: `mock-${idx}`, name, state: "available" as const, order: idx, heldUntil: null })));
+        setAvailableCountOverride(null);
       } else {
+        // If API returned aggregated remaining counts (International Press), compute total remaining
+        if (Array.isArray(data) && data.length > 0 && data[0] && typeof (data[0] as any).remaining === "number") {
+          const total = (data as any[]).reduce((sum, p) => sum + (Number(p.remaining) || 0), 0);
+          setAvailableCountOverride(total);
+        } else {
+          setAvailableCountOverride(null);
+        }
         setPortfolios(data);
       }
     } catch {
@@ -379,7 +388,7 @@ function RegisterInner() {
     );
   }
 
-  const available = portfolios?.filter((p) => p.state === "available" || p.state === "mine").length ?? 0;
+  const available = availableCountOverride != null ? availableCountOverride : portfolios?.filter((p) => p.state === "available" || p.state === "mine").length ?? 0;
   const filteredPortfolios = (portfolios ?? []).filter((p) => p.name.toLowerCase().includes(portfolioQuery.trim().toLowerCase()));
   const mm = String(Math.floor(remaining / 60));
   const ss = String(remaining % 60).padStart(2, "0");
@@ -519,7 +528,7 @@ function RegisterInner() {
           <div>
             <div className="flex items-center justify-between">
               <label className="text-sm font-500 text-ink/80">Portfolio</label>
-              <span className="text-xs text-slatey">{portfolios ? `${available} available` : "loading..."}</span>
+              <span className="text-xs text-slatey">{portfolios ? "" : "loading..."}</span>
             </div>
             <input
               value={portfolioQuery}
