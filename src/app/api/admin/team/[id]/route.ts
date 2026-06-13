@@ -30,6 +30,27 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 ) {
   data.role = body.role;
 }
+
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const s = await requireRole("SUPER_ADMIN");
+  if (!s) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  try {
+    const target = await prisma.adminUser.findUnique({ where: { id: params.id } });
+    if (!target) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+    if (target.role === "SUPER_ADMIN") {
+      const supers = await prisma.adminUser.count({ where: { role: "SUPER_ADMIN", active: true } });
+      if (supers <= 1) return NextResponse.json({ error: "Cannot remove the last active super-admin" }, { status: 409 });
+    }
+
+    await prisma.adminUser.delete({ where: { id: params.id } });
+    await audit(s.email, "team.delete", "AdminUser", params.id, null);
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("[admin/team] DELETE failed", { id: params.id, email: s.email, error });
+    return NextResponse.json({ error: "Failed to delete admin" }, { status: 500 });
+  }
+}
     if (typeof body.active === "boolean") data.active = body.active;
     if (typeof body.name === "string") data.name = body.name || null;
     if (typeof body.extraPermissions === "string" || body.extraPermissions === null) data.extraPermissions = body.extraPermissions;

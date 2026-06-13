@@ -49,26 +49,24 @@ const ROLE_HELP: Record<string, string> = {
 export default function TeamPage() {
   const [admins, setAdmins] = useState<Admin[] | null>(null);
   const [forbidden, setForbidden] = useState(false);
+  const [isSuper, setIsSuper] = useState(false);
   const [open, setOpen] = useState(false);
   const [err, setErr] = useState("");
 
   function load() {
-    fetch("/api/admin/team")
-      .then(async (r) => {
-        if (r.status === 403) return setForbidden(true);
-        const body = await r.json().catch(() => ({}));
-        if (!r.ok) {
-          setErr(body.error || "Could not load team");
-          setAdmins([]);
-          return;
-        }
-        setErr("");
-        setAdmins(body.admins ?? []);
-      })
-      .catch(() => {
-        setErr("Could not load team");
-        setAdmins([]);
-      });
+    // First check current admin role
+    fetch("/api/admin/me").then(async (r) => {
+      if (!r.ok) { setForbidden(true); setAdmins([]); return; }
+      const me = await r.json().catch(() => ({}));
+      if (me.role !== "SUPER_ADMIN") { setForbidden(true); setAdmins([]); return; }
+      setIsSuper(true);
+      // Now load team list (super-admin only)
+      fetch("/api/admin/team").then(async (r2) => {
+        const body = await r2.json().catch(() => ({}));
+        if (!r2.ok) { setErr(body.error || "Could not load team"); setAdmins([]); return; }
+        setErr(""); setAdmins(body.admins ?? []);
+      }).catch(() => { setErr("Could not load team"); setAdmins([]); });
+    }).catch(() => { setForbidden(true); setAdmins([]); });
   }
   useEffect(load, []);
 
@@ -76,6 +74,12 @@ export default function TeamPage() {
     const res = await fetch(`/api/admin/team/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) });
     if (res.ok) load();
     else alert((await res.json().catch(() => ({}))).error || "Update failed");
+  }
+
+  async function removeAdmin(id: string) {
+    if (!confirm("Remove this admin user? This cannot be undone.")) return;
+    const res = await fetch(`/api/admin/team/${id}`, { method: "DELETE" });
+    if (res.ok) load(); else alert((await res.json().catch(() => ({}))).error || "Delete failed");
   }
 
   async function create(e: React.FormEvent<HTMLFormElement>) {
@@ -92,7 +96,7 @@ export default function TeamPage() {
 
   return (
     <AdminShell title="Team & Roles">
-      <Panel title="Admin users" action={<button onClick={() => { setOpen(true); setErr(""); }} className="rounded-full bg-midnight px-4 py-2 text-sm font-600 text-cream hover:bg-royal">+ Invite admin</button>}>
+      <Panel title="Admin users" action={isSuper ? <button onClick={() => { setOpen(true); setErr(""); }} className="rounded-full bg-midnight px-4 py-2 text-sm font-600 text-cream hover:bg-royal">+ Invite admin</button> : null}>
         {!admins ? (
           <p className="text-slatey">Loading…</p>
         ) : (
@@ -107,15 +111,31 @@ export default function TeamPage() {
                   <tr key={a.id} className="hover:bg-cream/60">
                     <td className="px-3 py-3"><p className="font-600 text-ink">{a.name || "—"}</p><p className="text-xs text-slatey">{a.email}</p></td>
                     <td className="px-3 py-3">
-                      <select value={a.role} onChange={(e) => update(a.id, { role: e.target.value })} className="rounded-md border border-ink/15 bg-cream px-2 py-1 text-xs">
-                        {ROLES.map((r) => <option key={r} value={r}>{r.replace("_", " ")}</option>)}
-                      </select>
-                      <p className="mt-1 text-[11px] text-slatey">{ROLE_HELP[a.role]}</p>
+                      {isSuper ? (
+                        <>
+                          <select value={a.role} onChange={(e) => update(a.id, { role: e.target.value })} className="rounded-md border border-ink/15 bg-cream px-2 py-1 text-xs">
+                            {ROLES.map((r) => <option key={r} value={r}>{r.replace("_", " ")}</option>)}
+                          </select>
+                          <p className="mt-1 text-[11px] text-slatey">{ROLE_HELP[a.role]}</p>
+                        </>
+                      ) : (
+                        <>
+                          <div className="text-sm font-600 text-ink">{a.role}</div>
+                          <p className="mt-1 text-[11px] text-slatey">{ROLE_HELP[a.role]}</p>
+                        </>
+                      )}
                     </td>
                     <td className="px-3 py-3">
-                      <button onClick={() => update(a.id, { active: !a.active })} className={`rounded-full px-2.5 py-1 text-xs font-600 ${a.active ? "bg-[#D97706]/20 text-[#92400E]" : "bg-[#3B1A0A]/10 text-[#3B1A0A]/50"}`}>
-                        {a.active ? "Active" : "Disabled"}
-                      </button>
+                      {isSuper ? (
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => update(a.id, { active: !a.active })} className={`rounded-full px-2.5 py-1 text-xs font-600 ${a.active ? "bg-[#D97706]/20 text-[#92400E]" : "bg-[#3B1A0A]/10 text-[#3B1A0A]/50"}`}>
+                            {a.active ? "Active" : "Disabled"}
+                          </button>
+                          <button onClick={() => removeAdmin(a.id)} className="rounded-full px-2.5 py-1 text-xs font-600 text-red-600 border border-red-100">Remove</button>
+                        </div>
+                      ) : (
+                        <div className="text-sm font-600">{a.active ? "Active" : "Disabled"}</div>
+                      )}
                     </td>
                     <td className="px-3 py-3 text-slatey">{a.lastLoginAt ? new Date(a.lastLoginAt).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—"}</td>
                   </tr>
