@@ -552,7 +552,6 @@ function RegisterInner() {
                   >
                     {p.name}
                     {p.state === "held" && <span className="ml-1 text-[10px] text-amber-600">held</span>}
-                    {p.state === "taken" && <span className="ml-1 text-[10px]">taken</span>}
                   </button>
                 );
               })}
