@@ -35,6 +35,42 @@ export async function POST(req: NextRequest) {
   if (!portfolioId) return NextResponse.json({ error: "Please select a portfolio.", needPortfolio: true }, { status: 422 });
   if (!data.consentAccepted) return NextResponse.json({ error: "Please accept the Terms and Code of Conduct to continue.", needConsent: true }, { status: 422 });
 
+  // Support category-style selections for International Press: if frontend sent a
+  // category name (e.g., "Journalist") or the selected id is not a real portfolio
+  // row, attempt to resolve it to an available underlying portfolio row.
+  let resolvedPortfolioId = portfolioId;
+  const ipCategories = new Set(["journalist", "caricature", "photographer"]);
+  try {
+    const maybe = await prisma.portfolio.findUnique({ where: { id: portfolioId } });
+    if (!maybe) {
+      // If the selection is a category label, try to find an available matching row.
+      const label = String(portfolioId || "").trim().toLowerCase();
+      if (ipCategories.has(label)) {
+        const now = new Date();
+        const sample = await prisma.portfolio.findFirst({
+          where: {
+            trackSlug: data.track,
+            name: { contains: label, mode: "insensitive" },
+            OR: [
+              { status: "AVAILABLE" },
+              { status: "HELD", heldUntil: { lt: now } }
+            ]
+          },
+          orderBy: [{ order: "asc" }, { name: "asc" }]
+        });
+        if (sample) resolvedPortfolioId = sample.id;
+        else resolvedPortfolioId = undefined;
+      } else {
+        // not found and not a category — mark as unresolved
+        resolvedPortfolioId = undefined;
+      }
+    }
+  } catch (err) {
+    resolvedPortfolioId = undefined;
+  }
+
+  if (!resolvedPortfolioId) return NextResponse.json({ error: "Invalid portfolio for this committee." }, { status: 422 });
+
   // Validate answers to admin-defined custom questions (required ones must be answered)
   const answers = Array.isArray((body as any)?.customAnswers) ? (body as any).customAnswers as { questionId: string; label: string; value: string | string[] }[] : [];
   type RQ = { id: string; label: string; required: boolean };
@@ -65,8 +101,8 @@ export async function POST(req: NextRequest) {
   const portfolioCount = await prisma.portfolio.count({ where: { trackSlug: track.slug } });
   if (paidCount >= portfolioCount) return NextResponse.json({ error: "Track is full", full: true }, { status: 409 });
 
-  // Validate the portfolio belongs to this committee
-  const portfolio = await prisma.portfolio.findUnique({ where: { id: portfolioId } });
+  // Validate the (resolved) portfolio belongs to this committee
+  const portfolio = await prisma.portfolio.findUnique({ where: { id: resolvedPortfolioId } });
   if (!portfolio || portfolio.trackSlug !== track.slug) return NextResponse.json({ error: "Invalid portfolio for this committee." }, { status: 422 });
 
   // Apply an optional promo code to the committee fee
