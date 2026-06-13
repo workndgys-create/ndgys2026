@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   // Support category-style selections for International Press: if frontend sent a
   // category name (e.g., "Journalist") or the selected id is not a real portfolio
   // row, attempt to resolve it to an available underlying portfolio row.
-  let resolvedPortfolioId = portfolioId;
+  let resolvedPortfolioId: string | undefined = portfolioId;
   const ipCategories = new Set(["journalist", "caricature", "photographer"]);
   try {
     const maybe = await prisma.portfolio.findUnique({ where: { id: portfolioId } });
@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
   const createPayload: any = {
     fullName: data.fullName, email: data.email, phone: data.phone,
     institution: data.institution || null, trackSlug: track.slug, trackName: track.name,
-    amount, status: "PENDING", portfolioId, promoCode: appliedCode,
+    amount, status: "PENDING", portfolioId: resolvedPortfolioId, promoCode: appliedCode,
     age: data.age ?? null, city: data.city || null, gender: data.gender ?? null,
     emergencyContact: data.emergencyContact ?? null, howHeard: howHeard || null, notes: data.notes || null,
     consentAccepted: true, guardianName: data.guardianName || null, guardianPhone: data.guardianPhone || null, guardianConsent: !!data.guardianConsent,
@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
   const reg = await prisma.registration.create({ data: createPayload });
 
   // Atomically hold the portfolio for the configured window
-  const hold = await holdPortfolio(portfolioId, reg.id);
+  const hold = await holdPortfolio(resolvedPortfolioId as string, reg.id);
   if (!hold.ok) {
     await prisma.registration.delete({ where: { id: reg.id } }).catch(() => {});
     return NextResponse.json({ error: "That portfolio was just taken — please choose another.", portfolioUnavailable: true }, { status: 409 });
