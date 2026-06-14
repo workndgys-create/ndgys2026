@@ -13,7 +13,16 @@ export async function POST(req: NextRequest) {
 
   try {
     if (ids.length > 0) {
-      await prisma.portfolio.updateMany({ where: { id: { in: ids } }, data: { archived: true } });
+      const result = await prisma.portfolio.updateMany({
+  where: {
+    id: { in: idsToArchive }
+  },
+  data: {
+    archived: true
+  }
+});
+
+console.log("Archived:", result.count);
       await audit(admin.email, "portfolio.bulk.delete", "Portfolio", undefined, JSON.stringify({ ids }));
       return NextResponse.json({ ok: true, count: ids.length });
     }
