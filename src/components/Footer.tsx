@@ -60,30 +60,23 @@ export default function Footer() {
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           {/* brand column */}
           <div>
-            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-              <Link href="/" className="inline-block">
-                <img
-                  src="/NDGYS26.png"
-                  alt="NDGYS Logo"
-                  className="h-10 w-auto object-contain md:h-12 transition hover:brightness-110"
-                />
-              </Link>
+            <div className="flex h-12 items-center overflow-visible md:h-14 -ml-4 -mt-3">
               <Link href="https://socialhouselearning.com" target="_blank" rel="noopener noreferrer" className="inline-block">
                 <img
                   src="/SHLLogo.png"
                   alt="Social House Learning Logo"
-                  className="h-7 w-auto object-contain md:h-8 transition hover:brightness-110"
+                  className="h-32 w-auto object-contain md:h-40 -mr-6 -my-8 md:-my-10"
                 />
               </Link>
               <Link href="/" className="inline-block">
                 <img
                   src="/GYS.png"
                   alt="Global Youth Summit Logo"
-                  className="h-10 w-auto object-contain md:h-12 transition hover:brightness-110"
+                  className="h-44 w-auto object-contain md:h-52 -ml-6 -my-12 md:-my-14"
                 />
               </Link>
             </div>
-            <p className="mt-4 max-w-xs text-sm text-cream/60">
+            <p className="mt-3 max-w-xs text-sm text-cream/60">
               Empowering the next generation of global leaders through diplomacy and debate.
             </p>
 

@@ -72,7 +72,9 @@ export async function GET(req: NextRequest) {
             {
               OR: [
                 { status: "AVAILABLE" },
-                { status: "HELD", heldUntil: { lt: now } }
+                { status: "HELD", heldUntil: { lt: now } },
+                // Treat a portfolio HELD by the requesting registration as available
+                ...(reg ? [{ status: "HELD", heldBy: reg }] : [])
               ]
             }
           ]
@@ -86,26 +88,29 @@ export async function GET(req: NextRequest) {
     const sampleCaricature = remainingCaricature > 0 ? await findAvailableSample("caricature") : null;
     const samplePhotographer = remainingPhotographer > 0 ? await findAvailableSample("photographer") : null;
 
+    // Expose categories as AVAILABLE as long as their paid seats are below capacity.
+    // When there is no immediate sample row to hold (all rows currently HELD by others),
+    // return the category label as the id so the frontend can send it back and the
+    // register route will attempt to resolve an underlying row at submit-time.
     const out = [
       {
-        id: sampleJournalist ? sampleJournalist.id : `none-journalist`,
+        id: sampleJournalist ? sampleJournalist.id : `journalist`,
         name: "Journalist",
-        // Only mark available if there is both remaining capacity AND an actual portfolio row to hold
-        state: remainingJournalist > 0 && sampleJournalist ? "available" : "taken",
+        state: remainingJournalist > 0 ? "available" : "taken",
         remaining: remainingJournalist,
         capacity: capJournalist,
       },
       {
-        id: sampleCaricature ? sampleCaricature.id : `none-caricature`,
+        id: sampleCaricature ? sampleCaricature.id : `caricature`,
         name: "Caricature",
-        state: remainingCaricature > 0 && sampleCaricature ? "available" : "taken",
+        state: remainingCaricature > 0 ? "available" : "taken",
         remaining: remainingCaricature,
         capacity: capCaricature,
       },
       {
-        id: samplePhotographer ? samplePhotographer.id : `none-photographer`,
+        id: samplePhotographer ? samplePhotographer.id : `photographer`,
         name: "Photographer",
-        state: remainingPhotographer > 0 && samplePhotographer ? "available" : "taken",
+        state: remainingPhotographer > 0 ? "available" : "taken",
         remaining: remainingPhotographer,
         capacity: capPhotographer,
       },
