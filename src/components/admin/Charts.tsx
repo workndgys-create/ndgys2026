@@ -48,8 +48,8 @@ export function CapacityBars({ data }: { data: { name: string; paid: number; cap
         const pct = t.capacity ? Math.min(100, Math.round((t.paid / t.capacity) * 100)) : 0;
         return (
           <div key={t.name}>
-            <div className="flex items-center justify-between text-xs">
-              <span className="truncate pr-2 text-ink/80">{t.name}</span>
+            <div className="flex items-center justify-between gap-2 text-xs min-w-0">
+              <span className="truncate text-ink/80 min-w-0">{t.name}</span>
               <span className="tabular-nums text-slatey">{t.paid}/{t.capacity}</span>
             </div>
             <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-ink/10">
