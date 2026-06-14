@@ -32,18 +32,15 @@ export async function POST(req: NextRequest) {
   try {
     // Delete by IDs
     if (ids.length > 0) {
-      const result = await prisma.portfolio.updateMany({
+      const result = await prisma.portfolio.deleteMany({
         where: {
           id: {
             in: ids,
           },
         },
-        data: {
-          archived: true,
-        },
       });
 
-      console.log("Archived:", result.count);
+      console.log("Deleted:", result.count);
 
       await audit(
         admin.email,
@@ -94,7 +91,6 @@ export async function POST(req: NextRequest) {
       const matched = await prisma.portfolio.findMany({
         where: {
           trackSlug,
-          archived: false,
           OR: orClauses,
         },
         select: {
@@ -113,18 +109,15 @@ export async function POST(req: NextRequest) {
       );
 
       if (matched.length > 0) {
-        const idsToArchive = matched.map(
+        const idsToDelete = matched.map(
           (m) => m.id
         );
 
-        await prisma.portfolio.updateMany({
+        await prisma.portfolio.deleteMany({
           where: {
             id: {
-              in: idsToArchive,
+              in: idsToDelete,
             },
-          },
-          data: {
-            archived: true,
           },
         });
       }
@@ -160,7 +153,7 @@ export async function POST(req: NextRequest) {
     );
 
     return NextResponse.json(
-      { error: "Failed to archive portfolios" },
+      { error: "Failed to delete portfolios" },
       { status: 500 }
     );
   }
