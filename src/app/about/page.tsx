@@ -26,13 +26,7 @@ export default function AboutPage() {
               delegates debate live agendas, draft resolutions and pitch ideas — learning by doing.
             </p>
             <p>
-
-              The summit runs on 22nd–23rd August 2026 at IIT Delhi. Every committee is chaired by experienced
-
-              The Summit will take place on 22nd–23rd August 2026 at IIT Delhi. Every committee is chaired by experienced
-
-              facilitators, and the programme balances rigorous debate with mentorship from practitioners in policy,
-              climate, technology and enterprise.
+              The summit runs on 22nd–23rd August 2026 .The Summit will take place on 22nd–23rd August 2026.Every committee is chaired by experienced facilitators, and the programme balances rigorous debate with mentorship from practitioners in policy, climate, technology and enterprise.
             </p>
             <p>
               Whether it's your first conference or your fiftieth, the Summit is built to challenge you, widen your
