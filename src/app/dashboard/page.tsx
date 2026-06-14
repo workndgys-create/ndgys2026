@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { currentDelegate } from "@/lib/delegateSession";
+import { currentDelegate, allDelegateRegistrations } from "@/lib/delegateSession";
 import Countdown from "@/components/dashboard/Countdown";
 import LiveAnnouncements from "@/components/dashboard/LiveAnnouncements";
+import OverviewRegistrations from "@/components/dashboard/OverviewRegistrations";
 
 export const dynamic = "force-dynamic";
 
@@ -9,11 +10,14 @@ export default async function Overview() {
   const reg = await currentDelegate();
   if (!reg) return null; // middleware redirects; safety net
 
+  const regs = await allDelegateRegistrations();
   const paid = reg.status === "PAID";
   return (
     <div>
       <h1 className="font-display text-3xl font-700 text-ink">Welcome, {reg.fullName.split(" ")[0]}.</h1>
       <p className="mt-1 text-ink/70">New Delhi Global Youth Summit · 22–23 August 2026</p>
+
+      <OverviewRegistrations currentId={reg.id} registrations={regs} />
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-2xl border border-ink/10 bg-paper p-5">
