@@ -4,7 +4,7 @@ import { getAllSettings } from "../lib/settings";
 
 export default async function FAQ() {
   const settings = await getAllSettings();
-  const venueRevealed = settings["venue.revealed"] === "true" || settings["venue.revealed"] === true;
+  const venueRevealed = String(settings["venue.revealed"]) === "true";
   const venueName = settings["venue.name"] || settings["venue.displayName"] || "IIT Delhi";
 
   return (
