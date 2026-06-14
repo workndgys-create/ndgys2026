@@ -106,14 +106,32 @@ export default function CrudManager({
     </div>
   );
 
+  const [query, setQuery] = useState("");
+  const filteredItems = (items || []).filter((item) => {
+    return Object.values(item).some((val) => 
+      String(val).toLowerCase().includes(query.toLowerCase())
+    );
+  });
+
   return (
     <Panel title="Manage" action={actionNode}>
+      {items && items.length > 0 && (
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search items..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold md:w-80"
+          />
+        </div>
+      )}
       {!items ? (
         <p className="text-slatey">Loading…</p>
-      ) : items.length === 0 ? (
+      ) : filteredItems.length === 0 ? (
         <div className="py-8 text-center">
           {err && <p className="mb-3 text-sm text-red-600">{err}</p>}
-          <p className="text-slatey">Nothing yet. Click “{newLabel}” to add the first one.</p>
+          <p className="text-slatey">{query ? "No items match your search." : `Nothing yet. Click “${newLabel}” to add the first one.`}</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -121,12 +139,12 @@ export default function CrudManager({
           <table className="w-full text-sm">
             <thead className="text-left text-xs uppercase tracking-wider text-slatey">
               <tr>
-                {bulkDelete && <th className="px-3 py-2"><input type="checkbox" onChange={(e) => { const v = e.target.checked; const map: Record<string, boolean> = {}; (items||[]).forEach((it) => map[it.id] = v); setSelected(map); }} /></th>}
+                {bulkDelete && <th className="px-3 py-2"><input type="checkbox" onChange={(e) => { const v = e.target.checked; const map: Record<string, boolean> = {}; filteredItems.forEach((it) => map[it.id] = v); setSelected(map); }} /></th>}
                 {columns.map((c) => <th key={c.key} className="px-3 py-2">{c.label}</th>)}{hasPublished && <th className="px-3 py-2">Live</th>}<th className="px-3 py-2 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">
-              {items.map((row) => (
+              {filteredItems.map((row) => (
                 <tr key={row.id} className="hover:bg-cream/60">
                   {bulkDelete && <td className="px-3 py-2.5 align-top"><input type="checkbox" checked={!!selected[row.id]} onChange={(e) => setSelected((s) => ({ ...s, [row.id]: e.target.checked }))} /></td>}
                   {columns.map((c) => <td key={c.key} className="px-3 py-2.5 align-top">{c.render ? c.render(row) : String(row[c.key] ?? "")}</td>)}
