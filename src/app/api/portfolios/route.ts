@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { listPortfolios } from "@/lib/portfolios";
 import { prisma } from "@/lib/prisma";
+import { getSetting } from "@/lib/settings";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,9 +20,13 @@ export async function GET(req: NextRequest) {
     const trackRow = await prisma.track.findUnique({ where: { slug: trackSlug } });
     const isInternationalPress = trackRow && String(trackRow.name).trim().toLowerCase() === "international press";
 
+    const groupedSetting = await getSetting("portfolio.groupedTracks", "");
+    const groupedTracks = groupedSetting.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+    const isGrouped = groupedTracks.includes(trackSlug.toLowerCase());
+
     if (!isInternationalPress) {
       const portfolios = await listPortfolios(trackSlug, reg);
-      return NextResponse.json({ ok: true, count: portfolios.length, portfolios });
+      return NextResponse.json({ ok: true, count: portfolios.length, portfolios, grouped: isGrouped });
     }
 
     // Mirror the capacities used by the public API

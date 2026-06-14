@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
   const b = await req.json().catch(() => null);
   const text: string = (b?.text || "").toString();
   const trackSlug = typeof b?.trackSlug === "string" ? b.trackSlug : undefined;
+  const parentGroup = typeof b?.parentGroup === "string" ? b.parentGroup.trim() : undefined;
 
   const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
   if (lines.length === 0) return NextResponse.json({ error: "Nothing to import" }, { status: 422 });
@@ -62,6 +63,9 @@ export async function POST(req: NextRequest) {
     } else {
       // Line has no comma. Use global trackSlug if provided
       nameVal = line.replace(/^[-*]\s*/, "").trim();
+      if (parentGroup) {
+        nameVal = `${parentGroup} - ${nameVal}`;
+      }
       if (trackSlug) {
         resolvedSlug = trackMap.get(trackSlug.toLowerCase());
       }

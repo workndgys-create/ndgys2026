@@ -45,6 +45,8 @@ function RegisterInner() {
   const [form, setForm] = useState<Record<string, string>>({});
 
   const [portfolios, setPortfolios] = useState<Portfolio[] | null>(null);
+  const [grouped, setGrouped] = useState(false);
+  const [selectedParent, setSelectedParent] = useState("");
   const [availableCountOverride, setAvailableCountOverride] = useState<number | null>(null);
   const [selected, setSelected] = useState<string>("");
   const [regId, setRegId] = useState<string>("");
@@ -198,6 +200,8 @@ function RegisterInner() {
       const res = await fetch(`/api/portfolios?track=${track}${regId ? `&reg=${regId}` : ""}`, { cache: "no-store" });
       const d = await res.json();
       const data = d.portfolios || [];
+      const isGrouped = !!d.grouped;
+      setGrouped(isGrouped);
       // If API returns empty, use mock data
       if (data.length === 0) {
         const portfolios = mockData[track] || [];
@@ -221,12 +225,42 @@ function RegisterInner() {
   }
   useEffect(() => {
     setSelected(""); setPortfolios(null); setDiscounted(null); setPromoMsg(""); setPortfolioQuery("");
+    setGrouped(false); setSelectedParent("");
     loadPortfolios();
     if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = setInterval(() => { if (!document.hidden) loadPortfolios(); }, 12000);
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [track, regId]);
+
+  const parentGroups = useMemo(() => {
+    if (!grouped || !portfolios) return [];
+    const set = new Set<string>();
+    portfolios.forEach((p) => {
+      const parts = p.name.split(" - ");
+      if (parts.length > 1) {
+        set.add(parts[0]);
+      }
+    });
+    return Array.from(set).sort();
+  }, [grouped, portfolios]);
+
+  useEffect(() => {
+    if (grouped && parentGroups.length > 0 && !selectedParent) {
+      setSelectedParent(parentGroups[0]);
+    }
+  }, [grouped, parentGroups, selectedParent]);
+
+  const displayPortfolios = useMemo(() => {
+    if (!portfolios) return [];
+    if (portfolioQuery.trim()) {
+      return portfolios.filter((p) => p.name.toLowerCase().includes(portfolioQuery.trim().toLowerCase()));
+    }
+    if (grouped && selectedParent) {
+      return portfolios.filter((p) => p.name.startsWith(selectedParent + " - "));
+    }
+    return portfolios;
+  }, [portfolios, portfolioQuery, grouped, selectedParent]);
 
   useEffect(() => {
     if (!deadline) return;
@@ -569,21 +603,40 @@ function RegisterInner() {
               placeholder="Search portfolio..."
               className="mt-2 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm outline-none focus:border-gold"
             />
+            {grouped && !portfolioQuery && parentGroups.length > 0 && (
+              <div className="mt-3">
+                <label className="text-xs font-600 text-ink/75 block mb-1">Select Group / Party / Organization</label>
+                <select
+                  value={selectedParent}
+                  onChange={(e) => setSelectedParent(e.target.value)}
+                  className="w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-gold"
+                >
+                  {parentGroups.map((group) => (
+                    <option key={group} value={group}>{group}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="mt-2 grid max-h-56 grid-cols-2 gap-2 overflow-y-auto rounded-lg border border-ink/10 bg-cream p-2 sm:grid-cols-3">
               {!portfolios ? (
                 <p className="col-span-full py-6 text-center text-sm text-slatey">Loading portfolios...</p>
-              ) : filteredPortfolios.length === 0 ? (
-                <p className="col-span-full py-6 text-center text-sm text-slatey">No portfolios configured for this committee yet.</p>
-              ) : filteredPortfolios.map((p) => {
+              ) : displayPortfolios.length === 0 ? (
+                <p className="col-span-full py-6 text-center text-sm text-slatey">
+                  {grouped && !portfolioQuery ? "No portfolios in this group." : "No portfolios configured for this committee yet."}
+                </p>
+              ) : displayPortfolios.map((p) => {
                 const disabled = p.state === "held" || p.state === "taken";
                 const isSel = selected === p.id;
+                const label = (grouped && !portfolioQuery && p.name.startsWith(selectedParent + " - "))
+                  ? p.name.slice(selectedParent.length + 3)
+                  : p.name;
                 return (
                   <button
                     type="button" key={p.id} disabled={disabled}
                     onClick={() => setSelected(p.id)}
                     className={`rounded-lg px-2.5 py-2 text-left text-xs font-500 transition ${isSel ? "bg-midnight text-cream ring-2 ring-gold" : disabled ? "cursor-not-allowed bg-ink/5 text-slatey line-through" : "bg-paper text-ink hover:ring-1 hover:ring-gold"}`}
                   >
-                    {p.name}
+                    {label}
                   </button>
                 );
               })}
