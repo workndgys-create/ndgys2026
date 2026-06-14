@@ -1,7 +1,26 @@
 import { prisma } from "./prisma";
 
 /** Runtime-editable flags, stored in the Setting table. */
-export const SETTING_KEYS = ["home.published", "home.showTrackPricing", "home.showCompetitionPricing", "allocations.live", "registration.open", "portfolio.holdMinutes", "event.start", "event.end", "event.venue", "venue.address", "venue.mapQuery", "venue.metro", "venue.airport", "venue.parking", "venue.notes", "safety.grievanceEmail", "safety.grievancePhone"] as const;
+export const SETTING_KEYS = [
+  "home.published",
+  "home.showTrackPricing",
+  "home.showCompetitionPricing",
+  "allocations.live",
+  "registration.open",
+  "portfolio.holdMinutes",
+  "event.start",
+  "event.end",
+  "event.venue",
+  "venue.revealed",
+  "venue.address",
+  "venue.mapQuery",
+  "venue.metro",
+  "venue.airport",
+  "venue.parking",
+  "venue.notes",
+  "safety.grievanceEmail",
+  "safety.grievancePhone",
+] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
 const ENV_FALLBACK: Record<SettingKey, string> = {
@@ -14,6 +33,7 @@ const ENV_FALLBACK: Record<SettingKey, string> = {
   "event.start": process.env.EVENT_START ?? "2026-08-22T09:00:00+05:30",
   "event.end": process.env.EVENT_END ?? "2026-08-23T17:30:00+05:30",
   "event.venue": process.env.EVENT_VENUE ?? "IIT Delhi, New Delhi",
+  "venue.revealed": process.env.VENUE_REVEALED ?? "false",
   "venue.address": process.env.VENUE_ADDRESS ?? "Indian Institute of Technology Delhi, Hauz Khas, New Delhi, Delhi 110016",
   "venue.mapQuery": process.env.VENUE_MAP_QUERY ?? "IIT Delhi, Hauz Khas, New Delhi",
   "venue.metro": process.env.VENUE_METRO ?? "Nearest Metro: IIT Delhi (Magenta Line), ~1 km. Hauz Khas (Yellow/Magenta interchange) is ~2.5 km.",
