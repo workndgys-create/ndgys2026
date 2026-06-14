@@ -1,12 +1,16 @@
 import SectionKicker from "./SectionKicker";
 import Reveal from "./Reveal";
+import { getAllSettings } from "@/lib/settings";
 
-const details = [
-  { label: "DATES", value: "Aug 22nd–23rd, 2026", sub: "Two intensive days" },
-  { label: "VENUE", value: "IIT Delhi", sub: "New Delhi" },
-];
-
-export default function About() {
+export default async function About() {
+  const settings = await getAllSettings();
+  const revealed = settings["venue.revealed"] === "true";
+  const venueValue = revealed ? (settings["venue.address"] ?? "IIT Delhi") : "VENUE ANNOUNCEMENT COMING SOON";
+  const venueSub = revealed ? (settings["venue.metro"] ? "" : "New Delhi") : "Announcement coming soon";
+  const details = [
+    { label: "DATES", value: "Aug 22nd–23rd, 2026", sub: "Two intensive days" },
+    { label: "VENUE", value: venueValue, sub: venueSub },
+  ];
   return (
     <section id="about" className="relative overflow-hidden bg-cream grain py-28">
       {/* Decorative concentric rings */}
