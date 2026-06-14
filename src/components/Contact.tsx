@@ -58,20 +58,26 @@ export default function Contact() {
                 <p className="text-sm font-500">info@globalyouthsummit.com</p>
               </div>
             </a>
-            <a href="tel:+917042719992" className="flex items-center gap-4 rounded-2xl border border-[#D97706]/15 bg-[#D97706]/5 p-4 text-cream/80 transition-all duration-300 hover:border-gold/50 hover:bg-gold/10 hover:text-gold hover:translate-x-1 shadow-sm">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold text-lg">☎</span>
-              <div>
-                <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">Call Us</p>
-                <p className="text-sm font-500">+91 70427 19992</p>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-4 rounded-2xl border border-[#D97706]/15 bg-[#D97706]/5 p-4 text-cream/80">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold text-lg">☎</span>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">Call Us</p>
+                  <p className="text-sm font-500">
+                    <a href="tel:+918447676110" className="underline-offset-2 hover:underline">+91 84476 76106</a>
+                    <span className="mx-2">·</span>
+                    <a href="tel:+919311276303" className="underline-offset-2 hover:underline">+91 93112 76303</a>
+                  </p>
+                </div>
               </div>
-            </a>
-            <a href="https://wa.me/917042719992" className="flex items-center gap-4 rounded-2xl border border-[#D97706]/15 bg-[#D97706]/5 p-4 text-cream/80 transition-all duration-300 hover:border-gold/50 hover:bg-gold/10 hover:text-gold hover:translate-x-1 shadow-sm">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold text-lg">⦿</span>
-              <div>
-                <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">WhatsApp</p>
-                <p className="text-sm font-500">Chat with support</p>
-              </div>
-            </a>
+              <a href="https://wa.me/918447676110" className="flex items-center gap-4 rounded-2xl border border-[#D97706]/15 bg-[#D97706]/5 p-4 text-cream/80 transition-all duration-300 hover:border-gold/50 hover:bg-gold/10 hover:text-gold hover:translate-x-1 shadow-sm">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold text-lg">⦿</span>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">WhatsApp</p>
+                  <p className="text-sm font-500">Chat with support</p>
+                </div>
+              </a>
+            </div>
           </div>
         </div>
 
