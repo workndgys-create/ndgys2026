@@ -60,6 +60,7 @@ if (typeof compReg.members === "string") {
       isCompetition: true,
       members: membersWithQrs
     }, { headers: { "Cache-Control": "no-store, private" } });
+  }
 
   const photo = await prisma.registrationPhoto.findUnique({
     where: { registrationId: reg.id },
