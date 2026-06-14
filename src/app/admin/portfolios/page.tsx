@@ -66,7 +66,7 @@ function BulkDelete({ tracks, refreshTracks }: { tracks: { value: string; label:
 
   return (
     <Panel title="Bulk delete portfolios">
-      <p className="mb-3 text-sm text-slatey">Paste portfolio names (one per line) to archive them in the selected committee.</p>
+      <p className="mb-3 text-sm text-slatey">Paste portfolio names (one per line) to delete them from the selected committee.</p>
       <div className="mb-3">
         <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search committee" className="mb-2 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 sm:w-80" />
         <select value={trackSlug} onChange={(e) => setTrackSlug(e.target.value)} className="w-full rounded-lg border border-ink/15 bg-cream px-3 py-2.5 sm:w-80">

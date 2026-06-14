@@ -6,9 +6,7 @@ export const runtime = "nodejs";
 export async function GET(req: NextRequest) {
   if (!(await currentAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const track = req.nextUrl.searchParams.get("track") || undefined;
-  const where: any = track
-  ? { trackSlug: track, archived: false }
-  : { archived: false };
+  const where: any = track ? { trackSlug: track } : {};
   const items = await prisma.portfolio.findMany({ where, orderBy: [{ trackSlug: "asc" }, { order: "asc" }, { name: "asc" }] });
   return NextResponse.json({ items });
 }
@@ -48,14 +46,11 @@ export async function DELETE(req: NextRequest) {
     );
   }
 
-  await prisma.portfolio.updateMany({
+  await prisma.portfolio.deleteMany({
     where: {
       id: {
         in: ids,
       },
-    },
-    data: {
-      archived: true,
     },
   });
 
@@ -69,6 +64,6 @@ export async function DELETE(req: NextRequest) {
 
   return NextResponse.json({
     ok: true,
-    archived: ids.length,
+    deleted: ids.length,
   });
 }
