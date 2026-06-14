@@ -1,41 +1,11 @@
-"use client";
-import { useState } from "react";
 import SectionKicker from "./SectionKicker";
+import FAQClient from "./FAQClient";
+import { getAllSettings } from "../lib/settings";
 
-const ALL = "All";
-const faqs = [
-  { cat: "About", q: "What is the New Delhi Global Youth Summit?", a: "It is a national-level youth diplomacy and leadership summit where students simulate global committees, debate policy, and build skills in research, public speaking and negotiation. NDGYS 4.0 takes place on 22–23 August 2026 at IIT Delhi." },
-
-  { cat: "About", q: "What is the New Delhi Global Youth Summit?", a: "It is a national-level youth diplomacy and leadership summit where students simulate global committees, debate policy, and build skills in research, public speaking and negotiation." },
-
-  { cat: "About", q: "When and where is it taking place?", a: "22–23 August 2026 at IIT Delhi, New Delhi." },
-  { cat: "Registration", q: "Who can participate?", a: "Open to school and college students across India. There is a track suited to every level, from first-timers to seasoned delegates." },
-  { cat: "Registration", q: "How do I register and pay?", a: "Click Register, choose your track, fill in your details and pay securely online. You'll receive an instant email confirmation once payment succeeds." },
-  { cat: "Tracks", q: "How many tracks are offered?", a: "Eight tracks spanning policy, climate, technology, entrepreneurship, human rights, press, leadership and a continuous crisis committee." },
-  { cat: "Tracks", q: "Can I change my track later?", a: "Yes — email the team before allotments are finalised and we'll do our best to accommodate the switch." },
-  { cat: "General", q: "Is there a fee?", a: "Standard tracks are ₹2,500; flagship and crisis tracks are higher. The fee is shown on each track card before payment." },
-  { cat: "General", q: "Is this an educational event, and will certificates be provided?", a: "Yes. This is an educational summit focused on learning, leadership and diplomacy. Participation certificates will be provided to attendees by the organising venue." }
-  ,{ cat: "About", q: "Why should I be a part of NDGYS 2026?", a: (
-    <div>
-      <ul className="list-disc pl-6">
-        <li><span className="font-semibold">Trophies for All Winners:</span> Take home stunning champion trophies to concrete your victory.</li>
-        <li><span className="font-semibold">Exclusive Merchandise (20% Off):</span> Access limited-edition summit gear at a rare, participant-only discount.</li>
-        <li><span className="font-semibold">Premium Delegate Kit:</span> Receive a curated, high-value toolkit reserved strictly for attending delegates.</li>
-        <li><span className="font-semibold">Certificate of Merit:</span> Earn a prestigious, high-tier credential that sets your resume apart globally.</li>
-        <li><span className="font-semibold">Memorable Socials:</span> Build lifelong connections and network with the brightest young minds at exclusive events.</li>
-        <li><span className="font-semibold">Highly Experienced Judges:</span> Get your ideas evaluated and mentored by industry titans and global experts.</li>
-        <li><span className="font-semibold">Gourmet Food & Beverages:</span> Stay fueled with premium meals and refreshments provided throughout the entire summit.</li>
-        <li><span className="font-semibold">Certificate of Participation:</span> Secure official, globally recognized proof of your presence at this elite conference.</li>
-      </ul>
-    </div>
-  ) }
-];
-
-export default function FAQ() {
-  const cats = [ALL, ...Array.from(new Set(faqs.map((f) => f.cat)))];
-  const [cat, setCat] = useState(ALL);
-  const [open, setOpen] = useState<number | null>(0);
-  const shown = faqs.filter((f) => cat === ALL || f.cat === cat);
+export default async function FAQ() {
+  const settings = await getAllSettings();
+  const venueRevealed = settings["venue.revealed"] === "true" || settings["venue.revealed"] === true;
+  const venueName = settings["venue.name"] || settings["venue.displayName"] || "IIT Delhi";
 
   return (
     <section id="faq" className="bg-cream grain py-28">
@@ -46,71 +16,7 @@ export default function FAQ() {
         </h2>
         <p className="mt-3 text-sm text-slatey">Have queries about participation, fees, or timeline? We've got you covered.</p>
 
-        <div className="mt-8 flex flex-wrap gap-2">
-          {cats.map((c) => (
-            <button
-              key={c}
-              onClick={() => { setCat(c); setOpen(null); }}
-              className={`rounded-full border px-5 py-2 text-xs font-600 uppercase tracking-wider transition-all duration-300 ${
-                cat === c
-                  ? "border-gold bg-gold text-midnight shadow-md shadow-gold/25 scale-105"
-                  : "border-ink/10 bg-paper text-ink/65 hover:border-gold hover:text-gold"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-10 space-y-4">
-          {shown.map((f, i) => {
-            const isOpen = open === i;
-            return (
-              <div
-                key={f.q}
-                className={`overflow-hidden rounded-2xl border transition-all duration-400 ${
-                  isOpen
-                    ? "border-gold/30 bg-midnight text-cream shadow-xl shadow-black/15"
-                    : "border-ink/10 bg-paper text-ink"
-                }`}
-              >
-                <button
-                  className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
-                  onClick={() => setOpen(isOpen ? null : i)}
-                  aria-expanded={isOpen}
-                >
-                  <span className={`font-display text-lg font-600 transition-colors duration-300 ${isOpen ? "text-goldlite" : "text-ink"}`}>
-                    {f.q}
-                  </span>
-                  <span
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-lg font-500 transition-all duration-300 ${
-                      isOpen ? "border-goldlite/30 bg-gold/10 text-goldlite rotate-45" : "border-ink/10 bg-cream text-gold"
-                    }`}
-                  >
-                    +
-                  </span>
-                </button>
-                <div
-                  className={`grid transition-all duration-300 ease-in-out ${
-                    isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                  }`}
-                >
-                  <div className="overflow-hidden">
-                    {typeof f.a === "string" ? (
-                      <p className={`px-6 pb-6 text-[15px] leading-relaxed transition-colors duration-300 ${isOpen ? "text-cream/75" : "text-ink/70"}`}>
-                      {f.a}
-                      </p>
-                    ) : (
-                      <div className={`px-6 pb-6 text-[15px] leading-relaxed transition-colors duration-300 ${isOpen ? "text-cream/75" : "text-ink/70"}`}>
-                        {f.a}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <FAQClient venueRevealed={venueRevealed} venueName={venueName} />
       </div>
     </section>
   );
