@@ -34,9 +34,9 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
-            {[["22–23 Aug", "2026"], ["8", "Committees"], ["IIT Delhi", "New Delhi"]].map(([a, b]) => (
-              <div key={b} className="rounded-2xl border border-ink/10 bg-paper p-5">
+          <div className="mt-10 grid gap-4 sm:grid-cols-3 justify-items-center">
+            {[["22–23 Aug", "2026"], ["20+", "Committees"]].map(([a, b]) => (
+              <div key={b} className="rounded-2xl border border-ink/10 bg-paper p-5 w-full max-w-xs">
                 <p className="font-display text-3xl font-700 text-ink">{a}</p>
                 <p className="text-sm text-slatey">{b}</p>
               </div>
