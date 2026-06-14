@@ -61,12 +61,13 @@ export default function AdminDashboard() {
               ) : (
                 <ul className="space-y-3 text-sm">
                   {d.recent.map((a) => (
-                    <li key={a.id} className="flex items-start justify-between gap-3 border-b border-ink/5 pb-2 last:border-0">
-                      <div>
-                        <span className="font-600 text-ink">{a.action}</span>
-                        <span className="text-slatey"> · {a.entity}{a.meta ? ` (${a.meta})` : ""}</span>
-                        <p className="text-xs text-slatey">{a.adminEmail}</p>
-                      </div>
+                    <li key={a.id} className="flex items-start justify-between gap-3 border-b border-ink/5 pb-2 last:border-0 min-w-0">
+  <div className="min-w-0 overflow-hidden">
+    <p className="truncate"><span className="font-600 text-ink">{a.action}</span>
+    <span className="text-slatey"> · {a.entity}</span></p>
+    {a.meta && <p className="truncate text-xs text-slatey/70 font-mono">{a.meta}</p>}
+    <p className="text-xs text-slatey">{a.adminEmail}</p>
+  </div>
                       <time className="shrink-0 text-xs text-slatey">{new Date(a.createdAt).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</time>
                     </li>
                   ))}
