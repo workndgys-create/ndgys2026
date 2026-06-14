@@ -18,7 +18,8 @@ const TOGGLES: { key: string; label: string; help: string }[] = [
   { key: "home.showTrackPricing", label: "Show MUN committee pricing on home", help: "Display committee pricing cards in the Track section on the home page." },
   { key: "home.showCompetitionPricing", label: "Show competition pricing on home", help: "Display competition fee details in the Competitions section on the home page." },
   { key: "allocations.live", label: "Portfolio allocations live", help: "Show the live allocations section on the home page." },
-  { key: "registration.open", label: "Registration open", help: "When off, the registration API rejects new sign-ups." }
+  { key: "registration.open", label: "Registration open", help: "When off, the registration API rejects new sign-ups." },
+  { key: "venue.revealed", label: "Reveal venue on public site", help: "When ON, the public /venue page shows full venue details; when OFF, it shows the 'coming soon' hero." }
 ];
 
 export default function SettingsPage() {

@@ -15,10 +15,12 @@ import FAQ from "@/components/FAQ";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import SectionKicker from "@/components/SectionKicker";
+import { getFlag } from "@/lib/settings";
 import Marquee from "@/components/Marquee";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
+  const venueRevealed = await getFlag("venue.revealed");
   return (
     <>
 
@@ -60,47 +62,59 @@ export default async function HomePage() {
         <section id="venue-preview" className="py-0">
           <div className="mx-auto max-w-full">
             <SectionKicker label="DISPATCH-4 VENUE" />
-            <div className="h-[80vh] w-full">
-              <iframe
-                title="IIT Delhi — full preview"
-                src="https://www.google.com/maps/embed?origin=mfe&pb=!1m2!2m1!1sIIT+Delhi,+Hauz+Khas,+New+Delhi"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
-            <div className="mx-auto max-w-6xl px-5 py-6">
-              <div className="grid gap-6 md:grid-cols-3">
-                <div className="rounded-lg border border-gold/20 p-6 bg-paper">
-                  <h4 className="text-lg font-semibold text-ink">By Metro</h4>
-                  <p className="mt-3 text-ink/80">Nearest Metro: IIT Delhi (Magenta Line), ~1 km. Hauz Khas (Yellow/Magenta interchange) is ~2.5 km.</p>
-                </div>
-
-                <div className="rounded-lg border border-gold/20 p-6 bg-paper">
-                  <h4 className="text-lg font-semibold text-ink">By Air</h4>
-                  <p className="mt-3 text-ink/80">Indira Gandhi International Airport (DEL) is ~15 km / 35-45 min by cab.</p>
-                </div>
-
-                <div className="rounded-lg border border-gold/20 p-6 bg-paper">
-                  <h4 className="text-lg font-semibold text-ink">Parking & on-site</h4>
-                  <p className="mt-3 text-ink/80">On-campus visitor parking is available; carpooling and metro are recommended on event days.</p>
+            {!venueRevealed ? (
+              <div className="min-h-[60vh] flex items-center">
+                <div className="mx-auto w-full max-w-4xl px-6 text-center">
+                  <h2 className="mt-6 text-3xl sm:text-4xl md:text-5xl font-display font-black text-ink">VENUE REVEAL COMING SOON</h2>
+                  <p className="mt-6 text-lg md:text-xl text-ink/80 max-w-2xl mx-auto">We're finalizing the venue details. Stay tuned for the official announcement!</p>
+                  <p className="mt-3 text-sm text-ink/70">The official venue announcement will be shared soon. Keep an eye on our updates.</p>
                 </div>
               </div>
+            ) : (
+              <>
+                <div className="h-[80vh] w-full">
+                  <iframe
+                    title="IIT Delhi — full preview"
+                    src="https://www.google.com/maps/embed?origin=mfe&pb=!1m2!2m1!1sIIT+Delhi,+Hauz+Khas,+New+Delhi"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+                <div className="mx-auto max-w-6xl px-5 py-6">
+                  <div className="grid gap-6 md:grid-cols-3">
+                    <div className="rounded-lg border border-gold/20 p-6 bg-paper">
+                      <h4 className="text-lg font-semibold text-ink">By Metro</h4>
+                      <p className="mt-3 text-ink/80">Nearest Metro: IIT Delhi (Magenta Line), ~1 km. Hauz Khas (Yellow/Magenta interchange) is ~2.5 km.</p>
+                    </div>
 
-              <div className="mt-6 rounded-lg border border-gold/30 bg-gold/10 p-4 text-ink/80 font-600">
-                Carry a government photo ID and your delegate QR for entry. Gates open 60 minutes before the first session.
-              </div>
+                    <div className="rounded-lg border border-gold/20 p-6 bg-paper">
+                      <h4 className="text-lg font-semibold text-ink">By Air</h4>
+                      <p className="mt-3 text-ink/80">Indira Gandhi International Airport (DEL) is ~15 km / 35-45 min by cab.</p>
+                    </div>
 
-              <div className="mt-6 rounded-lg border border-dashed border-gold/20 p-6 bg-paper">
-                <p className="text-ink/80">Recommended hotels and travel options will be published here soon. Outstation and international delegates — check back closer to the event for curated hotel and travel partners.</p>
-              </div>
+                    <div className="rounded-lg border border-gold/20 p-6 bg-paper">
+                      <h4 className="text-lg font-semibold text-ink">Parking & on-site</h4>
+                      <p className="mt-3 text-ink/80">On-campus visitor parking is available; carpooling and metro are recommended on event days.</p>
+                    </div>
+                  </div>
 
-              <div className="mt-6">
-                <p className="text-ink/70">IIT Delhi, Hauz Khas, New Delhi — previewed above. <a href="https://www.globalyouthsummit.in/venue" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">Open official venue page</a></p>
-              </div>
-            </div>
+                  <div className="mt-6 rounded-lg border border-gold/30 bg-gold/10 p-4 text-ink/80 font-600">
+                    Carry a government photo ID and your delegate QR for entry. Gates open 60 minutes before the first session.
+                  </div>
+
+                  <div className="mt-6 rounded-lg border border-dashed border-gold/20 p-6 bg-paper">
+                    <p className="text-ink/80">Recommended hotels and travel options will be published here soon. Outstation and international delegates — check back closer to the event for curated hotel and travel partners.</p>
+                  </div>
+
+                  <div className="mt-6">
+                    <p className="text-ink/70">IIT Delhi, Hauz Khas, New Delhi — previewed above. <a href="https://www.globalyouthsummit.in/venue" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">Open official venue page</a></p>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </section>
 
