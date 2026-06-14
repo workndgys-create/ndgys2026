@@ -37,6 +37,7 @@ const GROUPS: NavGroup[] = [
     { href: "/admin/announcements", label: "Announcements", icon: "◈", perm: "announcements.manage" }
   ]},
   { title: "Administration", items: [
+    { href: "/admin/profile", label: "My Profile", icon: "👤", perm: "registrations.read" },
     { href: "/admin/team", label: "Team & Roles", icon: "👥", perm: "team.manage" },
     { href: "/admin/promo-codes", label: "Promo Codes", icon: "%", perm: "payments.manage" },
     { href: "/admin/settings", label: "Settings", icon: "⚙", perm: "settings.manage" }
