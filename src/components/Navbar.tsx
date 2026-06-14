@@ -78,6 +78,7 @@ export default function Navbar() {
             setActive={setMenu}
             groupActive={isGroupActive(resources)}
           />
+          <NavLink href="/venue" label="Venue" active={isActive("/venue")} />
           <NavLink href="/#contact" label="Contact" active={false} />
         </div>
 
@@ -125,6 +126,7 @@ export default function Navbar() {
             { href: "/", label: "Home" },
             ...about,
             ...resources,
+            { href: "/venue", label: "Venue" },
             { href: "/#contact", label: "Contact" },
             { href: "/dashboard", label: "Participant Login" }
           ].map((i) => (
