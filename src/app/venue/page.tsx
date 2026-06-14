@@ -3,6 +3,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getAllSettings } from "@/lib/settings";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Venue — NDGYS 4.0",
   description: "Venue information for New Delhi Global Youth Summit 4.0 (reveal coming soon)",
