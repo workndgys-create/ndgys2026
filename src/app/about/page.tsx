@@ -13,7 +13,7 @@ export default function AboutPage() {
     <>
       <Navbar />
       <main className="bg-cream grain pt-36">
-        <section className="mx-auto max-w-3xl px-5 pb-20">
+        <section className="mx-auto max-w-5xl px-5 pb-20">
           <p className="kicker text-xs uppercase text-gold">COMMUNIQUÉ — About</p>
           <h1 className="mt-4 font-display text-5xl font-700 leading-tight text-ink sm:text-7xl">
             Where the next generation <span className="text-gold">deliberates.</span>
@@ -34,7 +34,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="mt-10 flex flex-wrap gap-6 justify-center">
+          <div className="mt-10 flex flex-wrap gap-6 justify-center mx-auto">
             {[["22–23 Aug", "2026"], ["20+", "Committees"]].map(([a, b]) => (
               <div key={b} className="rounded-2xl border border-ink/10 bg-paper p-5 w-full max-w-xs">
                 <p className="font-display text-3xl font-700 text-ink">{a}</p>
