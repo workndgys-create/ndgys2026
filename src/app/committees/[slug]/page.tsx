@@ -35,10 +35,8 @@ export default async function CommitteeDetail({ params }: { params: { slug: stri
             <h2 className="font-display text-lg font-700 text-ink">Agenda</h2>
             <p className="mt-2 text-ink/75">{t.agenda}</p>
 
-            <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            <div className="mt-6 grid gap-4 sm:grid-cols-1">
               <Stat label="Delegate fee" value={`₹${t.fee.toLocaleString("en-IN")}`} />
-              <Stat label="Capacity" value={String(t.capacity)} />
-              <Stat label="Seats left" value={t.full ? "Full" : String(t.seatsRemaining)} />
             </div>
 
               {String(t.name).trim().toLowerCase() === "international press" && (
@@ -49,7 +47,7 @@ export default async function CommitteeDetail({ params }: { params: { slug: stri
                     <li>Caricature</li>
                     <li>Photographer</li>
                   </ul>
-                  <p className="mt-3 font-display text-lg font-700 text-ink">Seats Remaining: {t.seatsRemaining} / {t.capacity}</p>
+                  
                 </div>
               )}
 

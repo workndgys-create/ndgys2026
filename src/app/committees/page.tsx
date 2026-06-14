@@ -54,9 +54,7 @@ export default async function CommitteesPage() {
                         {String(i + 1).padStart(2, "0")}
                       </div>
                     )}
-                    <div className="absolute right-4 top-3 rounded-full bg-black/30 px-3 py-1 text-[11px] text-cream backdrop-blur">
-                      {t.full ? "Full" : `${t.seatsRemaining} left`}
-                    </div>
+                    
                   </div>
                   <div className="flex flex-1 flex-col p-6">
                     <span className="text-[11px] uppercase tracking-wider text-slatey">{t.difficulty}</span>
