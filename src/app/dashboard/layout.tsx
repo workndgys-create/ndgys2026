@@ -40,7 +40,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       </header>
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-8 md:flex-row">
         {me ? (
-          <nav className="flex gap-2 overflow-x-auto md:w-56 md:flex-col shrink-0">
+          <nav className="flex w-full justify-center gap-2 overflow-x-auto md:w-56 md:flex-col md:justify-start shrink-0">
             {me && regs.length > 1 && (
               <RegistrationSwitcher currentId={me.id} registrations={regs} />
             )}
