@@ -26,7 +26,7 @@ function normaliseScanQuery(raw: string): string {
 function parseDay(value: unknown): 1 | 2 {
   return value === 2 ? 2 : 1;
 }
-
+//
 async function checkinCounts() {
   const [day1Count, day2Count, totalUnique, compTotal] = await Promise.all([
     prisma.registration.count({ where: { status: "PAID", checkedInDay1: true } }),
