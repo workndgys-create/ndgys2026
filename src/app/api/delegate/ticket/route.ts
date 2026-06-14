@@ -4,6 +4,7 @@ import { qrDataUrl } from "@/lib/qr";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const reg = await currentDelegate();
@@ -32,7 +33,10 @@ export async function GET() {
     });
     const photoIndices = new Set(photos.map((p) => p.memberIndex));
 
-    const membersList = typeof compReg.members === "string" ? JSON.parse(compReg.members) : compReg.members || [];
+    let membersList: any[] = [];
+if (typeof compReg.members === "string") {
+  try { membersList = compReg.members.trim() ? JSON.parse(compReg.members) : []; } catch { membersList = []; }
+} else if (Array.isArray(compReg.members)) { membersList = compReg.members; }
     const membersWithQrs = await Promise.all(
       membersList.map(async (m: any, idx: number) => {
         const mId = m.participantId || `${compReg.refId}-${String(idx + 1).padStart(2, "0")}`;
@@ -55,8 +59,7 @@ export async function GET() {
       hasPhoto: photoIndices.has(0),
       isCompetition: true,
       members: membersWithQrs
-    });
-  }
+    }, { headers: { "Cache-Control": "no-store, private" } });
 
   const photo = await prisma.registrationPhoto.findUnique({
     where: { registrationId: reg.id },
