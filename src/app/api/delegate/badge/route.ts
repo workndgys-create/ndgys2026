@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { currentDelegate } from "@/lib/delegateSession";
+import { currentDelegate, getDelegateById } from "@/lib/delegateSession";
 import {
   generateBadgePdf,
   generateBadgeSheet,
@@ -8,8 +8,10 @@ import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
-export async function GET() {
-  const reg = await currentDelegate();
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const regId = searchParams.get("regId");
+  const reg = regId ? await getDelegateById(regId) : await currentDelegate();
 
   if (!reg) {
     return NextResponse.json(
@@ -156,6 +158,8 @@ export async function GET() {
 
           "Content-Disposition":
             `attachment; filename="badges-${compReg.refId}.pdf"`,
+          "Cache-Control":
+            "no-store, private, must-revalidate",
         },
       }
     );
@@ -228,6 +232,8 @@ export async function GET() {
 
         "Content-Disposition":
           `attachment; filename="badge-${reg.delegateId}.pdf"`,
+        "Cache-Control":
+          "no-store, private, must-revalidate",
       },
     }
   );

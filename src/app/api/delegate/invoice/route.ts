@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { currentDelegate } from "@/lib/delegateSession";
+import { currentDelegate, getDelegateById } from "@/lib/delegateSession";
 import { generateInvoicePdf } from "@/lib/invoice";
 export const runtime = "nodejs";
 
-export async function GET() {
-  const reg = await currentDelegate();
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const regId = searchParams.get("regId");
+  const reg = regId ? await getDelegateById(regId) : await currentDelegate();
   if (!reg) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const isComp = !!(reg as any).isCompetition;
@@ -47,7 +49,8 @@ export async function GET() {
   return new NextResponse(new Uint8Array(pdf), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${number.replace(/\//g, "-")}.pdf"`
+      "Content-Disposition": `attachment; filename="${number.replace(/\//g, "-")}.pdf"`,
+      "Cache-Control": "no-store, private, must-revalidate"
     }
   });
 }
