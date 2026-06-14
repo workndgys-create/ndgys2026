@@ -42,7 +42,7 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-8 z-50 transition-all duration-300 border-b bg-[#1F0A02] ${scrolled
+      className={`fixed inset-x-0 ${isHome ? "top-8" : "top-0"} z-50 transition-all duration-300 border-b bg-[#1F0A02] ${scrolled
           ? "shadow-lg shadow-[#1F0A02]/30 border-[#D97706]/40 h-24"
           : "border-[#D97706]/20 h-28"
         }`}
@@ -221,7 +221,7 @@ function Dropdown({
         )}
       </button>
       <div
-        className={`absolute left-0 top-full mt-3 w-56 rounded-xl border border-[#D97706]/30 bg-[#1F0A02]/98 p-2 shadow-2xl backdrop-blur-md transition-all duration-300 ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"
+        className={`absolute left-0 top-full mt-3 w-56 rounded-xl border border-[#D97706]/30 bg-[#1F0A02] p-2 shadow-2xl transition-all duration-300 ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"
           }`}
       >
         {items.map((i) => {

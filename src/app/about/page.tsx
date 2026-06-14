@@ -12,7 +12,7 @@ export default function AboutPage() {
   return (
     <>
       <Navbar />
-      <main className="bg-cream grain pt-36">
+      <main className="bg-cream grain pt-40">
         <section className="mx-auto max-w-5xl px-5 pb-20">
           <p className="kicker text-xs uppercase text-gold">COMMUNIQUÉ — About</p>
           <h1 className="mt-4 font-display text-5xl font-700 leading-tight text-ink sm:text-7xl">

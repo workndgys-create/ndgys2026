@@ -23,7 +23,7 @@ export default async function VenuePage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-cream grain pt-36 text-ink">
+      <main className="min-h-screen bg-cream grain pt-40 text-ink">
         {!revealed ? (
           <section className="min-h-[60vh] flex items-center">
             <div className="mx-auto w-full max-w-4xl px-6 text-center">

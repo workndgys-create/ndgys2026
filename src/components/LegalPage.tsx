@@ -5,7 +5,7 @@ export default function LegalPage({ title, updated, children }: { title: string;
   return (
     <>
       <Navbar />
-      <main className="bg-cream grain pt-36">
+      <main className="bg-cream grain pt-40">
         <article className="mx-auto max-w-3xl px-5 pb-20">
           <h1 className="font-display text-4xl font-700 text-ink sm:text-5xl">{title}</h1>
           <p className="mt-2 text-sm text-slatey">Last updated {updated}</p>

@@ -24,7 +24,7 @@ export default async function CommitteeDetail({ params }: { params: { slug: stri
   return (
     <>
       <Navbar />
-      <main className="bg-cream grain pt-36">
+      <main className="bg-cream grain pt-40">
         <article className="mx-auto max-w-3xl px-5 pb-20">
           <Link href="/committees" className="text-sm text-gold hover:underline">← All committees</Link>
           <span className="ml-3 rounded-full bg-paper px-3 py-1 text-xs uppercase tracking-wider text-slatey">{t.difficulty}</span>
