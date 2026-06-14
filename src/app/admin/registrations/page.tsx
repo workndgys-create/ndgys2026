@@ -224,6 +224,7 @@ export default function RegistrationsPage() {
                     <div><strong>Delegate ID:</strong> {viewReg.delegateId || "—"}</div>
                     <div><strong>Email:</strong> {viewReg.email}</div>
                     <div><strong>Phone:</strong> {viewReg.phone}</div>
+                    <div><strong>Emergency Contact:</strong> {viewReg.emergencyContact || "—"}</div>
                     <div><strong>Track:</strong> {viewReg.trackName}</div>
                     <div><strong>Portfolio:</strong> {viewReg.portfolio || "—"}</div>
                     <div><strong>Amount:</strong> ₹{(viewReg.amount || 0).toLocaleString("en-IN")}</div>
