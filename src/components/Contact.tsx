@@ -74,7 +74,7 @@ export default function Contact() {
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold text-lg">⦿</span>
                 <div>
                   <p className="text-[10px] uppercase tracking-wider text-cream/40 font-semibold">WhatsApp</p>
-                  <p className="text-sm font-500">Chat with support</p>
+                  <p className="text-sm font-500">Chat with support <span className="mx-2">·</span> <a href="tel:+918447676110" className="underline-offset-2 hover:underline">+91 84476 76106</a></p>
                 </div>
               </a>
             </div>
