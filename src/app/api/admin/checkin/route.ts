@@ -14,7 +14,7 @@ function normaliseScanQuery(raw: string): string {
       if (id) return id;
     }
   } catch {
-    // plain text scan, keep original hand
+    // plain text scan
   }
   if (q.includes("/verify/")) {
     const id = decodeURIComponent(q.split("/verify/").pop() || "").trim();
@@ -28,51 +28,90 @@ function parseDay(value: unknown): 1 | 2 {
 }
 
 async function checkinCounts() {
-  const [day1Count, day2Count, totalUnique] = await Promise.all([
+  const [day1Count, day2Count, totalUnique, compTotal] = await Promise.all([
     prisma.registration.count({ where: { status: "PAID", checkedInDay1: true } }),
     prisma.registration.count({ where: { status: "PAID", checkedInDay2: true } }),
-    prisma.registration.count({ where: { status: "PAID", OR: [{ checkedInDay1: true }, { checkedInDay2: true }] } })
+    prisma.registration.count({ where: { status: "PAID", OR: [{ checkedInDay1: true }, { checkedInDay2: true }] } }),
+    prisma.competitionRegistration.count({ where: { status: "PAID", checkedIn: true } })
   ]);
-  return { day1Count, day2Count, totalUnique };
+  return { day1Count, day2Count, totalUnique: totalUnique + compTotal };
 }
 
 async function recentCheckins(limit = 20) {
   const logs = await prisma.adminAction.findMany({
-    where: { action: { startsWith: "checkin" }, entity: "Registration", entityId: { not: null } },
+    where: {
+      action: { startsWith: "checkin" },
+      entity: { in: ["Registration", "CompetitionRegistration"] },
+      entityId: { not: null }
+    },
     orderBy: { createdAt: "desc" },
     take: limit
   });
-  const ids = Array.from(new Set(logs.map((l) => l.entityId).filter(Boolean))) as string[];
-  const regs = ids.length
-    ? await prisma.registration.findMany({
-        where: { id: { in: ids } },
-        select: { id: true, delegateId: true, fullName: true, trackName: true, portfolio: true }
-      })
-    : [];
-  const map = new Map(regs.map((r) => [r.id, r]));
+
+  const regIds = Array.from(new Set(
+    logs.filter((l) => l.entity === "Registration").map((l) => l.entityId).filter(Boolean)
+  )) as string[];
+  const compIds = Array.from(new Set(
+    logs.filter((l) => l.entity === "CompetitionRegistration").map((l) => l.entityId).filter(Boolean)
+  )) as string[];
+
+  const [regs, comps] = await Promise.all([
+    regIds.length
+      ? prisma.registration.findMany({
+          where: { id: { in: regIds } },
+          select: { id: true, delegateId: true, fullName: true, trackName: true, portfolio: true }
+        })
+      : Promise.resolve([]),
+    compIds.length
+      ? prisma.competitionRegistration.findMany({
+          where: { id: { in: compIds } },
+          select: { id: true, refId: true, leaderName: true, competitionTitle: true }
+        })
+      : Promise.resolve([])
+  ]);
+
+  const regMap = new Map(regs.map((r) => [r.id, r]));
+  const compMap = new Map(
+    comps.map((c) => [c.id, { id: c.id, delegateId: c.refId, fullName: c.leaderName, trackName: c.competitionTitle, portfolio: null }])
+  );
+
   return logs.map((l) => {
-    const reg = l.entityId ? map.get(l.entityId) : null;
-    return {
-      id: l.id,
-      scannedAt: l.createdAt,
-      action: l.action,
-      adminEmail: l.adminEmail,
-      meta: l.meta,
-      registration: reg || null
-    };
+    const reg = l.entity === "CompetitionRegistration"
+      ? (l.entityId ? compMap.get(l.entityId) : null)
+      : (l.entityId ? regMap.get(l.entityId) : null);
+    return { id: l.id, scannedAt: l.createdAt, action: l.action, adminEmail: l.adminEmail, meta: l.meta, registration: reg || null };
   });
 }
 
-// lookup by ?q=delegateId|email
 export async function GET(req: NextRequest) {
   const q = normaliseScanQuery(req.nextUrl.searchParams.get("q")?.trim() || "");
-  const results = q
-    ? await prisma.registration.findMany({
+  let results: any[] = [];
+  if (q) {
+    const [regs, comps] = await Promise.all([
+      prisma.registration.findMany({
         where: { OR: [{ delegateId: q }, { email: { contains: q, mode: "insensitive" } }], status: "PAID" },
         select: { id: true, delegateId: true, fullName: true, trackName: true, checkedInDay1: true, checkedInDay2: true },
         take: 10
+      }),
+      prisma.competitionRegistration.findMany({
+        where: { OR: [{ refId: q }, { email: { contains: q, mode: "insensitive" } }], status: "PAID" },
+        select: { id: true, refId: true, leaderName: true, competitionTitle: true, checkedIn: true, checkedInAt: true },
+        take: 10
       })
-    : [];
+    ]);
+    results = [
+      ...regs,
+      ...comps.map((c) => ({
+        id: c.id,
+        delegateId: c.refId,
+        fullName: c.leaderName,
+        trackName: c.competitionTitle,
+        checkedInDay1: c.checkedIn,
+        checkedInDay2: false,
+        isCompetition: true
+      }))
+    ];
+  }
   const counts = await checkinCounts();
   const recent = await recentCheckins();
   return NextResponse.json({ results, ...counts, recent });
@@ -81,152 +120,77 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const admin = await currentAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const b = await req.json().catch(() => null);
   const day = parseDay(b?.day);
   let id = typeof b?.id === "string" ? b.id : "";
   const scanQ = typeof b?.q === "string" ? normaliseScanQuery(b.q) : "";
 
-  console.log("SCAN VALUE:", scanQ);
-
   if (!id && !scanQ) return NextResponse.json({ error: "Bad request" }, { status: 422 });
 
-// If scanQ looks like delegateId.sig (ie from QR), verify signature before proceeding
-let target: any = null;
-let competitionTarget: any = null;
+  let target: any = null;
+  let isCompetition = false;
 
+  if (!id && scanQ) {
+    const sigDot = scanQ.lastIndexOf(".");
 
-
-    // If not found, try competitions
+    if (scanQ.startsWith("NDGYS-C-")) {
+      // Competition QR
+      const competitionRef = sigDot > 0 ? scanQ.substring(0, sigDot) : scanQ;
+      target = await prisma.competitionRegistration.findFirst({
+        where: { refId: competitionRef, status: "PAID" }
+      });
+      isCompetition = true;
+    } else if (sigDot > 0) {
+      // Signed MUN QR
+      const dId = scanQ.slice(0, sigDot);
+      const sig = scanQ.slice(sigDot + 1);
+      if (!verifySignature(dId, sig)) return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
+      target = await prisma.registration.findFirst({ where: { status: "PAID", delegateId: dId } });
+    } else {
+      // Manual MUN lookup by ID or email
+      target = await prisma.registration.findFirst({
+        where: { status: "PAID", OR: [{ delegateId: scanQ }, { email: { contains: scanQ, mode: "insensitive" } }] }
+      });
+    }
+  } else if (id) {
+    target = await prisma.registration.findUnique({ where: { id } });
     if (!target) {
-
-if (!id && scanQ) {
-  const sigDot = scanQ.lastIndexOf(".");
-
-  // Competition QR
-  if (scanQ.startsWith("NDGYS-C-")) {
-    let competitionRef = scanQ;
-
-    if (sigDot > 0) {
-      competitionRef = scanQ.substring(0, sigDot);
+      target = await prisma.competitionRegistration.findUnique({ where: { id } });
+      if (target) isCompetition = true;
     }
-
-    console.log("LOOKING FOR:", competitionRef);
-
-competitionTarget =
-  await prisma.competitionRegistration.findFirst({
-    where: {
-      refId: competitionRef,
-    },
-  });
-
-console.log("FOUND:", competitionTarget);
-
-  // MUN signed QR
-  } else if (sigDot > 0) {
-    const dId = scanQ.slice(0, sigDot);
-    const sig = scanQ.slice(sigDot + 1);
-
-    if (!verifySignature(dId, sig)) {
-      return NextResponse.json(
-        { error: "Invalid signature" },
-        { status: 403 }
-      );
-    }
-
-    target = await prisma.registration.findFirst({
-      where: {
-        status: "PAID",
-        delegateId: dId,
-      },
-    });
-
-  // Manual MUN lookup
-  } else {
-    target = await prisma.registration.findFirst({
-      where: {
-        status: "PAID",
-        OR: [
-          { delegateId: scanQ },
-          {
-            email: {
-              contains: scanQ,
-              mode: "insensitive",
-            },
-          },
-        ],
-      },
-    });
   }
-}
-    
-    
-    
-    
-    }  else if (id) {
-  target = await prisma.registration.findUnique({
-    where: { id },
-  });
-}
 
-if (!target && !competitionTarget) {
-  return NextResponse.json(
-    {
-      error: "No paid participant found.",
-      debug: {
-        scanQ,
-        competitionFound: !!competitionTarget,
-        munFound: !!target,
-      },
-    },
-    { status: 404 }
-  );
-}
+  if (!target || target.status !== "PAID") {
+    return NextResponse.json({ error: "No paid participant found." }, { status: 404 });
+  }
 
-// Competition auto check-in
-if (competitionTarget) {
-  const updated =
-    await prisma.competitionRegistration.update({
-      where: {
-        id: competitionTarget.id,
-      },
-      data: {
-        checkedIn: true,
-        checkedInAt: new Date(),
-      },
-    });
-
-  await audit(
-    admin.email,
-    "competition.checkin.scan",
-    "CompetitionRegistration",
-    updated.id,
-    `refId=${updated.refId}`
-  );
-
-  return NextResponse.json({
-    ok: true,
-    competition: true,
-    registration: updated,
-  });
-}
-  
-  
-  
-  
-  
   id = target.id;
-  const value = b?.value === undefined ? true : !!b.value;
 
-  // Idempotent behaviour: if already checked in for this day and trying to set true, return existing info
+  // Competition check-in (single boolean, no day tracking)
+  if (isCompetition) {
+    if (target.checkedIn) {
+      return NextResponse.json({ ok: true, alreadyCheckedIn: true, when: target.checkedInAt?.toISOString() ?? null });
+    }
+    const updated = await prisma.competitionRegistration.update({
+      where: { id },
+      data: { checkedIn: true, checkedInAt: new Date() }
+    });
+    await audit(admin.email, "competition.checkin.scan", "CompetitionRegistration", id, `refId=${updated.refId}`);
+    const counts = await checkinCounts();
+    const recent = await recentCheckins();
+    return NextResponse.json({ ok: true, competition: true, registration: updated, ...counts, recent });
+  }
+
+  // MUN Day 1 / Day 2 check-in
+  const value = b?.value === undefined ? true : !!b.value;
   const already = day === 1 ? !!target.checkedInDay1 : !!target.checkedInDay2;
   if (value === true && already) {
-    // find existing audit log for this registration and day
     const existing = await prisma.adminAction.findFirst({
       where: { entity: "Registration", entityId: id, action: { startsWith: "checkin" }, meta: { contains: `day${day}=true` } },
       orderBy: { createdAt: "desc" }
     });
-    const when = existing ? existing.createdAt.toISOString() : null;
-    return NextResponse.json({ ok: true, alreadyCheckedIn: true, when });
+    return NextResponse.json({ ok: true, alreadyCheckedIn: true, when: existing?.createdAt.toISOString() ?? null });
   }
 
   const data = day === 1 ? { checkedInDay1: value } : { checkedInDay2: value };
