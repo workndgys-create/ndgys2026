@@ -40,10 +40,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
       </header>
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-8 md:flex-row">
         {me ? (
-          <nav className="flex w-full justify-center gap-2 overflow-x-auto md:w-56 md:flex-col md:justify-start shrink-0">
-            {me && regs.length > 1 && (
-              <RegistrationSwitcher currentId={me.id} registrations={regs} />
-            )}
+          <nav className="flex w-full flex-wrap justify-center gap-2 overflow-x-auto md:w-56 md:flex-col md:justify-start shrink-0">
+            <div className="w-full mb-2">
+              {me && regs.length > 1 && (
+                <div className="w-full md:w-auto">
+                  <RegistrationSwitcher currentId={me.id} registrations={regs} />
+                </div>
+              )}
+            </div>
             {filteredNav.map((n) => (
               <Link key={n.href} href={n.href} className="whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-500 text-ink/75 hover:bg-paper hover:text-ink">
                 {n.label}
