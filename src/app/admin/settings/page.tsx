@@ -86,6 +86,19 @@ export default function SettingsPage() {
           <div className="space-y-4">
             {readOnly && <p className="rounded-lg bg-[#D97706]/10 px-4 py-2 text-sm text-[#92400E]">Read-only — only a super-admin can change settings.</p>}
             <p className="text-sm text-slatey">These power the public <b>/venue</b> page and the <b>/code-of-conduct</b> grievance contact.</p>
+            <div className="flex items-center justify-between gap-4 border-b border-ink/5 pb-4">
+              <div>
+                <p className="font-600 text-ink">Reveal venue on public site</p>
+                <p className="text-sm text-slatey">When ON, the public /venue page shows full venue details; when OFF, it shows the 'coming soon' hero.</p>
+              </div>
+              <button
+                onClick={() => toggle("venue.revealed")} disabled={readOnly}
+                aria-pressed={settings["venue.revealed"] === "true"}
+                className={`relative h-7 w-12 shrink-0 rounded-full transition ${settings["venue.revealed"] === "true" ? "bg-[#D97706]" : "bg-ink/20"} ${readOnly ? "opacity-50" : ""}`}
+              >
+                <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-cream transition ${settings["venue.revealed"] === "true" ? "left-[22px]" : "left-0.5"}`} />
+              </button>
+            </div>
             {TEXT_SETTINGS.map((t) => (
               <div key={t.key}>
                 <label className="text-sm font-500 text-ink/80">{t.label}</label>
