@@ -34,7 +34,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-3 justify-items-center">
+          <div className="mt-10 flex flex-wrap gap-6 justify-center">
             {[["22–23 Aug", "2026"], ["20+", "Committees"]].map(([a, b]) => (
               <div key={b} className="rounded-2xl border border-ink/10 bg-paper p-5 w-full max-w-xs">
                 <p className="font-display text-3xl font-700 text-ink">{a}</p>
