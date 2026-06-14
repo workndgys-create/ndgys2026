@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { currentDelegate } from "@/lib/delegateSession";
+import { currentDelegate, allDelegateRegistrations } from "@/lib/delegateSession";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,11 +13,14 @@ export async function GET(req: Request) {
   const me = await currentDelegate();
   if (!me) return new Response("Unauthorized", { status: 401 });
 
+  const allRegs = await allDelegateRegistrations();
+  const trackSlugs = allRegs.map(r => r.trackSlug).filter(Boolean);
+
   const audienceWhere = {
     OR: [
       { audience: "ALL" as const },
       ...(me.status === "PAID" ? [{ audience: "PAID" as const }] : []),
-      { audience: "TRACK" as const, trackSlug: me.trackSlug }
+      { audience: "TRACK" as const, trackSlug: { in: trackSlugs } }
     ]
   };
 

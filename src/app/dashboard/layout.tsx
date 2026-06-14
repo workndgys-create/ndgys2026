@@ -1,6 +1,7 @@
 import Link from "next/link";
 import LogoutButton from "@/components/dashboard/LogoutButton";
-import { currentDelegate } from "@/lib/delegateSession";
+import { currentDelegate, allDelegateRegistrations } from "@/lib/delegateSession";
+import RegistrationSwitcher from "@/components/dashboard/RegistrationSwitcher";
 
 const nav = [
   { href: "/dashboard", label: "Overview" },
@@ -14,6 +15,7 @@ const nav = [
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const me = await currentDelegate();
+  const regs = await allDelegateRegistrations();
   const isComp = me ? (me as any).isCompetition : false;
 
   const filteredNav = nav.filter((n) => {
@@ -35,7 +37,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <LogoutButton endpoint="/api/delegate/auth/logout" redirect="/dashboard/login" />
       </header>
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-8 md:flex-row">
-        <nav className="flex gap-2 overflow-x-auto md:w-56 md:flex-col">
+        <nav className="flex gap-2 overflow-x-auto md:w-56 md:flex-col shrink-0">
+          {me && regs.length > 1 && (
+            <RegistrationSwitcher currentId={me.id} registrations={regs} />
+          )}
           {filteredNav.map((n) => (
             <Link key={n.href} href={n.href} className="whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-500 text-ink/75 hover:bg-paper hover:text-ink">
               {n.label}
