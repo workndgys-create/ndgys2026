@@ -15,12 +15,18 @@ import FAQ from "@/components/FAQ";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import SectionKicker from "@/components/SectionKicker";
-import { getFlag } from "@/lib/settings";
+import { getAllSettings } from "@/lib/settings";
 import Marquee from "@/components/Marquee";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const venueRevealed = await getFlag("venue.revealed");
+  const settings = await getAllSettings();
+  const venueRevealed = settings["venue.revealed"] === "true";
+  const mapQuery = settings["venue.mapQuery"] ?? "IIT Delhi, Hauz Khas, New Delhi";
+  const metro = settings["venue.metro"] ?? "";
+  const airport = settings["venue.airport"] ?? "";
+  const parking = settings["venue.parking"] ?? "";
+  const address = settings["venue.address"] ?? "IIT Delhi, Hauz Khas, New Delhi";
   return (
     <>
 
@@ -74,8 +80,8 @@ export default async function HomePage() {
               <>
                 <div className="h-[80vh] w-full">
                   <iframe
-                    title="IIT Delhi — full preview"
-                    src="https://www.google.com/maps/embed?origin=mfe&pb=!1m2!2m1!1sIIT+Delhi,+Hauz+Khas,+New+Delhi"
+                    title="Venue preview"
+                    src={`https://www.google.com/maps?q=${encodeURIComponent(mapQuery || address)}&output=embed`}
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
@@ -87,17 +93,17 @@ export default async function HomePage() {
                   <div className="grid gap-6 md:grid-cols-3">
                     <div className="rounded-lg border border-gold/20 p-6 bg-paper">
                       <h4 className="text-lg font-semibold text-ink">By Metro</h4>
-                      <p className="mt-3 text-ink/80">Nearest Metro: IIT Delhi (Magenta Line), ~1 km. Hauz Khas (Yellow/Magenta interchange) is ~2.5 km.</p>
+                      <p className="mt-3 text-ink/80">{metro || "Nearest Metro details will be published soon."}</p>
                     </div>
 
                     <div className="rounded-lg border border-gold/20 p-6 bg-paper">
                       <h4 className="text-lg font-semibold text-ink">By Air</h4>
-                      <p className="mt-3 text-ink/80">Indira Gandhi International Airport (DEL) is ~15 km / 35-45 min by cab.</p>
+                      <p className="mt-3 text-ink/80">{airport || "Air travel details will be published soon."}</p>
                     </div>
 
                     <div className="rounded-lg border border-gold/20 p-6 bg-paper">
                       <h4 className="text-lg font-semibold text-ink">Parking & on-site</h4>
-                      <p className="mt-3 text-ink/80">On-campus visitor parking is available; carpooling and metro are recommended on event days.</p>
+                      <p className="mt-3 text-ink/80">{parking || "Parking details will be published soon."}</p>
                     </div>
                   </div>
 
@@ -110,7 +116,7 @@ export default async function HomePage() {
                   </div>
 
                   <div className="mt-6">
-                    <p className="text-ink/70">IIT Delhi, Hauz Khas, New Delhi — previewed above. <a href="https://www.globalyouthsummit.in/venue" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">Open official venue page</a></p>
+                    <p className="text-ink/70">{address} — previewed above. <a href="/venue" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">Open official venue page</a></p>
                   </div>
                 </div>
               </>

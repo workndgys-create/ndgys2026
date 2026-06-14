@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getFlag } from "@/lib/settings";
+import { getAllSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Venue — NDGYS 4.0",
@@ -9,7 +9,14 @@ export const metadata: Metadata = {
 };
 
 export default async function VenuePage() {
-  const revealed = await getFlag("venue.revealed");
+  const settings = await getAllSettings();
+  const revealed = settings["venue.revealed"] === "true";
+  const address = settings["venue.address"] ?? "";
+  const mapQuery = settings["venue.mapQuery"] ?? "";
+  const metro = settings["venue.metro"] ?? "";
+  const airport = settings["venue.airport"] ?? "";
+  const parking = settings["venue.parking"] ?? "";
+  const notes = settings["venue.notes"] ?? "";
 
   return (
     <>
@@ -39,15 +46,11 @@ export default async function VenuePage() {
                 <h1 className="text-4xl md:text-6xl font-display font-black mt-2 text-[#FFF8E7] drop-shadow-md">
                   THE VENUE
                 </h1>
-                <p className="mt-2 text-lg md:text-xl text-goldlite font-semibold">IIT Delhi, Hauz Khas, New Delhi</p>
-                <p className="mt-4 max-w-3xl text-sm md:text-base text-cream/80 leading-relaxed">
-                  The New Delhi Global Youth Summit 4.0 will be hosted at the historic and well-equipped
-                  campus of IIT Delhi (Hauz Khas). The campus provides large lecture halls, multiple
-                  breakout rooms, and accessible facilities suitable for conferences and large events.
-                </p>
+                {address && <p className="mt-2 text-lg md:text-xl text-goldlite font-semibold">{address}</p>}
+                <p className="mt-4 max-w-3xl text-sm md:text-base text-cream/80 leading-relaxed">{notes || "The venue details will be published here when revealed."}</p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <a
-                    href="https://www.google.com/maps/place/IIT+Delhi/@28.5463,77.1928,15z"
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery || address || "IIT Delhi")}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block rounded-full bg-gold px-6 py-2.5 text-sm font-bold text-midnight shadow-lg shadow-gold/25 hover:bg-goldlite transition"
@@ -76,25 +79,19 @@ export default async function VenuePage() {
               <div className="grid gap-8 md:grid-cols-2 mt-10">
                 <div className="rounded-2xl border border-gold/15 bg-paper p-6">
                   <h3 className="font-display text-xl font-bold text-ink">Address</h3>
-                  <address className="not-italic mt-3 text-ink/80 leading-relaxed">
-                    Indian Institute of Technology Delhi
-                    <br />
-                    Hauz Khas, New Delhi, Delhi 110016
-                  </address>
+                  <address className="not-italic mt-3 text-ink/80 leading-relaxed">{address || "Address will be published soon."}</address>
 
                   <h4 className="mt-6 font-display text-lg font-bold text-ink">On-site contacts</h4>
-                  <p className="mt-2 text-ink/80">Event desk: +91 11 2659 XXXX (on event days)</p>
+                  <p className="mt-2 text-ink/80">{notes ? notes : "Event desk details will appear here."}</p>
                 </div>
 
                 <div className="rounded-2xl border border-gold/15 bg-paper p-6">
                   <h3 className="font-display text-xl font-bold text-ink">How to reach</h3>
                   <ul className="mt-3 list-disc pl-5 text-ink/80 space-y-2">
-                    <li>
-                      By Metro: Hauz Khas Metro Station (Yellow Line) is a short auto/ride away from the
-                      campus.
-                    </li>
-                    <li>By Road: Easily accessible from South Delhi and the Ring Road.</li>
-                    <li>By Air: Indira Gandhi International Airport is ~30–45 minutes by taxi.</li>
+                    {metro && <li>{metro}</li>}
+                    {parking && <li>{parking}</li>}
+                    {airport && <li>{airport}</li>}
+                    {!metro && !parking && !airport && <li>Travel information will be published soon.</li>}
                   </ul>
                 </div>
               </div>
