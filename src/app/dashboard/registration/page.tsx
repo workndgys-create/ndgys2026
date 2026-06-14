@@ -48,7 +48,7 @@ export default async function RegistrationPage() {
 
       {hasInvoice && (
         <div className="mt-5">
-          <a href="/api/delegate/invoice" className="inline-block rounded-full bg-gold px-6 py-3 font-600 text-midnight hover:bg-goldlite">Download Invoice (PDF)</a>
+          <a href={`/api/delegate/invoice?regId=${reg.id}`} className="inline-block rounded-full bg-gold px-6 py-3 font-600 text-midnight hover:bg-goldlite">Download Invoice (PDF)</a>
         </div>
       )}
       {isComp && (

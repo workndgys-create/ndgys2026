@@ -88,7 +88,7 @@ export default function TicketPage() {
         <button onClick={() => window.print()} className="w-full rounded-full bg-midnight py-3 font-600 text-cream hover:bg-royal">
           {participants.length > 1 ? "Print tickets" : "Print ticket"}
         </button>
-        <a href="/api/delegate/badge" className="w-full rounded-full border border-ink/20 py-3 text-center font-600 text-ink hover:border-gold">
+        <a href={`/api/delegate/badge?regId=${t.id}`} className="w-full rounded-full border border-ink/20 py-3 text-center font-600 text-ink hover:border-gold">
           {participants.length > 1 ? "Download pass badges (PDF)" : "Download pass badge (PDF)"}
         </a>
         <a href="/api/delegate/calendar" className="w-full rounded-full border border-ink/20 py-3 text-center font-600 text-ink hover:border-gold">Add to calendar (.ics)</a>
